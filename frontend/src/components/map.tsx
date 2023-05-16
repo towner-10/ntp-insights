@@ -1,0 +1,192 @@
+import mapboxgl from 'mapbox-gl';
+import { useRef, useEffect, useState } from 'react';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from './ui/card';
+import { renderToString } from 'react-dom/server';
+import { useTheme } from 'next-themes';
+import { LucideArrowUp, LucideCircleDot } from 'lucide-react';
+import { Button } from './ui/button';
+
+interface DefaultProps {
+	className?: string;
+}
+
+interface MapCardProps extends DefaultProps {
+	title: string;
+	description: string;
+}
+
+interface MapCardMarkerProps extends MapCardProps {
+	onChange?: ({ lng, lat }: mapboxgl.LngLat) => void;
+	value?: {
+		lng: number;
+		lat: number;
+	};
+}
+
+export function MapCard(props: MapCardProps) {
+	return (
+		<Card className={props.className}>
+			<CardHeader>
+				<CardTitle>{props.title}</CardTitle>
+				<CardDescription>{props.description}</CardDescription>
+			</CardHeader>
+			<CardContent>
+				<MapDebug className="h-[600px]" />
+			</CardContent>
+		</Card>
+	);
+}
+
+export function MapWithMarkerCard(props: MapCardMarkerProps) {
+	const mapContainer = useRef<HTMLDivElement | null>(null);
+	const map = useRef<mapboxgl.Map | null>(null);
+	const { resolvedTheme } = useTheme();
+
+	const [lng, setLng] = useState(props.value?.lng || -81.3);
+	const [lat, setLat] = useState(props.value?.lat || 42.97);
+	const [rotation, setRotation] = useState(0);
+
+	let lastTheme: string | undefined = undefined;
+
+	mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
+
+	useEffect(() => {
+		if (mapboxgl.accessToken === '') return;
+		if (map.current && lastTheme === resolvedTheme) return;
+		else if (map.current) map.current.remove();
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		lastTheme = resolvedTheme;
+
+		map.current = new mapboxgl.Map({
+			container: mapContainer.current || '',
+			style:
+				resolvedTheme === 'light'
+					? 'mapbox://styles/mapbox/streets-v11'
+					: 'mapbox://styles/mapbox/dark-v10',
+			center: [lng, lat],
+			zoom: 9,
+			bearing: 0,
+		});
+
+		if (!map.current) return;
+
+		map.current.on('rotate', () => {
+			setRotation(map.current?.getBearing() || 0);
+		});
+
+		const el = document.createElement('div');
+		el.className = 'w-6 h-6 text-foreground';
+		el.innerHTML = renderToString(<LucideCircleDot />);
+
+		const marker = new mapboxgl.Marker(el, {
+			draggable: true,
+		})
+			.setLngLat([lng, lat])
+			.addTo(map.current);
+
+		marker.on('dragend', () => {
+			const lngLat = marker.getLngLat();
+			if (!lngLat) return;
+			setLng(Number(lngLat.lng.toFixed(5)));
+			setLat(Number(lngLat.lat.toFixed(5)));
+			if (props.onChange) props.onChange(lngLat);
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [resolvedTheme]);
+
+	return (
+		<Card className={props.className}>
+			<CardHeader>
+				<div className="flex flex-row justify-between">
+					<div className="flex flex-col">
+						<CardTitle>{props.title}</CardTitle>
+						<CardDescription>{props.description}</CardDescription>
+					</div>
+					<Button
+						type="button"
+						variant="outline"
+						onClick={() => {
+							if (!map.current) return;
+							map.current.flyTo({
+								center: [lng, lat],
+								zoom: 9,
+								bearing: 0,
+								pitch: 0,
+							});
+						}}
+					>
+						Snap to Point
+					</Button>
+				</div>
+			</CardHeader>
+			<CardContent>
+				<div className="relative w-full">
+					<div className="absolute z-10 m-2 flex max-w-xs flex-col gap-2 rounded-lg bg-background/60 p-2 backdrop-blur">
+						<span>Longitude: {lng}</span>
+						<span>Latitude: {lat}</span>
+					</div>
+					<div className="absolute right-0 z-10 m-2 flex max-w-xs flex-col gap-2 rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
+						<LucideArrowUp
+							onClick={() => {
+								if (!map.current) return;
+								map.current.resetNorthPitch();
+							}}
+							className="transform-gpu"
+							style={{
+								transform: `rotate(${-rotation}deg)`,
+							}}
+						/>
+					</div>
+					<div ref={mapContainer} className="h-[600px]" />
+				</div>
+			</CardContent>
+		</Card>
+	);
+}
+
+function MapDebug(props: DefaultProps) {
+	const mapContainer = useRef<HTMLDivElement | null>(null);
+	const map = useRef<mapboxgl.Map | null>(null);
+	const [lng, setLng] = useState(-81.3);
+	const [lat, setLat] = useState(42.97);
+	const [zoom, setZoom] = useState(9);
+
+	mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
+
+	useEffect(() => {
+		if (mapboxgl.accessToken === '') return;
+		if (map.current) return;
+
+		map.current = new mapboxgl.Map({
+			container: mapContainer.current || '',
+			style: 'mapbox://styles/mapbox/streets-v11',
+			center: [lng, lat],
+			zoom: zoom,
+		});
+
+		if (!map.current) return;
+
+		map.current.on('move', () => {
+			if (!map.current) return;
+			setLng(Number(map.current.getCenter().lng.toFixed(4)));
+			setLat(Number(map.current.getCenter().lat.toFixed(4)));
+			setZoom(Number(map.current.getZoom().toFixed(2)));
+		});
+	});
+
+	return (
+		<div>
+			<div className="absolute z-10 m-2 flex max-w-xs flex-col items-center justify-center rounded-lg bg-background/60 p-2 backdrop-blur">
+				Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
+			</div>
+			<div ref={mapContainer} className={props.className} />
+		</div>
+	);
+}
