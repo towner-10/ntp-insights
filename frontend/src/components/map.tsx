@@ -21,6 +21,11 @@ interface MapCardProps extends DefaultProps {
 	description: string;
 }
 
+interface StaticMapProps extends DefaultProps {
+	lng: number;
+	lat: number;
+}
+
 interface MapCardMarkerProps extends MapCardProps {
 	onChange?: ({ lng, lat }: mapboxgl.LngLat) => void;
 	value?: {
@@ -148,6 +153,41 @@ export function MapWithMarkerCard(props: MapCardMarkerProps) {
 				</div>
 			</CardContent>
 		</Card>
+	);
+}
+
+export function StaticMap(props: StaticMapProps) {
+	const mapContainer = useRef<HTMLDivElement | null>(null);
+	const map = useRef<mapboxgl.Map | null>(null);
+	const { resolvedTheme } = useTheme();
+
+	let lastTheme: string | undefined = undefined;
+
+	mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
+
+	useEffect(() => {
+		if (mapboxgl.accessToken === '') return;
+		if (map.current && lastTheme === resolvedTheme) return;
+		else if (map.current) map.current.remove();
+
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		lastTheme = resolvedTheme;
+
+		map.current = new mapboxgl.Map({
+			container: mapContainer.current || '',
+			style:
+				resolvedTheme === 'light'
+					? 'mapbox://styles/mapbox/streets-v11'
+					: 'mapbox://styles/mapbox/dark-v10',
+			center: [props.lng, props.lat],
+			zoom: 9,
+			bearing: 0,
+			interactive: false
+		});
+	}, [resolvedTheme]);
+
+	return (
+		<div ref={mapContainer} className={props.className} />
 	);
 }
 

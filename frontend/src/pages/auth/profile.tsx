@@ -1,4 +1,5 @@
 import Header from '@/components/header';
+import { StaticMap } from '@/components/map';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
 	Card,
@@ -41,10 +42,12 @@ export default function ProfilePage() {
 				<Header title="Profile" />
 				<Toaster />
 				<div className="container flex flex-col items-center justify-center p-6">
-					<div className="grid grid-cols-3 items-center gap-6">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-center gap-6">
 						{searches.isLoading && (
 							[...loadingCards].map((_, i) => (
-								<Skeleton key={i} className='w-[300px] h-[350px] rounded-lg' />
+								<div key={i} className='col-span-1 row-span-1'>
+									<Skeleton className='rounded-lg' />
+								</div>
 							))
 						)}
 						{searches.isError && <div>Error: {searches.error.message}</div>}
@@ -53,7 +56,7 @@ export default function ProfilePage() {
 								<p className="text-2xl font-bold">No searches found</p>
 							</div>
 						)}
-						{searches.data?.sort((a,b) => {
+						{searches.data?.sort((a, b) => {
 							return b.created_at.getTime() - a.created_at.getTime();
 						}).map((search) => (
 							<Card key={search.id}>
@@ -68,13 +71,16 @@ export default function ProfilePage() {
 									</CardDescription>
 								</CardHeader>
 								<CardContent>
-									<p>Frequency: {search.frequency} min</p>
-									<p>Keywords: {search.keywords.map((keyword) => {
+									<StaticMap
+										className='h-[200px] mb-4'
+										lat={Number(search.location.split(",")[0])}
+										lng={Number(search.location.split(",")[1])} />
+									<p>Frequency: <span className='font-bold'>{search.frequency}</span> min</p>
+									<p>Keywords: <span className='font-bold'>{search.keywords.map((keyword) => {
 										return keyword + ', ';
-									})}</p>
-									<p>Location: {search.location}</p>
-									<p>Facebook: {search.facebook ? 'True' : 'False'}</p>
-									<p>Instant Weather: {search.instant_weather ? 'True' : 'False'}</p>
+									})}</span></p>
+									<p>Facebook: <span className='font-bold'>{search.facebook ? 'True' : 'False'}</span></p>
+									<p>Instant Weather: <span className='font-bold'>{search.instant_weather ? 'True' : 'False'}</span></p>
 								</CardContent>
 								<CardFooter>
 									<div className="flex justify-end">
