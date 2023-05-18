@@ -7,7 +7,7 @@ import {
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '@/server/db';
 import DiscordProvider from 'next-auth/providers/discord';
-import EmailProvider from "next-auth/providers/email";
+import EmailProvider from 'next-auth/providers/email';
 import { env } from '@/env.mjs';
 
 /**
@@ -47,6 +47,7 @@ export const authOptions: NextAuthOptions = {
 	},
 	pages: {
 		signIn: '/auth/signin',
+		newUser: '/auth/profile/settings',
 	},
 	providers: [
 		DiscordProvider({
@@ -60,10 +61,10 @@ export const authOptions: NextAuthOptions = {
 				auth: {
 					user: env.EMAIL_USERNAME,
 					pass: env.EMAIL_PASSWORD,
-				}
+				},
 			},
-			from: env.EMAIL_USERNAME
-		})
+			from: env.EMAIL_FROM,
+		}),
 	],
 };
 
