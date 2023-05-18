@@ -4,11 +4,15 @@ import {
 	type NextAuthOptions,
 	type DefaultSession,
 } from 'next-auth';
+import { renderEmail } from '@/components/emails/verify-email';
+import sendgrid from '@sendgrid/mail';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { prisma } from '@/server/db';
 import DiscordProvider from 'next-auth/providers/discord';
 import EmailProvider from 'next-auth/providers/email';
 import { env } from '@/env.mjs';
+
+sendgrid.setApiKey(env.SENDGRID_API_KEY);
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -55,15 +59,27 @@ export const authOptions: NextAuthOptions = {
 			clientSecret: env.DISCORD_CLIENT_SECRET,
 		}),
 		EmailProvider({
-			server: {
-				host: env.EMAIL_SERVER,
-				port: env.EMAIL_PORT,
-				auth: {
-					user: env.EMAIL_USERNAME,
-					pass: env.EMAIL_PASSWORD,
-				},
-			},
 			from: env.EMAIL_FROM,
+			sendVerificationRequest: async ({ identifier: email, url, provider }) => {
+				const { host } = new URL(url);
+
+				const emailHtml = await renderEmail({
+					recipient: email,
+					url,
+					host,
+				});
+
+				const response = await sendgrid.send({
+					to: email,
+					from: provider.from || env.EMAIL_FROM,
+					subject: 'Verify your email',
+					html: emailHtml,
+				});
+
+				if (response[0].statusCode !== 202) {
+					throw new Error('Failed to send email');
+				}
+			},
 		}),
 	],
 };

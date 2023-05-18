@@ -11,11 +11,7 @@ type EmailInputs = {
 };
 
 export function EmailSignIn() {
-	const {
-		register,
-		handleSubmit,
-		reset,
-	} = useForm<EmailInputs>();
+	const { register, handleSubmit, reset } = useForm<EmailInputs>();
 
 	const toaster = useToast();
 
@@ -36,6 +32,13 @@ export function EmailSignIn() {
 
 				reset({
 					email: '',
+				});
+			} else {
+				toaster.toast({
+					title: 'Error',
+					description: 'Failed to send email',
+					variant: 'destructive',
+					duration: 5000,
 				});
 			}
 		})(event);
