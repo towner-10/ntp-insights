@@ -13,12 +13,14 @@ import { addDays } from 'date-fns';
 import { Toaster } from '@/components/ui/toaster';
 import { api } from '@/utils/api';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
+import { useSession } from 'next-auth/react';
 
 type RouterSearch = {
 	id?: string;
 };
 
 const ViewSearchPage = () => {
+	const session = useSession();
 	const router = useRouter();
 	const { id }: RouterSearch = router.query;
 
@@ -38,7 +40,7 @@ const ViewSearchPage = () => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="h-screen">
-				<Header title={`${search.data?.name || 'View Search'}`} />
+				<Header title={`${search.data?.name || 'View Search'}`} session={session.data} />
 				<Toaster />
 				<div className="container flex flex-col items-center justify-center p-6">
 					<div className="flex w-full flex-row items-center">

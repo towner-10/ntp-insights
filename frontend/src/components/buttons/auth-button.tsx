@@ -30,6 +30,11 @@ export default function AuthButton(props: Props) {
 	const router = useRouter();
 	const sessionData = props.session;
 
+	const handleSignOut = async () => {
+		await signOut();
+		await router.push('/');
+	}
+
 	if (sessionData?.user) {
 		return (
 			<DropdownMenu>
@@ -98,7 +103,7 @@ export default function AuthButton(props: Props) {
 							<span className="pl-2">Settings</span>
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem onClick={() => void signOut()}>
+						<DropdownMenuItem onClick={() => void handleSignOut()}>
 							<LucideLogOut size={18} />
 							<span className="pl-2">Sign Out</span>
 						</DropdownMenuItem>
