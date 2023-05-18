@@ -16,6 +16,6 @@ export const searchDataSchema = z.object({
 	keywords: z.array(z.string()),
 	frequency: z.number(),
 	maxResults: z.number(),
+	twitter: z.boolean(),
 	facebook: z.boolean(),
-	instantWeather: z.boolean(),
 }).strict();

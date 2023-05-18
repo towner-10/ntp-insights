@@ -42,67 +42,90 @@ export default function ProfilePage() {
 				<Header title="Profile" session={session.data} />
 				<Toaster />
 				<div className="container flex flex-col items-center justify-center p-6">
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-center gap-6">
-						{searches.isLoading && (
+					<div className="grid grid-cols-1 items-center gap-6 sm:grid-cols-2 lg:grid-cols-3">
+						{searches.isLoading &&
 							[...loadingCards].map((_, i) => (
-								<Skeleton key={i} className='rounded-lg w-full h-4' />
-							))
-						)}
+								<Skeleton key={i} className="h-4 w-full rounded-lg" />
+							))}
 						{searches.isError && <div>Error: {searches.error.message}</div>}
 						{searches.data?.length === 0 && (
-							<div className="flex flex-col h-full w-full items-center justify-center col-span-3 row-span-full">
+							<div className="col-span-3 row-span-full flex h-full w-full flex-col items-center justify-center">
 								<p className="text-2xl font-bold">No searches found...</p>
 							</div>
 						)}
-						{searches.data?.sort((a, b) => {
-							return b.created_at.getTime() - a.created_at.getTime();
-						}).map((search) => (
-							<Card key={search.id}>
-								<CardHeader>
-									<CardTitle>
-										<Link className='underline' href={`/search/${search.id}/view`}>
-											{search.name}
-										</Link>
-									</CardTitle>
-									<CardDescription>
-										Created on: {search.created_at.toDateString()}
-									</CardDescription>
-								</CardHeader>
-								<CardContent>
-									<StaticMap
-										className='h-[200px] mb-4'
-										lat={Number(search.location.split(",")[0])}
-										lng={Number(search.location.split(",")[1])} />
-									<p>Frequency: <span className='font-bold'>{search.frequency}</span> min</p>
-									<p>Keywords: <span className='font-bold'>{search.keywords.map((keyword) => {
-										return keyword + ', ';
-									})}</span></p>
-									<p>Facebook: <span className='font-bold'>{search.facebook ? 'True' : 'False'}</span></p>
-									<p>Instant Weather: <span className='font-bold'>{search.instant_weather ? 'True' : 'False'}</span></p>
-								</CardContent>
-								<CardFooter>
-									<div className="flex justify-end">
-										<div className="flex flex-row items-center gap-2">
-											<Avatar>
-												<AvatarImage
-													src={search.created_by.image || ''}
-													alt={search.created_by.name || ''}
-												/>
-												<AvatarFallback>
-													{search.created_by.name?.charAt(0)}
-												</AvatarFallback>
-											</Avatar>
-											<p>
-												Created by{' '}
-												<span className="font-bold">
-													{search.created_by.name}
-												</span>
-											</p>
+						{searches.data
+							?.sort((a, b) => {
+								return b.created_at.getTime() - a.created_at.getTime();
+							})
+							.map((search) => (
+								<Card key={search.id}>
+									<CardHeader>
+										<CardTitle>
+											<Link
+												className="underline"
+												href={`/search/${search.id}/view`}
+											>
+												{search.name}
+											</Link>
+										</CardTitle>
+										<CardDescription>
+											Created on: {search.created_at.toDateString()}
+										</CardDescription>
+									</CardHeader>
+									<CardContent>
+										<StaticMap
+											className="mb-4 h-[200px]"
+											lat={Number(search.location.split(',')[0])}
+											lng={Number(search.location.split(',')[1])}
+										/>
+										<p>
+											Frequency:{' '}
+											<span className="font-bold">{search.frequency}</span> min
+										</p>
+										<p>
+											Keywords:{' '}
+											<span className="font-bold">
+												{search.keywords.map((keyword) => {
+													return keyword + ', ';
+												})}
+											</span>
+										</p>
+										<p>
+											Twitter:{' '}
+											<span className="font-bold">
+												{search.twitter ? 'True' : 'False'}
+											</span>
+										</p>
+										<p>
+											Facebook:{' '}
+											<span className="font-bold">
+												{search.facebook ? 'True' : 'False'}
+											</span>
+										</p>
+									</CardContent>
+									<CardFooter>
+										<div className="flex justify-end">
+											<div className="flex flex-row items-center gap-2">
+												<Avatar>
+													<AvatarImage
+														src={search.created_by.image || ''}
+														alt={search.created_by.name || ''}
+													/>
+													<AvatarFallback>
+														{search.created_by.name?.charAt(0)}
+													</AvatarFallback>
+												</Avatar>
+												<p>
+													Created by{' '}
+													<span className="font-bold">
+														{search.created_by.name}
+													</span>
+												</p>
+											</div>
 										</div>
-									</div>
-								</CardFooter>
-							</Card>
-						))}
+									</CardFooter>
+								</Card>
+							))}
 					</div>
 				</div>
 			</main>

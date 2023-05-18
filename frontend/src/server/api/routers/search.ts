@@ -32,7 +32,7 @@ export const searchRouter = createTRPCRouter({
 					frequency: input.frequency,
 					max_results: input.maxResults,
 					facebook: input.facebook,
-					instant_weather: input.instantWeather,
+					twitter: input.twitter,
 					created_by: {
 						connect: {
 							id: ctx.session.user.id,
@@ -134,7 +134,7 @@ export const searchRouter = createTRPCRouter({
 					frequency: input.search.frequency,
 					max_results: input.search.maxResults,
 					facebook: input.search.facebook,
-					instant_weather: input.search.instantWeather,
+					twitter: input.search.twitter,
 					updated_by: {
 						connect: {
 							id: ctx.session.user.id,

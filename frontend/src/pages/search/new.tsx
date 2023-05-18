@@ -21,7 +21,6 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import { addDays } from 'date-fns';
 import mapboxgl from 'mapbox-gl';
 import { Toaster } from '@/components/ui/toaster';
@@ -33,6 +32,8 @@ import { KeywordsInfo, RadiusInfo } from '@/components/info-dialogs';
 import { useWebSocketContext } from '@/components/websocket-context';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import { useSession } from 'next-auth/react';
+import { Toggle } from '@/components/ui/toggle';
+import { LucideFacebook, LucideTwitter } from 'lucide-react';
 
 const NewSearchPage = () => {
 	const session = useSession();
@@ -235,39 +236,42 @@ const NewSearchPage = () => {
 										})}
 									/>
 								</div>
-								<div className="flex h-12 items-center gap-4">
-									<div className="flex flex-col gap-2">
-										<Label htmlFor="facebook">Enable Facebook</Label>
+								<div className="flex h-12 flex-col gap-2 mb-2">
+									<Label>Toggle Platforms</Label>
+									<div className="flex flex-row gap-2">
 										<Controller
 											control={control}
 											name="facebook"
 											defaultValue={false}
 											render={({ field: { onChange, value, ref } }) => (
-												<Switch
+												<Toggle
 													id="facebook"
-													onCheckedChange={onChange}
-													checked={value}
+													pressed={value}
+													onPressedChange={onChange}
 													ref={ref}
-												/>
+													variant="outline"
+													aria-label="Toggle Facebook"
+												>
+													<LucideFacebook />
+												</Toggle>
 											)}
 										/>
-									</div>
-									<Separator orientation="vertical" />
-									<div className="flex flex-col gap-2">
-										<Label htmlFor="instantWeather">
-											Enable InstantWeather
-										</Label>
+										<Separator orientation="vertical" />
 										<Controller
 											control={control}
-											name="instantWeather"
-											defaultValue={false}
+											name="twitter"
+											defaultValue={true}
 											render={({ field: { onChange, value, ref } }) => (
-												<Switch
-													id="instantWeather"
-													onCheckedChange={onChange}
-													checked={value}
+												<Toggle
+													id="twitter"
+													pressed={value}
+													onPressedChange={onChange}
 													ref={ref}
-												/>
+													variant="outline"
+													aria-label="Toggle Twitter"
+												>
+													<LucideTwitter />
+												</Toggle>
 											)}
 										/>
 									</div>

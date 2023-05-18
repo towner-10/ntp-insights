@@ -8,8 +8,8 @@ generator client_frontend {
 }
 
 generator client_backend {
-  provider        = "prisma-client-js"
-  output          = "../../backend/node_modules/.prisma/client"
+  provider = "prisma-client-js"
+  output   = "../../backend/node_modules/.prisma/client"
 }
 
 model Account {
@@ -63,26 +63,26 @@ model VerificationToken {
 }
 
 model Search {
-  id              String   @id @default(cuid())
-  name            String
-  location        String
-  province        String?
-  start_date      DateTime
-  end_date        DateTime
-  keywords        String[]
-  frequency       Float    @default(30)
-  max_results     Int      @default(50)
-  facebook        Boolean  @default(false)
-  instant_weather Boolean  @default(false)
-  enabled         Boolean  @default(true)
-  archived        Boolean  @default(false)
-  posts           Post[]
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-  created_by      User     @relation("Created By", fields: [created_by_id], references: [id])
-  created_by_id   String
-  updated_by      User     @relation("Updated By", fields: [updated_by_id], references: [id])
-  updated_by_id   String
+  id            String   @id @default(cuid())
+  name          String
+  location      String
+  province      String?
+  start_date    DateTime
+  end_date      DateTime
+  keywords      String[]
+  frequency     Float    @default(30)
+  max_results   Int      @default(50)
+  facebook      Boolean  @default(false)
+  twitter       Boolean  @default(true)
+  enabled       Boolean  @default(true)
+  archived      Boolean  @default(false)
+  posts         Post[]
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  created_by    User     @relation("Created By", fields: [created_by_id], references: [id])
+  created_by_id String
+  updated_by    User     @relation("Updated By", fields: [updated_by_id], references: [id])
+  updated_by_id String
 }
 
 model Post {
