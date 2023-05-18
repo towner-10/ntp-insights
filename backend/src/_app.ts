@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config({ override: true });
+
 import Scheduler from './scheduler';
 import NTPServer from './server';
 import { Search } from '@prisma/client';
@@ -78,12 +81,12 @@ const addSearch = (search: Search, immediate = false) => {
 
 (async () => {
 	searches = await getEnabledSearches();
-	
+
 	// searches.forEach((search) => {
 	// 	addSearch(search, false);
 	// });
 
-	await facebook.fetchGroupPosts("ontariostormreports", 20);
+	await facebook.fetchGroupPosts('ontariostormreports', 20);
 })();
 
 NTPServer.getInstance().setEventMap(eventMap);
@@ -94,8 +97,8 @@ NTPServer.getInstance()
 	});
 
 process.on('SIGINT', () => {
-    logger.debug('Cleaning up...');
-    scheduler.stop();
-    NTPServer.getInstance().getServer().close();
-    process.exit(0);
+	logger.debug('Cleaning up...');
+	scheduler.stop();
+	NTPServer.getInstance().getServer().close();
+	process.exit(0);
 });

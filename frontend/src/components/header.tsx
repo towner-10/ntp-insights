@@ -2,27 +2,32 @@ import { type ReactNode } from 'react';
 import AuthButton from './buttons/auth-button';
 import ThemeSwitch from './buttons/theme-switch';
 import { Separator } from './ui/separator';
+import { type Session } from 'next-auth';
 
 type Props = {
 	title?: ReactNode;
+	session: Session | null;
 };
 
 export default function Header(props: Props) {
 	return (
-		<nav className="flex flex-wrap sticky w-full px-6 pt-6 z-40 top-0 items-center justify-between bg-background/50 backdrop-blur gap-4 ">
-			<div className="flex items-center mr-6">
-				<span className="font-bold text-2xl sm:text-4xl">
-					{props.title}
-				</span>
-			</div>
-			<div className="flex-grow flex w-auto items-center">
-				<div className="text-sm flex-grow"></div>
-				<div className='flex flex-row items-center gap-4'>
-                    <AuthButton />
-					<ThemeSwitch />
+		<>
+			<nav className="fixed top-0 z-40 flex w-full flex-wrap h-20 items-center justify-between gap-4 bg-background/50 px-6 pt-6 backdrop-blur">
+				<div className="mr-6 flex items-center">
+					<span className="text-2xl font-bold sm:text-4xl">{props.title}</span>
 				</div>
-			</div>
-			<Separator />
-		</nav>
+				<div className="flex w-auto flex-grow items-center">
+					<div className="flex-grow text-sm"></div>
+					<div className="flex flex-row items-center gap-4">
+						{props.session && (
+							<AuthButton session={props.session} />
+						)}
+						<ThemeSwitch />
+					</div>
+				</div>
+				<Separator />
+			</nav>
+			<div className="h-20" />
+		</>
 	);
 }

@@ -1,4 +1,4 @@
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { signIn, signOut } from 'next-auth/react';
 import { Button } from '../ui/button';
 import {
 	DropdownMenu,
@@ -13,15 +13,20 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
 	LucideHome,
 	LucideLogOut,
+	LucidePackagePlus,
 	LucideSettings,
 	LucideUser,
 } from 'lucide-react';
 import { useRouter } from 'next/router';
-import { SettingsSheet } from '../settings-sheet';
+import { type Session } from 'next-auth';
 
-export default function AuthButton() {
+type Props = {
+	session: Session;
+};
+
+export default function AuthButton(props: Props) {
 	const router = useRouter();
-	const { data: sessionData } = useSession();
+	const sessionData = props.session;
 
 	if (sessionData?.user) {
 		return (
@@ -49,6 +54,15 @@ export default function AuthButton() {
 					<DropdownMenuSeparator />
 					<DropdownMenuItem
 						onClick={() => {
+							void router.push('/search/new');
+						}}
+					>
+						<LucidePackagePlus size={18} />
+						<span className="pl-2">New Search</span>
+					</DropdownMenuItem>
+					<DropdownMenuSeparator />
+					<DropdownMenuItem
+						onClick={() => {
 							void router.push('/');
 						}}
 					>
@@ -56,24 +70,22 @@ export default function AuthButton() {
 						<span className="pl-2">Home</span>
 					</DropdownMenuItem>
 					<DropdownMenuGroup>
-						<DropdownMenuItem onClick={() => {
-							void router.push('/auth/profile');
-						}}>
+						<DropdownMenuItem
+							onClick={() => {
+								void router.push('/auth/profile');
+							}}
+						>
 							<LucideUser size={18} />
 							<span className="pl-2">Profile</span>
 						</DropdownMenuItem>
-						<SettingsSheet
-							trigger={
-								<DropdownMenuItem
-									onSelect={(e) => {
-										e.preventDefault();
-									}}
-								>
-									<LucideSettings size={18} />
-									<span className="pl-2">Settings</span>
-								</DropdownMenuItem>
-							}
-						/>
+						<DropdownMenuItem
+							onClick={() => {
+								void router.push('/auth/profile/settings');
+							}}
+						>
+							<LucideSettings size={18} />
+							<span className="pl-2">Settings</span>
+						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem onClick={() => void signOut()}>
 							<LucideLogOut size={18} />

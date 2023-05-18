@@ -9,7 +9,7 @@ generator client_frontend {
 
 generator client_backend {
   provider        = "prisma-client-js"
-  output          = "../../backend/node_modules/@prisma/client"
+  output          = "../../backend/node_modules/.prisma/client"
 }
 
 model Account {

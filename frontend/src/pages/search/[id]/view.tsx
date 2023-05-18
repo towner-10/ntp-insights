@@ -1,6 +1,4 @@
 import { useRouter } from 'next/router';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/server/auth';
 import { type GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Header from '@/components/header';
@@ -14,6 +12,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { addDays } from 'date-fns';
 import { Toaster } from '@/components/ui/toaster';
 import { api } from '@/utils/api';
+import { ntpProtectedRoute } from '@/lib/protectedRoute';
 
 type RouterSearch = {
 	id?: string;
@@ -94,31 +93,7 @@ const ViewSearchPage = () => {
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-	const session = await getServerSession(context.req, context.res, authOptions);
-
-	if (!session) {
-		return {
-			redirect: {
-				destination: '/',
-				permanent: false,
-			},
-		};
-	}
-
-	if (session.user.ntpAuthenticated === false) {
-		return {
-			redirect: {
-				destination: '/auth/ntp',
-				permanent: false,
-			},
-		};
-	}
-
-	return {
-		props: {
-			session,
-		},
-	};
+	return await ntpProtectedRoute(context);
 }
 
 export default ViewSearchPage;

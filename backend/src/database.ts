@@ -1,6 +1,12 @@
 import { Post, PrismaClient, Search } from '@prisma/client';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+	datasources: {
+		db: {
+			url: process.env.DATABASE_URL_BACKEND,
+		}
+	}
+});
 
 export const getSearches = async () => {
 	return await prisma.search.findMany();

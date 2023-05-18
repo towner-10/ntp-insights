@@ -5,13 +5,15 @@ import ExampleStatCard from '@/components/examples/example-stat-card';
 import ServerStatusBadge from '@/components/server-status-badge';
 import Header from '@/components/header';
 import { CalendarDateRangePicker } from '@/components/ui/calendar-range';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/server/auth';
 import { addDays } from 'date-fns';
 import { Toaster } from '@/components/ui/toaster';
 import { NewSearchButton } from '@/components/buttons/new-search-button';
+import { ntpProtectedRoute } from '@/lib/protectedRoute';
+import { useSession } from 'next-auth/react';
 
 const Dashboard: NextPage = () => {
+	const session = useSession();
+
 	return (
 		<>
 			<Head>
@@ -20,7 +22,7 @@ const Dashboard: NextPage = () => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="h-screen">
-				<Header title="Dashboard" />
+				<Header title="Dashboard" session={session.data} />
 				<Toaster />
 				<div className="container flex flex-col items-center justify-center p-6">
 					<div className="flex w-full flex-row items-center">
@@ -61,29 +63,5 @@ const Dashboard: NextPage = () => {
 export default Dashboard;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-	const session = await getServerSession(context.req, context.res, authOptions);
-
-	if (!session) {
-		return {
-			redirect: {
-				destination: '/auth/signin',
-				permanent: false,
-			},
-		};
-	}
-
-	if (session.user.ntpAuthenticated === false) {
-		return {
-			redirect: {
-				destination: '/auth/ntp',
-				permanent: false,
-			},
-		};
-	}
-
-	return {
-		props: {
-			session,
-		},
-	};
+	return await ntpProtectedRoute(context);
 }

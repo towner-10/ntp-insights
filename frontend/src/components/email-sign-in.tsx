@@ -14,6 +14,7 @@ export function EmailSignIn() {
 	const {
 		register,
 		handleSubmit,
+		reset,
 		formState: { errors },
 	} = useForm<EmailInputs>();
 
@@ -29,8 +30,13 @@ export function EmailSignIn() {
 			if (result?.ok) {
 				toaster.toast({
 					title: 'Email sent',
-					description: 'Check your email for the sign-in link.',
+					description:
+						'Check your email for the sign-in link. You can now close this window.',
 					variant: 'default',
+				});
+
+				reset({
+					email: '',
 				});
 			}
 		})(event);

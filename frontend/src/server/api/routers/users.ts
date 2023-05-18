@@ -61,4 +61,25 @@ export const usersRouter = createTRPCRouter({
 
 			return user;
 		}),
+	update: ntpProtectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+				name: z.string().optional(),
+				image: z.string().optional(),
+			})
+		)
+		.mutation(async ({ input }) => {
+			const user = await prisma.user.update({
+				where: {
+					id: input.id,
+				},
+				data: {
+					name: input.name,
+					image: input.image,
+				},
+			});
+
+			return user;
+		}),
 });

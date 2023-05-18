@@ -21,14 +21,14 @@ import Link from 'next/link';
 
 export default function ProfilePage() {
 	const loadingCards = new Array<number>(6);
-	const { data: session } = useSession();
+	const session = useSession();
 
-	if (!session?.user) {
+	if (!session.data?.user) {
 		return <div>Loading...</div>;
 	}
 
 	const searches = api.search.getUpdatedBy.useQuery({
-		id: session.user.id,
+		id: session.data.user.id || '',
 	});
 
 	return (
@@ -39,21 +39,19 @@ export default function ProfilePage() {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="h-screen">
-				<Header title="Profile" />
+				<Header title="Profile" session={session.data} />
 				<Toaster />
 				<div className="container flex flex-col items-center justify-center p-6">
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-center gap-6">
 						{searches.isLoading && (
 							[...loadingCards].map((_, i) => (
-								<div key={i} className='col-span-1 row-span-1'>
-									<Skeleton className='rounded-lg' />
-								</div>
+								<Skeleton key={i} className='rounded-lg w-full h-4' />
 							))
 						)}
 						{searches.isError && <div>Error: {searches.error.message}</div>}
 						{searches.data?.length === 0 && (
-							<div className="flex flex-col items-center justify-center col-span-3 row-span-full">
-								<p className="text-2xl font-bold">No searches found</p>
+							<div className="flex flex-col h-full w-full items-center justify-center col-span-3 row-span-full">
+								<p className="text-2xl font-bold">No searches found...</p>
 							</div>
 						)}
 						{searches.data?.sort((a, b) => {

@@ -1,5 +1,3 @@
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/server/auth';
 import { type FormEvent } from 'react';
 import { type GetServerSidePropsContext } from 'next';
 import { type SearchData } from '@/utils/types/searchData';
@@ -33,11 +31,14 @@ import { useRouter } from 'next/router';
 import { KeywordInput } from '@/components/input/keyword-input';
 import { KeywordsInfo, RadiusInfo } from '@/components/info-dialogs';
 import { useWebSocketContext } from '@/components/websocket-context';
+import { ntpProtectedRoute } from '@/lib/protectedRoute';
+import { useSession } from 'next-auth/react';
 
 const NewSearchPage = () => {
+	const session = useSession();
+	const router = useRouter();
 	const search = api.search.new.useMutation();
 	const { register, handleSubmit, control } = useForm<SearchData>();
-	const router = useRouter();
 	const websocketInstance = useWebSocketContext();
 
 	const onSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -85,7 +86,7 @@ const NewSearchPage = () => {
 			</Head>
 			<main className="h-screen">
 				<Toaster />
-				<Header title="New Search" />
+				<Header title="New Search" session={session.data} />
 				<div className="container flex flex-col items-center justify-center p-6">
 					<div className="flex w-full flex-row items-center">
 						<ServerStatusBadge />
@@ -284,31 +285,7 @@ const NewSearchPage = () => {
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-	const session = await getServerSession(context.req, context.res, authOptions);
-
-	if (!session) {
-		return {
-			redirect: {
-				destination: '/',
-				permanent: false,
-			},
-		};
-	}
-
-	if (session.user.ntpAuthenticated === false) {
-		return {
-			redirect: {
-				destination: '/auth/ntp',
-				permanent: false,
-			},
-		};
-	}
-
-	return {
-		props: {
-			session,
-		},
-	};
+	return await ntpProtectedRoute(context);
 }
 
 export default NewSearchPage;
