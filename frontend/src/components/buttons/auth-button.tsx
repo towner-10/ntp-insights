@@ -16,9 +16,11 @@ import {
 	LucidePackagePlus,
 	LucideSettings,
 	LucideUser,
+	LucideX,
 } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { type Session } from 'next-auth';
+import { Badge } from '../ui/badge';
 
 type Props = {
 	session: Session;
@@ -52,14 +54,23 @@ export default function AuthButton(props: Props) {
 						</div>
 					</DropdownMenuLabel>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem
+					{sessionData.user.ntpAuthenticated ? (<DropdownMenuItem
 						onClick={() => {
 							void router.push('/search/new');
 						}}
 					>
 						<LucidePackagePlus size={18} />
 						<span className="pl-2">New Search</span>
-					</DropdownMenuItem>
+					</DropdownMenuItem>) : (
+						<DropdownMenuLabel>
+							<div className="flex flex-row items-center justify-between">
+								<p className="text-xs text-muted-foreground">
+									Not NTP authenticated
+								</p>
+								<Badge variant="destructive"><LucideX /></Badge>
+							</div>
+						</DropdownMenuLabel>
+					)}
 					<DropdownMenuSeparator />
 					<DropdownMenuItem
 						onClick={() => {

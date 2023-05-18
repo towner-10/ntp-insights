@@ -15,7 +15,6 @@ export function EmailSignIn() {
 		register,
 		handleSubmit,
 		reset,
-		formState: { errors },
 	} = useForm<EmailInputs>();
 
 	const toaster = useToast();
@@ -52,10 +51,8 @@ export function EmailSignIn() {
 				<Input
 					type="email"
 					placeholder="Email"
-					aria-invalid={errors.email ? 'true' : 'false'}
 					{...register('email', { required: 'Required' })}
 				/>
-				{errors.email && <span role="alert">This field is required</span>}
 				<Button type="submit" className="w-full">
 					Sign-in with Email
 				</Button>

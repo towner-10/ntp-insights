@@ -19,7 +19,7 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: z.string(),
     EMAIL_SERVER: z.string(),
     EMAIL_PORT: z.string(),
-    EMAIL_USERNAME: z.string().email(),
+    EMAIL_USERNAME: z.string(),
     EMAIL_PASSWORD: z.string(),
     EMAIL_FROM: z.string().email(),
     BACKEND_URL: z.string().url(),
