@@ -1,5 +1,5 @@
 import { Badge } from './ui/badge';
-import { useWebSocketContext } from './websocket-context';
+import { useWebSocketContext } from './socket-context';
 
 export const isBrowser = typeof window !== 'undefined';
 

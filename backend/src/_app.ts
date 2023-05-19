@@ -91,7 +91,7 @@ const addSearch = (search: Search, immediate = false) => {
 
 NTPServer.getInstance().setEventMap(eventMap);
 NTPServer.getInstance()
-	.getServer()
+	.getHttpServer()
 	.listen(8000, () => {
 		logger.success('Server listening on port 8000');
 	});
@@ -99,6 +99,6 @@ NTPServer.getInstance()
 process.on('SIGINT', () => {
 	logger.debug('Cleaning up...');
 	scheduler.stop();
-	NTPServer.getInstance().getServer().close();
+	NTPServer.getInstance().getHttpServer().close();
 	process.exit(0);
 });

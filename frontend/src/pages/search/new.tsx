@@ -29,7 +29,7 @@ import { api } from '@/utils/api';
 import { useRouter } from 'next/router';
 import { KeywordInput } from '@/components/input/keyword-input';
 import { KeywordsInfo, RadiusInfo } from '@/components/info-dialogs';
-import { useWebSocketContext } from '@/components/websocket-context';
+import { useWebSocketContext } from '@/components/socket-context';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import { useSession } from 'next-auth/react';
 import { Toggle } from '@/components/ui/toggle';
@@ -62,7 +62,7 @@ const NewSearchPage = () => {
 						duration: 5000,
 					});
 
-					websocketInstance.websocket?.send('refresh');
+					websocketInstance.socket?.send('refresh');
 
 					return router.push(`/search/${data.id}/view`);
 				},
@@ -236,7 +236,7 @@ const NewSearchPage = () => {
 										})}
 									/>
 								</div>
-								<div className="flex h-12 flex-col gap-2 mb-2">
+								<div className="mb-2 flex h-12 flex-col gap-2">
 									<Label>Toggle Platforms</Label>
 									<div className="flex flex-row gap-2">
 										<Controller

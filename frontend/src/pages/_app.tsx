@@ -6,7 +6,7 @@ import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/toaster';
 import { api } from '@/utils/api';
-import { WebSocketProvider } from '@/components/websocket-context';
+import { SocketProvider } from '@/components/socket-context';
 
 const MyApp: AppType<{ session: Session | null }> = ({
 	Component,
@@ -15,10 +15,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
 	return (
 		<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 			<SessionProvider session={session}>
-				<WebSocketProvider>
+				<SocketProvider>
 					<Component {...pageProps} />
 					<Toaster />
-				</WebSocketProvider>
+				</SocketProvider>
 			</SessionProvider>
 		</ThemeProvider>
 	);
