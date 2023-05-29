@@ -8,6 +8,7 @@ type KeywordInputProps = {
 	onChange: (value: string[]) => void;
 	onBlur: FocusEventHandler<HTMLInputElement>;
 	inputRef: React.Ref<HTMLInputElement>;
+	disabled?: boolean;
 };
 
 export function KeywordInput(props: KeywordInputProps) {
@@ -53,6 +54,7 @@ export function KeywordInput(props: KeywordInputProps) {
 				value={input}
 				onBlur={props.onBlur}
 				onChange={(e) => setInput(e.target.value)}
+				disabled={props.disabled}
 				onKeyDown={(e) => {
 					const trimmedInput = input.trim();
 

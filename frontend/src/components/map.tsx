@@ -11,6 +11,7 @@ import { renderToString } from 'react-dom/server';
 import { useTheme } from 'next-themes';
 import { LucideArrowUp, LucideCircleDot } from 'lucide-react';
 import { Button } from './ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 interface DefaultProps {
 	className?: string;
@@ -133,10 +134,21 @@ export function MapWithMarkerCard(props: MapCardMarkerProps) {
 			</CardHeader>
 			<CardContent>
 				<div className="relative w-full">
-					<div className="absolute z-10 m-2 flex max-w-xs flex-col gap-2 rounded-lg bg-background/60 p-2 backdrop-blur">
-						<span>Longitude: {lng}</span>
-						<span>Latitude: {lat}</span>
-					</div>
+					<TooltipProvider>
+						<Tooltip> 
+							<TooltipTrigger asChild>
+								<div className="absolute z-10 m-2 flex max-w-xs flex-col gap-2 rounded-lg bg-background/60 p-2 backdrop-blur select-none cursor-pointer" onClick={void (async () => {
+									await navigator.clipboard.writeText(`${lat}, ${lng}`);
+								})()}>
+									<span>Latitude: {lat}</span>
+									<span>Longitude: {lng}</span>
+								</div>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>Copy to clipboard</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
 					<div className="absolute right-0 z-10 m-2 flex max-w-xs flex-col gap-2 rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
 						<LucideArrowUp
 							onClick={() => {
