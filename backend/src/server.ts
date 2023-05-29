@@ -18,8 +18,6 @@ export default class NTPServer {
 		this.eventMap = {};
 
 		this.wss.on('connection', (socket) => {
-			const ip = socket.client.conn.remoteAddress;
-
 			socket.on('message', async (message: string) => {
 				await this.callEvent(message);
 			});
@@ -28,7 +26,7 @@ export default class NTPServer {
 				logger.error(`Error in WebSocket: ${err}`);
 			});
 
-			logger.debug(`New WebSocket connection via: ${ip}`);
+			logger.debug(`New WebSocket connection from ${socket.handshake.address.replace('::ffff:', '')}`);
 		});
 	}
 

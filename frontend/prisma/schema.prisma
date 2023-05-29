@@ -63,26 +63,30 @@ model VerificationToken {
 }
 
 model Search {
-  id            String   @id @default(cuid())
-  name          String
-  location      String
-  province      String?
-  start_date    DateTime
-  end_date      DateTime
-  keywords      String[]
-  frequency     Float    @default(30)
-  max_results   Int      @default(50)
-  facebook      Boolean  @default(false)
-  twitter       Boolean  @default(true)
-  enabled       Boolean  @default(true)
-  archived      Boolean  @default(false)
-  posts         Post[]
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  created_by    User     @relation("Created By", fields: [created_by_id], references: [id])
-  created_by_id String
-  updated_by    User     @relation("Updated By", fields: [updated_by_id], references: [id])
-  updated_by_id String
+  id                String    @id @default(cuid())
+  name              String
+  location          Json?
+  location_keywords String[]
+  province          String?
+  start_date        DateTime
+  end_date          DateTime
+  keywords          String[]
+  frequency         Float     @default(30)
+  max_results       Int       @default(50)
+  facebook          Boolean   @default(false)
+  twitter           Boolean   @default(true)
+  enabled           Boolean   @default(true)
+  archived          Boolean   @default(false)
+  posts             Post[]
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+  last_run          DateTime?
+  last_run_time     Float?
+  tweet_count       Int[]
+  created_by        User      @relation("Created By", fields: [created_by_id], references: [id])
+  created_by_id     String
+  updated_by        User      @relation("Updated By", fields: [updated_by_id], references: [id])
+  updated_by_id     String
 }
 
 model Post {

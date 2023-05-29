@@ -19,6 +19,7 @@
     "dotenv": "^16.0.3",
     "puppeteer": "^20.1.2",
     "socket.io": "^4.6.1",
+    "twitter-api-v2": "^1.14.2",
     "typescript": "^5.0.4",
     "ws": "^8.13.0"
   },

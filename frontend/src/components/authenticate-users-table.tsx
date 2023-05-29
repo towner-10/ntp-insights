@@ -73,7 +73,7 @@ export function AuthenticateUsersTable() {
 		);
 	}
 
-	if (users.data?.pages[0]?.users.length === 0) {
+	if (!users.data?.pages[0]?.users.length) {
 		return (
 			<h2 className="text-center font-semibold text-muted-foreground">
 				No users to authenticate right now.

@@ -4,8 +4,8 @@ const prisma = new PrismaClient({
 	datasources: {
 		db: {
 			url: process.env.DATABASE_URL_BACKEND,
-		}
-	}
+		},
+	},
 });
 
 export const getSearches = async () => {
@@ -37,6 +37,29 @@ export const getNewSearches = async (oldSearches: Search[]) => {
 			},
 			enabled: true,
 			archived: false,
+		},
+	});
+};
+
+export const setTweetCount = async (search: Search, count: number[]) => {
+	await prisma.search.update({
+		where: {
+			id: search.id,
+		},
+		data: {
+			tweet_count: count,
+		},
+	});
+};
+
+export const setLastRun = async (search: Search, last_run_time: number) => {
+	await prisma.search.update({
+		where: {
+			id: search.id,
+		},
+		data: {
+			last_run: new Date(),
+			last_run_time: last_run_time,
 		},
 	});
 };

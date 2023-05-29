@@ -8,10 +8,10 @@ import {
 	getEnabledSearches,
 	getNewDisabledSearches,
 	getNewSearches,
+	setLastRun,
 } from './database';
 import { logger } from './utils/logger';
-import { randomInt } from 'crypto';
-import { facebook } from './lib/facebook';
+import { twitter } from './lib/twitter';
 
 const UPDATE_FREQUENCY = 10000;
 
@@ -60,21 +60,28 @@ const eventMap: { [key: string]: () => Promise<void> } = {
 	},
 };
 
+const handleSearch = async (search: Search) => {
+	const now = new Date().getTime();
+	logger.debug(`Waiting for search ${search.id}`);
+
+	if (search.twitter) {
+		logger.debug(`Searching Twitter for ${search.id}`);
+		await twitter.getTweetCount(search);
+		logger.debug(`Finished searching Twitter for ${search.id}`);
+	}
+
+	const timeTaken = new Date().getTime() - now;
+	await setLastRun(search, timeTaken);
+	logger.debug(`Finished search ${search.id} in ${timeTaken}ms`);
+};
+
 const addSearch = (search: Search, immediate = false) => {
 	scheduler.addJob(
 		search.id,
 		new Date(search.start_date),
 		new Date(search.end_date),
 		search.frequency,
-		async () => {
-			logger.debug(`Waiting for search ${search.id}`);
-			await new Promise((resolve) => {
-				setTimeout(() => {
-					logger.debug(`Finished search ${search.id}`);
-					resolve(0);
-				}, randomInt(10000, 50000));
-			});
-		},
+		() => handleSearch(search),
 		immediate
 	);
 };
@@ -82,11 +89,9 @@ const addSearch = (search: Search, immediate = false) => {
 (async () => {
 	searches = await getEnabledSearches();
 
-	// searches.forEach((search) => {
-	// 	addSearch(search, false);
-	// });
-
-	await facebook.fetchGroupPosts('ontariostormreports', 20);
+	searches.forEach((search) => {
+		addSearch(search, true);
+	});
 })();
 
 NTPServer.getInstance().setEventMap(eventMap);

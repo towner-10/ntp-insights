@@ -1,6 +1,6 @@
 import { env } from '@/env.mjs';
 import { type Socket, Manager } from 'socket.io-client';
-import { createContext, useContext, useEffect, useState, useMemo } from 'react';
+import { createContext, useContext, useState, useMemo } from 'react';
 
 type SocketContextType = {
 	socket: Socket | null;
@@ -26,25 +26,13 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 			reconnectionDelay: RECONNECT_TIMEOUT,
 		});
 
-		return  isBrowser ? manager.socket('/') : null;
+		manager.on('open', () => setState(WebSocket.OPEN));
+		manager.on('reconnect_attempt', () => setState(WebSocket.CONNECTING));
+		manager.on('close', () => setState(WebSocket.CLOSED));
+		manager.on('error', () => setState(WebSocket.CLOSED));
+
+		return isBrowser ? manager.socket('/') : null;
 	}, []);
-
-	useEffect(() => {
-		if (socket === null) return;
-
-		socket.io.on('open', () => {
-			console.log('WebSocket connected');
-			setState(WebSocket.OPEN);
-		});
-
-		socket.io.on('reconnect_attempt', () => {
-			console.log('WebSocket reconnecting');
-			setState(WebSocket.CONNECTING);
-		});
-
-		socket.io.on('close', () => setState(WebSocket.CLOSED));
-		socket.io.on('error', () => setState(WebSocket.CLOSED));
-	}, [socket]);
 
 	return (
 		<SocketContext.Provider

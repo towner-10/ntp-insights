@@ -8,7 +8,7 @@ const geocoder = NodeGeocoder({
 
 type StateCode = {
 	[key: string]: string | null;
-}
+};
 
 export const stateCodes: StateCode = {
 	'Newfoundland and Labrador': 'NL',
@@ -24,7 +24,7 @@ export const stateCodes: StateCode = {
 	'Yukon Territory': 'YT',
 	'Northwest Territories': 'NT',
 	Nunavut: 'NU',
-	'None': null
+	None: null,
 };
 
 export const findLocation = async ({

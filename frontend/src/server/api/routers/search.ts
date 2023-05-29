@@ -21,7 +21,14 @@ export const searchRouter = createTRPCRouter({
 			const response = await prisma.search.create({
 				data: {
 					name: input.name,
-					location: `${input.map.lat},${input.map.lng},${input.radius}km`,
+					location: {
+						lng: input.map.lng,
+						lat: input.map.lat,
+						radius: input.radius,
+					},
+					location_keywords: location
+						? ([location.city, location.state, location.country] as string[])
+						: [],
 					province:
 						location?.stateCode ||
 						stateCodes[location?.state || 'None'] ||
@@ -118,13 +125,25 @@ export const searchRouter = createTRPCRouter({
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
+			const location = await findLocation({
+				lng: input.search.map.lng,
+				lat: input.search.map.lat,
+			});
+			
 			const response = await prisma.search.update({
 				where: {
 					id: input.id,
 				},
 				data: {
 					name: input.search.name,
-					location: `${input.search.map.lat},${input.search.map.lng},${input.search.radius}km`,
+					location: {
+						lng: input.search.map.lng,
+						lat: input.search.map.lat,
+						radius: input.search.radius,
+					},
+					location_keywords: location
+						? ([location.city, location.state, location.country] as string[])
+						: [],
 					keywords: input.search.keywords,
 					start_date: input.search.dateRange.from || new Date(),
 					end_date:
