@@ -2,34 +2,16 @@ import { type GetServerSidePropsContext, type NextPage } from 'next';
 import Head from 'next/head';
 import Header from '@/components/header';
 import { Toaster } from '@/components/ui/toaster';
-import { OrbitControls } from '@react-three/drei'
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import { useSession } from 'next-auth/react';
-import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
-import * as THREE from 'three';
-import { Suspense } from 'react';
-
-function StreetViewImage() {
-	const texture = useLoader(THREE.TextureLoader, './Street_View_360.jpg');
-	texture.mapping = THREE.EquirectangularReflectionMapping;
-	texture.minFilter = texture.magFilter = THREE.LinearFilter;
-	return (
-		<mesh>
-			<sphereGeometry attach="geometry" args={[500, 60, 40]} />
-			<meshBasicMaterial attach="material" map={texture} side={THREE.BackSide} />
-		</mesh>
-	)
-}
-
-function Controls() {
-	const { camera, gl } = useThree();
-
-	useFrame(() => {
-		camera.updateProjectionMatrix();
-	});
-
-	return <OrbitControls target={[0, 0, 0]} autoRotate rotateSpeed={-0.5} args={[camera, gl.domElement]} />
-}
+import { View360 } from '@/components/view-360';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
 
 const Example: NextPage = () => {
 	const session = useSession();
@@ -42,20 +24,30 @@ const Example: NextPage = () => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="h-screen">
-				<Header title={
-					<>
-						NTP{" "}<span className='text-success'>360</span>
-					</>
-				} session={session.data} />
+				<Header
+					title={
+						<>
+							NTP <span className="text-success">360</span>
+						</>
+					}
+					session={session.data}
+				/>
 				<Toaster />
 				<div className="container flex flex-col items-center justify-center p-6">
-					<div className='h-[600px] w-full p-2'>
-						<Canvas camera={{ position: [0, 0, 0] }}>
-							<Controls />
-							<Suspense fallback={null}>
-								<StreetViewImage />
-							</Suspense>
-						</Canvas>
+					<h2 className="mb-4 w-full text-left text-2xl font-medium">
+						NTP 2023 Storm Event
+					</h2>
+					<div className="grid w-full grid-cols-1 lg:grid-cols-5 lg:grid-rows-3 gap-4">
+						<div className="relative h-full xl:h-[1000px] col-span-4 row-span-3 overflow-hidden rounded-md">
+							<View360 />
+						</div>
+						<Card className='row-span-2'>
+							<CardHeader>
+								<CardTitle>Details</CardTitle>
+								<CardDescription>About the current 360 view.</CardDescription>
+								<CardContent>Lng/Lat: 43.00635552433941, -81.27503295743084</CardContent>
+							</CardHeader>
+						</Card>
 					</div>
 				</div>
 			</main>
