@@ -8,9 +8,11 @@ import { Label } from './ui/label';
 import { Controllers, VRButton, XR } from '@react-three/xr';
 
 const StreetViewImage = () => {
-	const texture = useLoader(THREE.TextureLoader, './Street_View_360.jpg');
+	const texture = useLoader(THREE.TextureLoader, './test.jpg');
 	texture.mapping = THREE.EquirectangularReflectionMapping;
 	texture.minFilter = texture.magFilter = THREE.LinearFilter;
+	texture.wrapS = THREE.RepeatWrapping;
+	texture.repeat.x = -1;
 	return (
 		<mesh>
 			<sphereGeometry attach="geometry" args={[500, 60, 40, 90]} />
