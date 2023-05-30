@@ -18,6 +18,8 @@ export default class NTPServer {
 		this.eventMap = {};
 
 		this.wss.on('connection', (socket) => {
+			const ip = socket.handshake.address; 
+
 			socket.on('message', async (message: string) => {
 				await this.callEvent(message);
 			});

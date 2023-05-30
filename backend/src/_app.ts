@@ -64,11 +64,12 @@ const handleSearch = async (search: Search) => {
 	const now = new Date().getTime();
 	logger.debug(`Waiting for search ${search.id}`);
 
-	if (search.twitter) {
-		logger.debug(`Searching Twitter for ${search.id}`);
-		await twitter.getTweetCount(search);
-		logger.debug(`Finished searching Twitter for ${search.id}`);
-	}
+	// Disable Twitter search for now
+	// if (search.twitter) {
+	// 	logger.debug(`Searching Twitter for ${search.id}`);
+	// 	await twitter.getTweetCount(search);
+	// 	logger.debug(`Finished searching Twitter for ${search.id}`);
+	// }
 
 	const timeTaken = new Date().getTime() - now;
 	await setLastRun(search, timeTaken);
