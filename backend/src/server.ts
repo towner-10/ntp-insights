@@ -26,7 +26,11 @@ export default class NTPServer {
 				logger.error(`Error in WebSocket: ${err}`);
 			});
 
-			logger.debug(`New WebSocket connection from ${socket.handshake.address.replace('::ffff:', '')}`);
+			socket.on('disconnect', () => {
+				logger.debug(`WebSocket disconnected: ${ip.replace('::ffff:', '')}`);
+			});
+
+			logger.debug(`New WebSocket connection via: ${ip.replace('::ffff:', '')}`);
 		});
 	}
 

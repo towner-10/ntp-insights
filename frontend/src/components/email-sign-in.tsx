@@ -2,7 +2,7 @@ import { signIn } from 'next-auth/react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { useForm } from 'react-hook-form';
-import { type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Toaster } from './ui/toaster';
 import { useToast } from './ui/use-toast';
 
@@ -12,12 +12,13 @@ type EmailInputs = {
 
 export function EmailSignIn() {
 	const { register, handleSubmit, reset } = useForm<EmailInputs>();
-
+	const [signingIn, setSigningIn] = useState(false);
 	const toaster = useToast();
 
 	const onSubmit = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		void handleSubmit(async (data) => {
+			setSigningIn(true);
 			const result = await signIn('email', {
 				email: data.email,
 				redirect: false,
@@ -30,6 +31,8 @@ export function EmailSignIn() {
 					variant: 'default',
 				});
 
+				setSigningIn(false);
+
 				reset({
 					email: '',
 				});
@@ -40,6 +43,8 @@ export function EmailSignIn() {
 					variant: 'destructive',
 					duration: 5000,
 				});
+
+				setSigningIn(false);
 			}
 		})(event);
 	};
@@ -54,9 +59,10 @@ export function EmailSignIn() {
 				<Input
 					type="email"
 					placeholder="Email"
+					disabled={signingIn}
 					{...register('email', { required: 'Required' })}
 				/>
-				<Button type="submit" className="w-full">
+				<Button type="submit" className="w-full" disabled={signingIn}>
 					Sign-in with Email
 				</Button>
 			</form>

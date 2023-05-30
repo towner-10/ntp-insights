@@ -39,7 +39,7 @@ const NewSearchPage = () => {
 	const session = useSession();
 	const router = useRouter();
 	const search = api.search.new.useMutation();
-	const { register, handleSubmit, control } = useForm<SearchData>();
+	const { register, handleSubmit, control, formState } = useForm<SearchData>();
 	const websocketInstance = useWebSocketContext();
 
 	const onSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -123,7 +123,8 @@ const NewSearchPage = () => {
 										placeholder="Name"
 										type="text"
 										className="w-full"
-										{...register('name', { required: true })}
+										disabled={formState.isSubmitting}
+										{...register('name', { required: true, disabled: formState.isSubmitting })}
 									/>
 								</div>
 								<div className="flex flex-col gap-2">
@@ -174,6 +175,7 @@ const NewSearchPage = () => {
 													value={value}
 													onBlur={onBlur}
 													inputRef={ref}
+													disabled={formState.isSubmitting}
 												/>
 											);
 										}}
@@ -196,9 +198,11 @@ const NewSearchPage = () => {
 										step="10"
 										type="number"
 										className="w-full"
+										disabled={formState.isSubmitting}
 										{...register('radius', {
 											required: true,
 											valueAsNumber: true,
+											disabled: formState.isSubmitting
 										})}
 									/>
 								</div>
@@ -216,6 +220,7 @@ const NewSearchPage = () => {
 										{...register('frequency', {
 											required: true,
 											valueAsNumber: true,
+											disabled: formState.isSubmitting
 										})}
 									/>
 								</div>
@@ -230,9 +235,11 @@ const NewSearchPage = () => {
 										step="1"
 										type="number"
 										className="w-full"
+										disabled={formState.isSubmitting}
 										{...register('maxResults', {
 											required: true,
 											valueAsNumber: true,
+											disabled: formState.isSubmitting
 										})}
 									/>
 								</div>
@@ -278,7 +285,7 @@ const NewSearchPage = () => {
 								</div>
 							</CardContent>
 							<CardFooter>
-								<Button formAction="submit">Submit</Button>
+								<Button formAction="submit" disabled={formState.isSubmitting}>Submit</Button>
 							</CardFooter>
 						</Card>
 					</form>

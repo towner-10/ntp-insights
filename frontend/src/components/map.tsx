@@ -1,4 +1,4 @@
-import mapboxgl from 'mapbox-gl';
+import mapboxgl, { type LngLat } from 'mapbox-gl';
 import { useRef, useEffect, useState } from 'react';
 import {
 	Card,
@@ -11,6 +11,12 @@ import { renderToString } from 'react-dom/server';
 import { useTheme } from 'next-themes';
 import { LucideArrowUp, LucideCircleDot } from 'lucide-react';
 import { Button } from './ui/button';
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from './ui/tooltip';
 
 interface DefaultProps {
 	className?: string;
@@ -24,6 +30,10 @@ interface MapCardProps extends DefaultProps {
 interface StaticMapProps extends DefaultProps {
 	lng: number;
 	lat: number;
+}
+
+interface View360MapProps extends DefaultProps {
+	points: LngLat[];
 }
 
 interface MapCardMarkerProps extends MapCardProps {
@@ -133,10 +143,26 @@ export function MapWithMarkerCard(props: MapCardMarkerProps) {
 			</CardHeader>
 			<CardContent>
 				<div className="relative w-full">
-					<div className="absolute z-10 m-2 flex max-w-xs flex-col gap-2 rounded-lg bg-background/60 p-2 backdrop-blur">
-						<span>Longitude: {lng}</span>
-						<span>Latitude: {lat}</span>
-					</div>
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<div
+									className="absolute z-10 m-2 flex max-w-xs cursor-pointer select-none flex-col gap-2 rounded-lg bg-background/60 p-2 backdrop-blur"
+									onClick={
+										void (async () => {
+											await navigator.clipboard.writeText(`${lat}, ${lng}`);
+										})()
+									}
+								>
+									<span>Latitude: {lat}</span>
+									<span>Longitude: {lng}</span>
+								</div>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>Copy to clipboard</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
 					<div className="absolute right-0 z-10 m-2 flex max-w-xs flex-col gap-2 rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
 						<LucideArrowUp
 							onClick={() => {
@@ -153,6 +179,74 @@ export function MapWithMarkerCard(props: MapCardMarkerProps) {
 				</div>
 			</CardContent>
 		</Card>
+	);
+}
+
+export function View360Map(props: View360MapProps) {
+	const mapContainer = useRef<HTMLDivElement | null>(null);
+	const map = useRef<mapboxgl.Map | null>(null);
+
+	mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
+
+	useEffect(() => {
+		if (mapboxgl.accessToken === '') return;
+		if (map.current) return;
+
+		map.current = new mapboxgl.Map({
+			container: mapContainer.current || '',
+			style: 'mapbox://styles/mapbox/streets-v11',
+			center: [-81.3, 42.97],
+			zoom: 9,
+		});
+
+		if (!map.current) return;
+
+		map.current.on('load', () => {
+			map.current?.addSource('route', {
+				type: 'geojson',
+				data: {
+					type: 'Feature',
+					properties: {},
+					geometry: {
+						type: 'LineString',
+						coordinates: props.points.map((point) => [point.lng, point.lat]),
+					},
+				},
+			});
+
+			map.current?.addLayer({
+				id: 'route',
+				type: 'line',
+				source: 'route',
+				layout: {
+					'line-join': 'round',
+					'line-cap': 'round',
+				},
+				paint: {
+					'line-color': '#888',
+					'line-width': 8,
+				},
+			});
+
+			const getBounds = (points: LngLat[]) => {
+				const bounds = new mapboxgl.LngLatBounds();
+				points.forEach((point) => {
+					bounds.extend(point);
+				});
+				return bounds;
+			}
+
+			map.current?.fitBounds(getBounds(props.points), {
+				padding: 20,
+				maxZoom: 15
+			});
+		});
+	});
+
+	return (
+		<div>
+			<div ref={mapContainer} className={props.className} />
+		</div>
 	);
 }
 
@@ -182,16 +276,14 @@ export function StaticMap(props: StaticMapProps) {
 			center: [props.lng, props.lat],
 			zoom: 9,
 			bearing: 0,
-			interactive: false
+			interactive: false,
 		});
 	}, [resolvedTheme]);
 
-	return (
-		<div ref={mapContainer} className={props.className} />
-	);
+	return <div ref={mapContainer} className={props.className} />;
 }
 
-function MapDebug(props: DefaultProps) {
+export function MapDebug(props: DefaultProps) {
 	const mapContainer = useRef<HTMLDivElement | null>(null);
 	const map = useRef<mapboxgl.Map | null>(null);
 	const [lng, setLng] = useState(-81.3);

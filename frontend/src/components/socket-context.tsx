@@ -27,6 +27,8 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 		});
 
 		manager.on('open', () => setState(WebSocket.OPEN));
+		manager.on('reconnect', () => setState(WebSocket.OPEN));
+		manager.on('reconnect_failed', () => setState(WebSocket.CLOSED));
 		manager.on('reconnect_attempt', () => setState(WebSocket.CONNECTING));
 		manager.on('close', () => setState(WebSocket.CLOSED));
 		manager.on('error', () => setState(WebSocket.CLOSED));
