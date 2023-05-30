@@ -1,5 +1,5 @@
-import { Canvas, useLoader } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { Canvas, useLoader, useThree } from '@react-three/fiber';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as THREE from 'three';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { LucideArrowUp, LucideExpand, LucideGlasses } from 'lucide-react';
@@ -23,6 +23,28 @@ const StreetViewImage = () => {
 			/>
 		</mesh>
 	);
+};
+
+const CameraController = () => {
+	const { camera, gl } = useThree();
+	useEffect(() => {
+		const controls = new OrbitControls(camera, gl.domElement);
+
+		controls.enableDamping = true;
+		controls.dampingFactor = 0.05;
+		controls.zoomSpeed = 0.5;
+		controls.screenSpacePanning = false;
+		controls.maxDistance = 480;	
+
+		controls.addEventListener('change', () => {
+			console.log(controls.getDistance());
+		});
+
+		return () => {
+			controls.dispose();
+		};
+	}, [camera, gl]);
+	return null;
 };
 
 export const View360 = () => {
@@ -101,7 +123,7 @@ export const View360 = () => {
 			<Canvas ref={fullscreenRef}>
 				<XR>
 					<Controllers />
-					{vr ? null : <OrbitControls />}
+					{vr ? null : <CameraController />}
 					<Suspense fallback={null}>
 						<StreetViewImage />
 					</Suspense>
