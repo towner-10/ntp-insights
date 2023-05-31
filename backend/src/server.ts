@@ -24,6 +24,10 @@ export default class NTPServer {
 				await this.callEvent(message);
 			});
 
+			socket.on('upload', async (data: any) => {
+				logger.debug(data);
+			});
+
 			socket.on('error', (err) => {
 				logger.error(`Error in WebSocket: ${err}`);
 			});

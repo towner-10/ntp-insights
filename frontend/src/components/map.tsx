@@ -9,7 +9,7 @@ import {
 } from './ui/card';
 import { renderToString } from 'react-dom/server';
 import { useTheme } from 'next-themes';
-import { LucideArrowUp, LucideCircleDot } from 'lucide-react';
+import { LucideCircleDot, LucideNavigation2 } from 'lucide-react';
 import { Button } from './ui/button';
 import {
 	Tooltip,
@@ -164,7 +164,7 @@ export function MapWithMarkerCard(props: MapCardMarkerProps) {
 						</Tooltip>
 					</TooltipProvider>
 					<div className="absolute right-0 z-10 m-2 flex max-w-xs flex-col gap-2 rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
-						<LucideArrowUp
+						<LucideNavigation2
 							onClick={() => {
 								if (!map.current) return;
 								map.current.resetNorthPitch();
