@@ -33,7 +33,7 @@ export default function AuthButton(props: Props) {
 	const handleSignOut = async () => {
 		await signOut();
 		await router.push('/');
-	}
+	};
 
 	if (sessionData?.user) {
 		return (
@@ -59,20 +59,24 @@ export default function AuthButton(props: Props) {
 						</div>
 					</DropdownMenuLabel>
 					<DropdownMenuSeparator />
-					{sessionData.user.ntpAuthenticated ? (<DropdownMenuItem
-						onClick={() => {
-							void router.push('/search/new');
-						}}
-					>
-						<LucidePackagePlus size={18} />
-						<span className="pl-2">New Search</span>
-					</DropdownMenuItem>) : (
+					{sessionData.user.ntpAuthenticated ? (
+						<DropdownMenuItem
+							onClick={() => {
+								void router.push('/search/new');
+							}}
+						>
+							<LucidePackagePlus size={18} />
+							<span className="pl-2">New Search</span>
+						</DropdownMenuItem>
+					) : (
 						<DropdownMenuLabel>
 							<div className="flex flex-row items-center justify-between">
 								<p className="text-xs text-muted-foreground">
 									Not NTP authenticated
 								</p>
-								<Badge variant="destructive"><LucideX /></Badge>
+								<Badge variant="destructive">
+									<LucideX />
+								</Badge>
 							</div>
 						</DropdownMenuLabel>
 					)}

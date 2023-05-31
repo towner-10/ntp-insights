@@ -6,6 +6,7 @@ import { LucideArrowUp, LucideExpand, LucideGlasses } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { Controllers, VRButton, XR } from '@react-three/xr';
+import { radToDeg } from 'three/src/math/MathUtils';
 
 const StreetViewImage = () => {
 	const texture = useLoader(THREE.TextureLoader, './test.jpg');
@@ -25,31 +26,43 @@ const StreetViewImage = () => {
 	);
 };
 
-const CameraController = () => {
+const CameraController = ({
+	startAngle = 0,
+	onRotation,
+}: {
+	startAngle?: number;
+	onRotation?: (angle: number) => void;
+}) => {
 	const { camera, gl } = useThree();
 	useEffect(() => {
+		let lastAngle = 0;
 		const controls = new OrbitControls(camera, gl.domElement);
 
-		controls.enableDamping = true;
-		controls.dampingFactor = 0.05;
 		controls.zoomSpeed = 0.5;
-		controls.screenSpacePanning = false;
-		controls.maxDistance = 480;	
+		controls.maxDistance = 480;
+
+		onRotation?.(radToDeg(controls.getAzimuthalAngle()) - startAngle);
 
 		controls.addEventListener('change', () => {
-			console.log(controls.getDistance());
+			console.log(radToDeg(controls.getAzimuthalAngle()));
+			const angle = radToDeg(controls.getAzimuthalAngle()) - startAngle;
+			if (angle !== lastAngle) {
+				onRotation?.(angle);
+				lastAngle = angle;
+			}
 		});
 
 		return () => {
 			controls.dispose();
 		};
-	}, [camera, gl]);
+	}, [camera, gl, onRotation, startAngle]);
 	return null;
 };
 
 export const View360 = () => {
 	const [fullscreen, setFullscreen] = useState(false);
 	const [vr, setVR] = useState(false);
+	const [rotation, setRotation] = useState(111.4099445);
 	const fullscreenRef = useRef<HTMLCanvasElement>(null);
 
 	useEffect(() => {
@@ -80,7 +93,7 @@ export const View360 = () => {
 				<span className="font-bold">NTP</span> 360
 			</div>
 			<div className="absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg bg-background/60 p-2 text-lg backdrop-blur">
-				<RadioGroup>
+				<RadioGroup defaultChecked defaultValue='option-two'>
 					<div className="flex items-center space-x-2">
 						<RadioGroupItem value="option-one" id="option-one" />
 						<Label htmlFor="option-one">2020</Label>
@@ -95,7 +108,7 @@ export const View360 = () => {
 				<LucideArrowUp
 					className="transform-gpu"
 					style={{
-						transform: `rotate(${0}deg)`,
+						transform: `rotate(${rotation}deg)`,
 					}}
 				/>
 			</div>
@@ -123,7 +136,12 @@ export const View360 = () => {
 			<Canvas ref={fullscreenRef}>
 				<XR>
 					<Controllers />
-					{vr ? null : <CameraController />}
+					{vr ? null : (
+						<CameraController
+							onRotation={setRotation}
+							startAngle={111.4099445}
+						/>
+					)}
 					<Suspense fallback={null}>
 						<StreetViewImage />
 					</Suspense>

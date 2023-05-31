@@ -1,8 +1,7 @@
-import { type GetServerSidePropsContext, type NextPage } from 'next';
+import { type NextPage } from 'next';
 import Head from 'next/head';
 import Header from '@/components/header';
 import { Toaster } from '@/components/ui/toaster';
-import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import { useSession } from 'next-auth/react';
 import { View360 } from '@/components/view-360';
 import {
@@ -14,6 +13,7 @@ import {
 } from '@/components/ui/card';
 import { View360Map } from '@/components/map';
 import { LngLat } from 'mapbox-gl';
+import { New360ViewDialog } from '@/components/new-360-view-dialog';
 
 const Example: NextPage = () => {
 	const session = useSession();
@@ -50,6 +50,7 @@ const Example: NextPage = () => {
 				/>
 				<Toaster />
 				<div className="container flex flex-col items-center justify-center p-6">
+					<New360ViewDialog />
 					<h2 className="mb-4 w-full text-left text-2xl font-medium">
 						NTP 2023 Storm Event
 					</h2>
@@ -61,9 +62,14 @@ const Example: NextPage = () => {
 							<CardHeader>
 								<CardTitle>Details</CardTitle>
 								<CardDescription>About the current 360 view.</CardDescription>
-								<CardContent className='p-0'>
-									<p>From: <br /> {points[0]?.lng}, {points[0]?.lat}</p>
-									<p>To: <br /> {points[points.length - 1]?.lng}, {points[points.length - 1]?.lat}</p>
+								<CardContent className="p-0">
+									<p>
+										From: <br /> {points[0]?.lng}, {points[0]?.lat}
+									</p>
+									<p>
+										To: <br /> {points[points.length - 1]?.lng},{' '}
+										{points[points.length - 1]?.lat}
+									</p>
 								</CardContent>
 							</CardHeader>
 						</Card>
@@ -81,7 +87,3 @@ const Example: NextPage = () => {
 };
 
 export default Example;
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-	return await ntpProtectedRoute(context);
-}
