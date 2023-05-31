@@ -2,7 +2,7 @@ import { Canvas, useLoader, useThree } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as THREE from 'three';
 import { Suspense, useEffect, useRef, useState } from 'react';
-import { LucideArrowUp, LucideExpand, LucideGlasses } from 'lucide-react';
+import { LucideNavigation2, LucideExpand, LucideGlasses } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { Controllers, VRButton, XR } from '@react-three/xr';
@@ -14,6 +14,7 @@ const StreetViewImage = () => {
 	texture.minFilter = texture.magFilter = THREE.LinearFilter;
 	texture.wrapS = THREE.RepeatWrapping;
 	texture.repeat.x = -1;
+
 	return (
 		<mesh>
 			<sphereGeometry attach="geometry" args={[500, 60, 40, 90]} />
@@ -105,7 +106,7 @@ export const View360 = () => {
 				</RadioGroup>
 			</div>
 			<div className="absolute right-0 z-10 m-2 rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
-				<LucideArrowUp
+				<LucideNavigation2
 					className="transform-gpu"
 					style={{
 						transform: `rotate(${rotation}deg)`,
