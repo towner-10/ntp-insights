@@ -15,8 +15,8 @@ import { useWebSocketContext } from './socket-context';
 import { useToast } from './ui/use-toast';
 
 type DialogContentProps = {
-	onNext: () => void;
-	onCancel: () => void;
+	onNext?: () => void;
+	onCancel?: () => void;
 };
 
 function DialogContentHeader(props: {
@@ -42,20 +42,31 @@ function FramePosDialogContent(props: DialogContentProps) {
 
 	return (
 		<>
-			<DragAndDropZone type='framepos' processing={processing} onFiles={() => setProcessing(true)} callback={(data) => {
-				console.log(data);
-				setProcessing(false);
-			}} />
+			<DragAndDropZone
+				type="framepos"
+				processing={processing}
+				onFiles={() => setProcessing(true)}
+				callback={(data) => {
+					console.log(data);
+					setProcessing(false);
+				}}
+			/>
 			<AlertDialogFooter className="flex-col items-center pt-2 sm:space-y-2 md:flex-row md:justify-between">
 				<DialogContentHeader
 					index={1}
-					title={<span>Upload the <code>framepos</code> text file</span>}
+					title={
+						<span>
+							Upload the <code>framepos</code> text file
+						</span>
+					}
 					description={
 						'This stores the necessary geospatial data for each panorama.'
 					}
 				/>
 				<div className="flex w-full flex-row items-center justify-end space-x-2 pt-2 sm:pt-0 md:w-auto">
-					<AlertDialogCancel onClick={props.onCancel} disabled={processing}>Cancel</AlertDialogCancel>
+					<AlertDialogCancel onClick={props.onCancel} disabled={processing}>
+						Cancel
+					</AlertDialogCancel>
 					<Button type="button" onClick={props.onNext} disabled={processing}>
 						Next
 					</Button>
@@ -68,7 +79,7 @@ function FramePosDialogContent(props: DialogContentProps) {
 function SurveyPanoramasDialogContent(props: DialogContentProps) {
 	return (
 		<>
-			<DragAndDropZone type='survey' processing={false} />
+			<DragAndDropZone type="survey" processing={false} />
 			<AlertDialogFooter className="flex-col items-center pt-2 sm:space-y-2 md:flex-row md:justify-between">
 				<DialogContentHeader
 					index={2}
@@ -94,7 +105,7 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 	return (
 		<>
-			<DragAndDropZone type='comparison' processing={false} />
+			<DragAndDropZone type="comparison" processing={false} />
 			<AlertDialogFooter className="flex-col items-center pt-2 sm:space-y-2 md:flex-row md:justify-between">
 				<DialogContentHeader
 					index={3}
@@ -145,7 +156,7 @@ function NameDialogContent(props: DialogContentProps) {
 }
 
 export function New360ViewDialog() {
-	const [page, setPage] = useState(0);
+	const [page, setPage] = useState<'framepos' | 'survey' | 'comparison' | 'name'>('framepos');
 	const [open, setOpen] = useState(false);
 	const { socket } = useWebSocketContext();
 	const toaster = useToast();
@@ -177,47 +188,47 @@ export function New360ViewDialog() {
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent className="md:max-w-2xl lg:max-w-4xl">
-				{page === 0 && (
+				{page === 'framepos' && (
 					<FramePosDialogContent
 						onNext={() => {
-							setPage(1);
+							setPage('survey');
 						}}
 						onCancel={() => {
 							console.log('cancel');
-							setPage(0);
+							setPage('framepos');
 						}}
 					/>
 				)}
-				{page === 1 && (
+				{page === 'survey' && (
 					<SurveyPanoramasDialogContent
 						onNext={() => {
-							setPage(2);
+							setPage('comparison');
 						}}
 						onCancel={() => {
 							console.log('cancel');
-							setPage(0);
+							setPage('framepos');
 						}}
 					/>
 				)}
-				{page === 2 && (
+				{page === 'comparison' && (
 					<ComparisonPanoramasDialogContent
 						onNext={() => {
-							setPage(3);
+							setPage('name');
 						}}
 						onCancel={() => {
 							console.log('cancel');
-							setPage(0);
+							setPage('framepos');
 						}}
 					/>
 				)}
-				{page === 3 && (
+				{page === 'name' && (
 					<NameDialogContent
 						onNext={() => {
-							setPage(0);
+							setPage('framepos');
 						}}
 						onCancel={() => {
 							console.log('cancel');
-							setPage(0);
+							setPage('framepos');
 						}}
 					/>
 				)}
