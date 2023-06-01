@@ -150,7 +150,9 @@ export function MapWithMarkerCard(props: MapCardMarkerProps) {
 									className="absolute z-10 m-2 flex max-w-xs cursor-pointer select-none flex-col gap-2 rounded-lg bg-background/60 p-2 backdrop-blur"
 									onClick={
 										void (async () => {
-											await navigator.clipboard.writeText(`${lat}, ${lng}`);
+											if (typeof window != 'undefined') {
+												await navigator.clipboard.writeText(`${lat}, ${lng}`);
+											}
 										})()
 									}
 								>
@@ -234,11 +236,11 @@ export function View360Map(props: View360MapProps) {
 					bounds.extend(point);
 				});
 				return bounds;
-			}
+			};
 
 			map.current?.fitBounds(getBounds(props.points), {
 				padding: 20,
-				maxZoom: 15
+				maxZoom: 15,
 			});
 		});
 	});

@@ -75,12 +75,12 @@ const Example: NextPage = () => {
 								</CardContent>
 							</CardHeader>
 						</Card>
-						<div className="col-span-1 lg:row-span-1 ">
+						{/* <div className="col-span-1 lg:row-span-1 ">
 							<View360Map
 								points={points}
 								className="h-[400px] overflow-hidden rounded-md lg:h-40"
 							/>
-						</div>
+						</div> */}
 					</div>
 				</div>
 			</main>

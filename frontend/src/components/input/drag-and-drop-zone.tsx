@@ -24,7 +24,7 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 
 		if (socket?.connected) {
 			if (props.type === 'framepos') {
-				socket?.emit(
+				socket?.compress(false).emit(
 					'upload',
 					{
 						uploadType: 'framepos',
@@ -82,18 +82,20 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 			} text-muted-foreground`}
 			aria-disabled={props.processing}
 		>
-			{files.length > 0 && !props.processing && (
-				<div className="flex flex-col items-center justify-center gap-2">
-					{files.map((file) => (
-						<div
-							key={file.name}
-							className="flex flex-row items-center justify-center gap-2"
-						>
-							<p>{file.name}</p>
-						</div>
-					))}
-				</div>
-			)}
+			<div className="flex max-h-48 flex-col overflow-y-scroll">
+				{files.length > 0 && !props.processing && (
+					<div className="flex flex-col items-center justify-center gap-2">
+						{files.map((file) => (
+							<div
+								key={file.name}
+								className="flex select-none flex-row items-center justify-center gap-2"
+							>
+								<p>{file.name}</p>
+							</div>
+						))}
+					</div>
+				)}
+			</div>
 			<Input
 				type="file"
 				multiple
