@@ -54,6 +54,7 @@ export const columns: ColumnDef<Upload>[] = [
 			return (
 				<Button
 					variant="ghost"
+					className='text-left'
 					onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
 				>
 					{'Date created'}

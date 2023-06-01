@@ -10,6 +10,7 @@ import {
 import { Button } from './ui/button';
 import { api } from '@/utils/api';
 import { Skeleton } from './ui/skeleton';
+import { UserHoverCard } from './user-hover-card';
 
 export function AuthenticateUsersTable() {
 	const users = api.users.getAllUnauthenticated.useInfiniteQuery(
@@ -98,7 +99,9 @@ export function AuthenticateUsersTable() {
 					page.users.map((user) => (
 						<TableRow key={user.id}>
 							<TableCell>{user.email}</TableCell>
-							<TableCell>{user.name}</TableCell>
+							<TableCell>
+								<UserHoverCard id={user.id} />
+							</TableCell>
 							<TableCell>
 								<Button
 									onClick={() => void handleAuthenticate(user.id)}

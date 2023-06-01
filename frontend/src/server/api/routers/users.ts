@@ -77,6 +77,11 @@ export const usersRouter = createTRPCRouter({
 					image: true,
 					ntpAuthenticated: true,
 					createdAt: true,
+					_count: {
+						select: {
+							searches_created: true,
+						}
+					}
 				},
 			});
 
