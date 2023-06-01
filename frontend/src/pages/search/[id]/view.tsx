@@ -15,14 +15,12 @@ import { api } from '@/utils/api';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import { useSession } from 'next-auth/react';
 
-type RouterSearch = {
-	id?: string;
-};
-
 const ViewSearchPage = () => {
 	const session = useSession();
 	const router = useRouter();
-	const { id }: RouterSearch = router.query;
+	const { id }: {
+		id?: string;
+	} = router.query;
 
 	const search = api.search.get.useQuery({ id: id || '' });
 
