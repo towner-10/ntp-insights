@@ -10,8 +10,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import { Upload, columns, uploads } from "./columns"
-import { DataTable } from "./data-table"
+import { Upload, columns, uploads } from "../../components/data-tables/360-data-table/columns"
+import { DataTable } from "@/components/data-tables/360-data-table/data-table"
 import { View360Map } from '@/components/map';
 import { LngLat } from 'mapbox-gl';
 import { New360ViewDialog } from '@/components/new-360-view-dialog';
@@ -38,7 +38,8 @@ const Dashboard: NextPage = () => {
 				session={session.data}
 			/>
 			<Toaster />
-			<div className="container flex flex-col items-center justify-center p-6">
+			<div className="container flex flex-col items-left justify-center p-6">
+                <h1>Uploads</h1>
                 <DataTable columns={columns} data={uploads} />
 			</div>
 			</main>
