@@ -45,9 +45,11 @@ const CameraController = ({
 		let lastAngle = 0;
 		const controls = new OrbitControls(camera, gl.domElement);
 
+		// Set camera configuration
 		controls.zoomSpeed = 0.5;
 		controls.maxDistance = 480;
 
+		// Set initial camera angle
 		onRotation?.(radToDeg(controls.getAzimuthalAngle()) - startAngle);
 
 		controls.addEventListener('change', () => {
@@ -59,6 +61,7 @@ const CameraController = ({
 			}
 		});
 
+		// Clean up
 		return () => {
 			controls.dispose();
 		};
@@ -66,9 +69,7 @@ const CameraController = ({
 	return null;
 };
 
-export const View360 = (props: {
-	className?: string
-}) => {
+export const View360 = (props: { className?: string }) => {
 	const [fullscreen, setFullscreen] = useState(false);
 	const [vr, setVR] = useState(false);
 	const [rotation, setRotation] = useState(111.4099445);
@@ -124,7 +125,7 @@ export const View360 = (props: {
 					}}
 				/>
 			</div>
-			<div className="absolute right-0 top-1/2 bottom-1/2 z-10 m-2 flex flex-col gap-4 justify-center items-center">
+			<div className="absolute bottom-1/2 right-0 top-1/2 z-10 m-2 flex flex-col items-center justify-center gap-4">
 				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
 					{/* TODO: Add onClick functionality */}
 					<LucideArrowUp />

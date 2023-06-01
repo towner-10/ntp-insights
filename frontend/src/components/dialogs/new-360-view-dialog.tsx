@@ -1,17 +1,17 @@
-import { Button } from './ui/button';
-import { Label } from './ui/label';
+import { Button } from '../ui/button';
+import { Label } from '../ui/label';
 import {
 	AlertDialog,
 	AlertDialogCancel,
 	AlertDialogContent,
 	AlertDialogFooter,
 	AlertDialogTrigger,
-} from './ui/alert-dialog';
+} from '../ui/alert-dialog';
 import { type FormEvent, useEffect, useState } from 'react';
-import { DragAndDropZone } from './input/drag-and-drop-zone';
-import { Input } from './ui/input';
-import { useWebSocketContext } from './socket-context';
-import { useToast } from './ui/use-toast';
+import { DragAndDropZone } from '../input/drag-and-drop-zone';
+import { Input } from '../ui/input';
+import { useWebSocketContext } from '../socket-context';
+import { useToast } from '../ui/use-toast';
 import { useForm } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
 

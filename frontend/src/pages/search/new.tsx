@@ -28,7 +28,7 @@ import { toast } from '@/components/ui/use-toast';
 import { api } from '@/utils/api';
 import { useRouter } from 'next/router';
 import { KeywordInput } from '@/components/input/keyword-input';
-import { KeywordsInfo, RadiusInfo } from '@/components/info-dialogs';
+import { KeywordsInfo, RadiusInfo } from '@/components/dialogs/info-dialogs';
 import { useWebSocketContext } from '@/components/socket-context';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import { useSession } from 'next-auth/react';

@@ -1,5 +1,6 @@
+import { columns } from '@/components/data-tables/searches/columns';
+import { DataTable } from '@/components/data-tables/searches/data-table';
 import Header from '@/components/header';
-import { SearchesDataTable } from '@/components/searches-datatable';
 import {
 	Card,
 	CardContent,
@@ -45,7 +46,7 @@ export default function ProfilePage() {
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<SearchesDataTable searches={searches.data ?? []} />
+							<DataTable columns={columns} data={searches.data ?? []} />
 						</CardContent>
 					</Card>
 				</div>

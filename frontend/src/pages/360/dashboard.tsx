@@ -8,7 +8,7 @@ import {
 	uploads,
 } from '../../components/data-tables/360-data-table/columns';
 import { DataTable } from '@/components/data-tables/360-data-table/data-table';
-import { New360ViewDialog } from '@/components/new-360-view-dialog';
+import { New360ViewDialog } from '@/components/dialogs/new-360-view-dialog';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 
 const Dashboard: NextPage = () => {
