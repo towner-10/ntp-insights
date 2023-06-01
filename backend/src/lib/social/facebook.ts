@@ -1,6 +1,6 @@
 import puppeteer, { Browser } from 'puppeteer';
-import { logger } from '../utils/logger';
-import selectors from '../utils/selectors';
+import { logger } from '../../utils/logger';
+import selectors from '../../utils/selectors';
 
 export const facebook = {
 	fetchGroupPosts: async (groupId: string, max: number) => {
