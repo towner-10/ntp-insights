@@ -1,6 +1,6 @@
 import { Button } from './ui/button';
 import { Label } from './ui/label';
-import { Table } from './ui/table'
+import { Table } from './ui/table';
 import {
 	AlertDialog,
 	AlertDialogCancel,
@@ -14,6 +14,7 @@ import { Input } from './ui/input';
 import { useWebSocketContext } from './socket-context';
 import { useToast } from './ui/use-toast';
 import { useForm } from 'react-hook-form';
+import { Loader2 } from 'lucide-react';
 
 type DialogContentProps = {
 	formState: FormStateData;
@@ -165,7 +166,8 @@ function FramePosDialogContent(props: DialogContentProps) {
 						}}
 						disabled={processing || !finished}
 					>
-						Next
+						{processing && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+						{processing ? 'Please wait' : 'Next'}
 					</Button>
 				</div>
 			</AlertDialogFooter>
@@ -196,7 +198,9 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 					title={'Upload the survey panoramas'}
 					description={
 						<>
-							<span><code>{`${files.length}/${props.formState.framepos.length}`}</code></span>
+							<span>
+								<code>{`${files.length}/${props.formState.framepos.length}`}</code>
+							</span>
 							<span> panoramas uploaded.</span>
 						</>
 					}
@@ -273,7 +277,9 @@ function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 								</a>{' '}
 								to copy the panorama IDs to your clipboard.
 							</span>
-							<span><code>{` ${files.length}/${uniquePanoramas.length} `}</code></span>
+							<span>
+								<code>{` ${files.length}/${uniquePanoramas.length} `}</code>
+							</span>
 							<span>panoramas uploaded.</span>
 						</>
 					}
