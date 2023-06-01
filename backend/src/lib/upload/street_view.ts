@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { logger } from '../utils/logger';
+import { logger } from '../../utils/logger';
 
 interface Panorama {
 	pano_id: string;
