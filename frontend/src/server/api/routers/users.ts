@@ -61,6 +61,27 @@ export const usersRouter = createTRPCRouter({
 
 			return user;
 		}),
+	getUser: protectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+			})
+		)
+		.query(async ({ input }) => {
+			const user = await prisma.user.findUnique({
+				where: {
+					id: input.id,
+				},
+				select: {
+					name: true,
+					image: true,
+					ntpAuthenticated: true,
+					createdAt: true,
+				},
+			});
+
+			return user;
+		}),
 	update: protectedProcedure
 		.input(
 			z.object({

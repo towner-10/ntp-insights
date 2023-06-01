@@ -1,6 +1,5 @@
 import { Button } from './ui/button';
 import { Label } from './ui/label';
-import { Table } from './ui/table';
 import {
 	AlertDialog,
 	AlertDialogCancel,
