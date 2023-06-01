@@ -62,7 +62,7 @@ const NewSearchPage = () => {
 						duration: 5000,
 					});
 
-					websocketInstance.socket?.send('refresh');
+					websocketInstance.socket?.emit('refresh');
 
 					return router.push(`/search/${data.id}/view`);
 				},

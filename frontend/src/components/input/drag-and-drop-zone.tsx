@@ -4,7 +4,14 @@ import { Button } from '../ui/button';
 import { LucideFilePlus } from 'lucide-react';
 import { useWebSocketContext } from '../socket-context';
 
-export function DragAndDropZone() {
+type DragAndDropZoneProps = {
+	type: 'framepos' | 'survey' | 'comparison';
+	processing: boolean;
+	onFiles?: (files: File[]) => void;
+	callback?: (data: unknown) => void;
+};
+
+export function DragAndDropZone(props: DragAndDropZoneProps) {
 	const fileRef = useRef<HTMLInputElement>(null);
 	const [dragOver, setDragOver] = useState(false);
 	const [files, setFiles] = useState<File[]>([]);
@@ -12,11 +19,31 @@ export function DragAndDropZone() {
 	const { socket } = useWebSocketContext();
 
 	const handleFiles = (files: FileList) => {
+		if (props.onFiles) props.onFiles(Array.from(files));
 		setFiles(Array.from(files));
 
 		if (socket?.connected) {
-			console.log(files);
-			socket?.emit('upload', files);
+			if (props.type === 'framepos') {
+				socket?.emit(
+					'upload',
+					{
+						uploadType: 'framepos',
+						files: Array.from(files),
+					},
+					(
+						data: [
+							{
+								frame_index: string;
+								lat: number;
+								lon: number;
+								pano_id: string;
+							}
+						]
+					) => {
+						if (props.callback) props.callback(data);
+					}
+				);
+			}
 		}
 	};
 
@@ -24,7 +51,7 @@ export function DragAndDropZone() {
 		e.preventDefault();
 		e.stopPropagation();
 		setDragOver(false);
-		if (e.dataTransfer.files) {
+		if (e.dataTransfer.files && !props.processing) {
 			handleFiles(e.dataTransfer.files);
 		}
 	};
@@ -53,23 +80,45 @@ export function DragAndDropZone() {
 			className={`relative flex h-96 flex-col items-center justify-center rounded-md border ${
 				dragOver ? 'border-primary' : 'border-muted'
 			} text-muted-foreground`}
+			aria-disabled={props.processing}
 		>
+			{files.length > 0 && !props.processing && (
+				<div className="flex flex-col items-center justify-center gap-2">
+					{files.map((file) => (
+						<div
+							key={file.name}
+							className="flex flex-row items-center justify-center gap-2"
+						>
+							<p>{file.name}</p>
+						</div>
+					))}
+				</div>
+			)}
 			<Input
 				type="file"
 				multiple
 				ref={fileRef}
 				onChange={handleFileChange}
 				className="hidden"
+				disabled={props.processing}
 			/>
-			<Button
-				type="button"
-				variant="link"
-				onClick={() => fileRef.current?.click()}
-				className="flex flex-row items-center justify-center gap-3"
-			>
-				<p>Drag or click here</p>
-				<LucideFilePlus />
-			</Button>
+			{!props.processing && (
+				<Button
+					type="button"
+					variant="link"
+					onClick={() => fileRef.current?.click()}
+					disabled={props.processing}
+					className="flex flex-row items-center justify-center gap-3"
+				>
+					<p>Drag or click here</p>
+					<LucideFilePlus />
+				</Button>
+			)}
+			{props.processing && (
+				<div className="flex flex-row items-center justify-center gap-3">
+					<p>Processing...</p>
+				</div>
+			)}
 			{dragOver && (
 				<div
 					onDragEnter={handleDrag}

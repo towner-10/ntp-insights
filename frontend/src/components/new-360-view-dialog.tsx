@@ -21,7 +21,7 @@ type DialogContentProps = {
 
 function DialogContentHeader(props: {
 	index: number;
-	title: string;
+	title: React.ReactNode;
 	description: React.ReactNode;
 }) {
 	return (
@@ -38,20 +38,25 @@ function DialogContentHeader(props: {
 }
 
 function FramePosDialogContent(props: DialogContentProps) {
+	const [processing, setProcessing] = useState(false);
+
 	return (
 		<>
-			<DragAndDropZone />
+			<DragAndDropZone type='framepos' processing={processing} onFiles={() => setProcessing(true)} callback={(data) => {
+				console.log(data);
+				setProcessing(false);
+			}} />
 			<AlertDialogFooter className="flex-col items-center pt-2 sm:space-y-2 md:flex-row md:justify-between">
 				<DialogContentHeader
 					index={1}
-					title={'Upload the framepos text file'}
+					title={<span>Upload the <code>framepos</code> text file</span>}
 					description={
 						'This stores the necessary geospatial data for each panorama.'
 					}
 				/>
 				<div className="flex w-full flex-row items-center justify-end space-x-2 pt-2 sm:pt-0 md:w-auto">
-					<AlertDialogCancel onClick={props.onCancel}>Cancel</AlertDialogCancel>
-					<Button type="button" onClick={props.onNext}>
+					<AlertDialogCancel onClick={props.onCancel} disabled={processing}>Cancel</AlertDialogCancel>
+					<Button type="button" onClick={props.onNext} disabled={processing}>
 						Next
 					</Button>
 				</div>
@@ -63,7 +68,7 @@ function FramePosDialogContent(props: DialogContentProps) {
 function SurveyPanoramasDialogContent(props: DialogContentProps) {
 	return (
 		<>
-			<DragAndDropZone />
+			<DragAndDropZone type='survey' processing={false} />
 			<AlertDialogFooter className="flex-col items-center pt-2 sm:space-y-2 md:flex-row md:justify-between">
 				<DialogContentHeader
 					index={2}
@@ -89,7 +94,7 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 	return (
 		<>
-			<DragAndDropZone />
+			<DragAndDropZone type='comparison' processing={false} />
 			<AlertDialogFooter className="flex-col items-center pt-2 sm:space-y-2 md:flex-row md:justify-between">
 				<DialogContentHeader
 					index={3}

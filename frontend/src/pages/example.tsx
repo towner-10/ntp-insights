@@ -14,6 +14,7 @@ import {
 import { View360Map } from '@/components/map';
 import { LngLat } from 'mapbox-gl';
 import { New360ViewDialog } from '@/components/new-360-view-dialog';
+import ServerStatusBadge from '@/components/server-status-badge';
 
 const Example: NextPage = () => {
 	const session = useSession();
@@ -51,8 +52,9 @@ const Example: NextPage = () => {
 				<Toaster />
 				<div className="container flex flex-col items-center justify-center p-6">
 					<New360ViewDialog />
-					<h2 className="mb-4 w-full text-left text-2xl font-medium">
+					<h2 className="mb-4 flex w-full flex-row items-center gap-4 text-left text-2xl font-medium">
 						NTP 2023 Storm Event
+						<ServerStatusBadge />
 					</h2>
 					<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-5 lg:grid-rows-3">
 						<div className="relative row-span-3 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[600px]">

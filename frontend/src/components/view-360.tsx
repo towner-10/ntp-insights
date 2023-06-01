@@ -2,12 +2,17 @@ import { Canvas, useLoader, useThree } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as THREE from 'three';
 import { Suspense, useEffect, useRef, useState } from 'react';
-import { LucideNavigation2, LucideArrowUp, LucideArrowDown, LucideExpand, LucideGlasses } from 'lucide-react';
+import {
+	LucideNavigation2,
+	LucideExpand,
+	LucideGlasses,
+	LucideArrowUp,
+	LucideArrowDown,
+} from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { Controllers, VRButton, XR } from '@react-three/xr';
 import { radToDeg } from 'three/src/math/MathUtils';
-import { Button } from 'react-day-picker';
 
 const StreetViewImage = () => {
 	const texture = useLoader(THREE.TextureLoader, './test.jpg');
@@ -95,7 +100,7 @@ export const View360 = () => {
 				<span className="font-bold">NTP</span> 360
 			</div>
 			<div className="absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg bg-background/60 p-2 text-lg backdrop-blur">
-				<RadioGroup defaultChecked defaultValue='option-two'>
+				<RadioGroup defaultChecked defaultValue="option-two">
 					<div className="flex items-center space-x-2">
 						<RadioGroupItem value="option-one" id="option-one" />
 						<Label htmlFor="option-one">Before</Label>
@@ -106,22 +111,24 @@ export const View360 = () => {
 					</div>
 				</RadioGroup>
 			</div>
-			<div className="absolute right-0 z-10 m-2 rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
-				<button onClick={() => {setRotation(0);}}>
-					<LucideNavigation2
-						className="transform-gpu"
-						style={{
-							transform: `rotate(${rotation}deg)`,
-						}}/>
-				</button>
+			<div
+				className="absolute right-0 z-10 m-2 rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background"
+				onClick={() => setRotation(0)}
+			>
+				<LucideNavigation2
+					className="transform-gpu"
+					style={{
+						transform: `rotate(${rotation}deg)`,
+					}}
+				/>
 			</div>
 			<div className="absolute right-0 top-60 z-10 m-2 rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
 				{/* TODO: Add onClick functionality */}
-				<LucideArrowUp/>
+				<LucideArrowUp />
 			</div>
-			<div className="absolute right-0 bottom-60 z-10 m-2 rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
+			<div className="absolute bottom-60 right-0 z-10 m-2 rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
 				{/* TODO: Add onClick functionality */}
-				<LucideArrowDown/>
+				<LucideArrowDown />
 			</div>
 			<div className="absolute bottom-0 right-0 z-10 m-2 flex flex-row gap-4">
 				<button
@@ -130,7 +137,7 @@ export const View360 = () => {
 					}}
 					className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background"
 				>
-				<LucideGlasses />
+					<LucideGlasses />
 				</button>
 				<button
 					onClick={() => {
