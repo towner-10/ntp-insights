@@ -2,7 +2,6 @@ import { Button } from './ui/button';
 import { Label } from './ui/label';
 import {
 	AlertDialog,
-	AlertDialogAction,
 	AlertDialogCancel,
 	AlertDialogContent,
 	AlertDialogFooter,
@@ -104,6 +103,7 @@ function NameDialogContent(props: DialogContentProps) {
 }
 
 function FramePosDialogContent(props: DialogContentProps) {
+	const [finished, setFinished] = useState(false);
 	const [processing, setProcessing] = useState(false);
 	const [framePosData, setFramePosData] = useState<FramePosCallbackData[]>([]);
 	const toaster = useToast();
@@ -113,9 +113,24 @@ function FramePosDialogContent(props: DialogContentProps) {
 			<DragAndDropZone
 				type="framepos"
 				processing={processing}
-				onFiles={() => setProcessing(true)}
+				onFiles={(files) => {
+					setProcessing(files.length > 0);
+				}}
 				callback={(data) => {
-					setFramePosData(data as FramePosCallbackData[]);
+					const framePosData = data as FramePosCallbackData[];
+
+					if (framePosData.length === 0) {
+						toaster.toast({
+							title: 'No data',
+							description: 'No data was recieved. Check the file format.',
+							variant: 'destructive',
+							duration: 5000,
+						});
+					} else {
+						setFramePosData(framePosData);
+						setFinished(true);
+					}
+
 					setProcessing(false);
 				}}
 			/>
@@ -147,7 +162,7 @@ function FramePosDialogContent(props: DialogContentProps) {
 								});
 							else props.onNext?.(framePosData);
 						}}
-						disabled={processing}
+						disabled={processing || !finished}
 					>
 						Next
 					</Button>
@@ -158,8 +173,8 @@ function FramePosDialogContent(props: DialogContentProps) {
 }
 
 function SurveyPanoramasDialogContent(props: DialogContentProps) {
+	const [finished, setFinished] = useState(false);
 	const [files, setFiles] = useState<File[]>([]);
-	const toaster = useToast();
 
 	return (
 		<>
@@ -167,6 +182,10 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 				type="survey"
 				onFiles={(data) => {
 					setFiles(data);
+
+					if (data.length === props.formState.framepos.length)
+						setFinished(true);
+					else setFinished(false);
 				}}
 				processing={false}
 			/>
@@ -185,17 +204,8 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 					<AlertDialogCancel onClick={props.onCancel}>Cancel</AlertDialogCancel>
 					<Button
 						type="button"
-						onClick={() => {
-							if (files.length != props.formState.framepos.length)
-								toaster.toast({
-									title: 'Not the correct amount of files',
-									description:
-										'Either too many files or not enough files were supplied.',
-									variant: 'destructive',
-									duration: 5000,
-								});
-							else props.onNext?.(files);
-						}}
+						disabled={!finished}
+						onClick={() => props.onNext?.(files)}
 					>
 						Next
 					</Button>
@@ -206,6 +216,7 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 }
 
 function ComparisonPanoramasDialogContent(props: DialogContentProps) {
+	const [finished, setFinished] = useState(false);
 	const [uniquePanoramas, setUniquePanoramas] = useState<string[]>([]);
 	const [files, setFiles] = useState<File[]>([]);
 	const toaster = useToast();
@@ -225,7 +236,12 @@ function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 			<DragAndDropZone
 				type="comparison"
 				processing={false}
-				onFiles={(files) => setFiles(files)}
+				onFiles={(data) => {
+					setFiles(data);
+
+					if (data.length === uniquePanoramas.length) setFinished(true);
+					else setFinished(false);
+				}}
 			/>
 			<AlertDialogFooter className="flex-col items-center pt-2 sm:space-y-2 md:flex-row md:justify-between">
 				<DialogContentHeader
@@ -234,7 +250,27 @@ function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 					description={
 						<>
 							<span>
-								Click here to copy the panorama IDs to your clipboard.
+								Click{' '}
+								<a
+									onClick={() => {
+										void (async () => {
+											if (typeof window !== 'undefined') {
+												await navigator.clipboard.writeText(
+													uniquePanoramas.join('\n')
+												);
+											}
+										})();
+										toaster.toast({
+											title: 'Copied',
+											description: 'Panorama IDs copied to clipboard.',
+											duration: 3000,
+										});
+									}}
+									className="cursor-pointer underline underline-offset-2"
+								>
+									here
+								</a>{' '}
+								to copy the panorama IDs to your clipboard.
 							</span>
 							<span>{` ${files.length} / ${uniquePanoramas.length} `}</span>
 							<span>panoramas uploaded.</span>
@@ -243,22 +279,13 @@ function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 				/>
 				<div className="flex w-full flex-row items-center justify-end space-x-2 pt-2 sm:pt-0 md:w-auto">
 					<AlertDialogCancel onClick={props.onCancel}>Cancel</AlertDialogCancel>
-					<AlertDialogAction
-						type="submit"
-						onClick={() => {
-							if (files.length != uniquePanoramas.length)
-								toaster.toast({
-									title: 'Not the correct amount of files',
-									description:
-										'Either too many files or not enough files were supplied.',
-									variant: 'destructive',
-									duration: 5000,
-								});
-							else props.onNext?.(files);
-						}}
+					<Button
+						type="button"
+						disabled={!finished}
+						onClick={() => props.onNext?.(files)}
 					>
 						Done
-					</AlertDialogAction>
+					</Button>
 				</div>
 			</AlertDialogFooter>
 		</>
@@ -291,6 +318,17 @@ export function New360ViewDialog() {
 		}
 	};
 
+	const handleCancel = () => {
+		console.log('cancel');
+		setPage('name');
+		setFormState({
+			name: '',
+			framepos: [],
+			survey: [],
+			comparison: [],
+		});
+	};
+
 	useEffect(() => {
 		socket?.on('disconnect', () => {
 			setOpen(false);
@@ -315,10 +353,7 @@ export function New360ViewDialog() {
 								name: data as string,
 							});
 						}}
-						onCancel={() => {
-							console.log('cancel');
-							setPage('name');
-						}}
+						onCancel={handleCancel}
 					/>
 				)}
 				{page === 'framepos' && (
@@ -331,41 +366,35 @@ export function New360ViewDialog() {
 								framepos: data as FramePosCallbackData[],
 							});
 						}}
-						onCancel={() => {
-							console.log('cancel');
-							setPage('name');
-							setFormState({
-								name: '',
-								framepos: [],
-								survey: [],
-								comparison: [],
-							});
-						}}
+						onCancel={handleCancel}
 					/>
 				)}
 				{page === 'survey' && (
 					<SurveyPanoramasDialogContent
 						formState={formState}
-						onNext={() => {
+						onNext={(data) => {
 							setPage('comparison');
+							setFormState({
+								...formState,
+								survey: data as File[],
+							});
 						}}
-						onCancel={() => {
-							console.log('cancel');
-							setPage('name');
-						}}
+						onCancel={handleCancel}
 					/>
 				)}
 				{page === 'comparison' && (
 					<ComparisonPanoramasDialogContent
 						formState={formState}
-						onNext={() => {
+						onNext={(data) => {
 							setPage('name');
+							handleOpen(false);
+							setFormState({
+								...formState,
+								comparison: data as File[],
+							});
 							console.log(formState);
 						}}
-						onCancel={() => {
-							console.log('cancel');
-							setPage('name');
-						}}
+						onCancel={handleCancel}
 					/>
 				)}
 			</AlertDialogContent>

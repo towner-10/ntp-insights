@@ -98,7 +98,7 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 			</div>
 			<Input
 				type="file"
-				multiple
+				multiple={props.type !== 'framepos'}
 				ref={fileRef}
 				onChange={handleFileChange}
 				className="hidden"
