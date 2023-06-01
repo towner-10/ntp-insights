@@ -82,7 +82,7 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 			} text-muted-foreground`}
 			aria-disabled={props.processing}
 		>
-			<div className="flex max-h-48 flex-col overflow-y-scroll">
+			<div className="flex max-h-full w-full flex-col overflow-y-auto overflow-x-clip">
 				{files.length > 0 && !props.processing && (
 					<div className="flex flex-col items-center justify-center gap-2">
 						{files.map((file) => (
@@ -104,23 +104,25 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 				className="hidden"
 				disabled={props.processing}
 			/>
-			{!props.processing && (
-				<Button
-					type="button"
-					variant="link"
-					onClick={() => fileRef.current?.click()}
-					disabled={props.processing}
-					className="flex flex-row items-center justify-center gap-3"
-				>
-					<p>Drag or click here</p>
-					<LucideFilePlus />
-				</Button>
-			)}
-			{props.processing && (
-				<div className="flex flex-row items-center justify-center gap-3">
-					<p>Processing...</p>
-				</div>
-			)}
+			<div className='m-4'>
+				{!props.processing && (
+					<Button
+						type="button"
+						variant="link"
+						onClick={() => fileRef.current?.click()}
+						disabled={props.processing}
+						className="flex flex-row items-center justify-center gap-3"
+					>
+						<p>Drag or click here</p>
+						<LucideFilePlus />
+					</Button>
+				)}
+				{props.processing && (
+					<div className="flex flex-row items-center justify-center gap-3">
+						<p>Processing...</p>
+					</div>
+				)}
+			</div>
 			{dragOver && (
 				<div
 					onDragEnter={handleDrag}
