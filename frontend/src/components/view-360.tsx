@@ -66,11 +66,13 @@ const CameraController = ({
 	return null;
 };
 
-export const View360 = () => {
+export const View360 = (props: {
+	className?: string
+}) => {
 	const [fullscreen, setFullscreen] = useState(false);
 	const [vr, setVR] = useState(false);
 	const [rotation, setRotation] = useState(111.4099445);
-	const fullscreenRef = useRef<HTMLCanvasElement>(null);
+	const fullscreenRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		document.addEventListener('fullscreenchange', () => {
@@ -95,7 +97,7 @@ export const View360 = () => {
 	};
 
 	return (
-		<>
+		<div className={props.className} ref={fullscreenRef}>
 			<div className="absolute bottom-3 left-5 z-10 text-2xl">
 				<span className="font-bold">NTP</span> 360
 			</div>
@@ -122,13 +124,15 @@ export const View360 = () => {
 					}}
 				/>
 			</div>
-			<div className="absolute right-0 top-60 z-10 m-2 rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
-				{/* TODO: Add onClick functionality */}
-				<LucideArrowUp />
-			</div>
-			<div className="absolute bottom-60 right-0 z-10 m-2 rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
-				{/* TODO: Add onClick functionality */}
-				<LucideArrowDown />
+			<div className="absolute right-0 top-1/2 bottom-1/2 z-10 m-2 flex flex-col gap-4 justify-center items-center">
+				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
+					{/* TODO: Add onClick functionality */}
+					<LucideArrowUp />
+				</div>
+				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
+					{/* TODO: Add onClick functionality */}
+					<LucideArrowDown />
+				</div>
 			</div>
 			<div className="absolute bottom-0 right-0 z-10 m-2 flex flex-row gap-4">
 				<button
@@ -151,7 +155,7 @@ export const View360 = () => {
 				</button>
 			</div>
 			{vr ? <VRButton /> : null}
-			<Canvas ref={fullscreenRef}>
+			<Canvas>
 				<XR>
 					<Controllers />
 					{vr ? null : (
@@ -165,6 +169,6 @@ export const View360 = () => {
 					</Suspense>
 				</XR>
 			</Canvas>
-		</>
+		</div>
 	);
 };

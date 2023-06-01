@@ -56,22 +56,28 @@ const Example: NextPage = () => {
 						NTP 2023 Storm Event
 						<ServerStatusBadge />
 					</h2>
-					<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-5 lg:grid-rows-3">
-						<div className="relative row-span-3 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[600px]">
-							<View360 />
-						</div>
-						<Card className="lg:row-span-2">
+					<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-5 lg:grid-rows-2">
+						<View360 className="relative row-span-3 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[515px]" />
+						<Card className="lg:row-span-1">
 							<CardHeader>
 								<CardTitle>Details</CardTitle>
-								<CardDescription>About the current 360 view.</CardDescription>
+								<CardDescription>About the current 360 view.</CardDescription><br/>
 								<CardContent className="p-0">
+									<CardDescription>Located at</CardDescription>
 									<p>
-										From: <br /> {points[0]?.lng}, {points[0]?.lat}
+										{points[0]?.lng}, {points[0]?.lat}
 									</p>
+									<br/>
+									<CardDescription>Previous location</CardDescription>
 									<p>
-										To: <br /> {points[points.length - 1]?.lng},{' '}
+										{points[points.length - 1]?.lng},{' '}
 										{points[points.length - 1]?.lat}
 									</p>
+									<br/>
+									<CardDescription>Panorama capture</CardDescription>
+										<p>
+											1 / 203
+										</p>
 								</CardContent>
 							</CardHeader>
 						</Card>
