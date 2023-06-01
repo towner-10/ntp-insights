@@ -1,6 +1,7 @@
 import { GetServerSidePropsContext, type NextPage } from 'next';
 import Head from 'next/head';
 import Header from '@/components/header';
+import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/toaster';
 import { useSession } from 'next-auth/react';
 import {
@@ -38,9 +39,11 @@ const Dashboard: NextPage = () => {
 				session={session.data}
 			/>
 			<Toaster />
-			<div className="container flex flex-col items-left justify-center p-6">
-                <h1>Uploads</h1>
-                <DataTable columns={columns} data={uploads} />
+			<div className="container flex flex-col items-left justify-left p-6">
+                <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">Uploads
+                <New360ViewDialog/>
+                </h3><br/>
+                <DataTable columns={columns} data={uploads}/>
 			</div>
 			</main>
 		</>

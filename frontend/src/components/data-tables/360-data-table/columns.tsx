@@ -12,12 +12,18 @@ export type Upload = {
 export const uploads: Upload[] = [
     {
         id: "1",
+        name: "NTP 2023 Storm Event",
+        author: "Tornado Man",
+        date: "05-29-2023",
+    },
+    {
+        id: "2",
         name: "London 2022 Derecho",
         author: "Kevin Manka",
         date: "05-18-2022",
     },
     {
-        id: "2",
+        id: "3",
         name: "Barrie 2021 Tornado",
         author: "Collin Town",
         date: "07-17-2021",
