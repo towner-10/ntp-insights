@@ -1,5 +1,6 @@
 import { Button } from './ui/button';
 import { Label } from './ui/label';
+import { Table } from './ui/table'
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -176,7 +177,7 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 					title={'Upload the survey panoramas'}
 					description={
 						<>
-							<span>{`${files.length} / ${props.formState.framepos.length}`}</span>
+							<span><code>{`${files.length}/${props.formState.framepos.length}`}</code></span>
 							<span> panoramas uploaded.</span>
 						</>
 					}
@@ -236,7 +237,7 @@ function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 							<span>
 								Click here to copy the panorama IDs to your clipboard.
 							</span>
-							<span>{` ${files.length} / ${uniquePanoramas.length} `}</span>
+							<span><code>{` ${files.length}/${uniquePanoramas.length} `}</code></span>
 							<span>panoramas uploaded.</span>
 						</>
 					}

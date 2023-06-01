@@ -15,7 +15,7 @@ import { Controllers, VRButton, XR } from '@react-three/xr';
 import { radToDeg } from 'three/src/math/MathUtils';
 
 const StreetViewImage = () => {
-	const texture = useLoader(THREE.TextureLoader, './test.jpg');
+	const texture = useLoader(THREE.TextureLoader, '/test.jpg');
 	texture.mapping = THREE.EquirectangularReflectionMapping;
 	texture.minFilter = texture.magFilter = THREE.LinearFilter;
 	texture.wrapS = THREE.RepeatWrapping;
