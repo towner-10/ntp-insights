@@ -81,7 +81,7 @@ model Search {
   archived          Boolean   @default(false)
   posts             Post[]
   created_at        DateTime  @default(now())
-  updated_at        DateTime  @updatedAt
+  updated_at        DateTime  @default(now()) @updatedAt
   last_run          DateTime?
   last_run_time     Float?
   tweet_count       Int[]
@@ -118,8 +118,8 @@ model Path {
   images        Image360[] @relation("Path Images")
   name          String
   date          DateTime
-  created_at    DateTime
-  updated_at    DateTime
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @default(now()) @updatedAt
   created_by    User       @relation("Path Created By", fields: [created_by_id], references: [id])
   created_by_id String
   updated_by    User       @relation("Path Updated By", fields: [updated_by_id], references: [id])

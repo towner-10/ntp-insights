@@ -1,12 +1,22 @@
 import { useRef, useState } from 'react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import { LucideFilePlus } from 'lucide-react';
+import { LucideFilePlus, LucideTrash } from 'lucide-react';
 import { useWebSocketContext } from '../socket-context';
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '../ui/table';
+import format from 'date-fns/format';
 
 type DragAndDropZoneProps = {
 	type: 'framepos' | 'survey' | 'comparison';
 	processing: boolean;
+	requiredFiles?: FileList;
 	onFiles?: (files: File[]) => void;
 	callback?: (data: unknown) => void;
 };
@@ -18,9 +28,9 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 
 	const { socket } = useWebSocketContext();
 
-	const handleFiles = (files: FileList) => {
-		if (props.onFiles) props.onFiles(Array.from(files));
-		setFiles(Array.from(files));
+	const handleFiles = (files: File[]) => {
+		if (props.onFiles) props.onFiles(files);
+		setFiles(files);
 
 		if (socket?.connected) {
 			if (props.type === 'framepos') {
@@ -30,16 +40,7 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 						uploadType: 'framepos',
 						files: Array.from(files),
 					},
-					(
-						data: [
-							{
-								frame_index: string;
-								lat: number;
-								lon: number;
-								pano_id: string;
-							}
-						]
-					) => {
+					(data: unknown) => {
 						if (props.callback) props.callback(data);
 					}
 				);
@@ -52,7 +53,7 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 		e.stopPropagation();
 		setDragOver(false);
 		if (e.dataTransfer.files && !props.processing) {
-			handleFiles(e.dataTransfer.files);
+			handleFiles(Array.from(e.dataTransfer.files));
 		}
 	};
 
@@ -60,7 +61,7 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 		e.preventDefault();
 		e.stopPropagation();
 		if (e.target.files) {
-			handleFiles(e.target.files);
+			handleFiles(Array.from(e.target.files));
 		}
 	};
 
@@ -77,25 +78,48 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 	return (
 		<div
 			onDragEnter={handleDrag}
-			className={`relative flex h-96 flex-col items-center justify-center rounded-md border ${
+			className={`relative flex h-96 max-w-full flex-col items-center justify-center rounded-md border ${
 				dragOver ? 'border-primary' : 'border-muted'
 			} text-muted-foreground`}
 			aria-disabled={props.processing}
 		>
-			<div className="flex max-h-full w-full flex-col overflow-y-auto overflow-x-clip">
-				{files.length > 0 && !props.processing && (
-					<div className="flex flex-col items-center justify-center gap-2">
+			{files.length > 0 && !props.processing && (
+				/* Display the files that have been selected */
+				<Table className="max-h-full w-full overflow-x-auto overflow-y-auto rounded-md border">
+					<TableHeader>
+						<TableRow>
+							<TableHead>Name</TableHead>
+							<TableHead>{'Size (KB)'}</TableHead>
+							<TableHead>Date modified</TableHead>
+							<TableHead className="text-right"></TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
 						{files.map((file) => (
-							<div
-								key={file.name}
-								className="flex select-none flex-row items-center justify-center gap-2"
-							>
-								<p>{file.name}</p>
-							</div>
+							<TableRow key={file.name} className="overflow-clip">
+								<TableCell className="break-all font-medium">
+									{file.name}
+								</TableCell>
+								<TableCell>{Math.round(file.size / 1024)}</TableCell>
+								<TableCell>
+									{format(file.lastModified, 'MMMM dd, yyyy')}
+								</TableCell>
+								<TableCell className="p-0 pr-2">
+									<Button
+										variant="ghost"
+										className="text-destructive"
+										onClick={() => {
+											handleFiles(files.filter((f) => f.name !== file.name));
+										}}
+									>
+										<LucideTrash />
+									</Button>
+								</TableCell>
+							</TableRow>
 						))}
-					</div>
-				)}
-			</div>
+					</TableBody>
+				</Table>
+			)}
 			<Input
 				type="file"
 				multiple={props.type !== 'framepos'}
@@ -104,7 +128,7 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 				className="hidden"
 				disabled={props.processing}
 			/>
-			<div className='m-4'>
+			<div className="m-4">
 				{!props.processing && (
 					<Button
 						type="button"

@@ -15,23 +15,41 @@ import { useToast } from '../ui/use-toast';
 import { Controller, useForm } from 'react-hook-form';
 import { Loader2, LucideFootprints } from 'lucide-react';
 import { DatePicker } from '../ui/date-picker';
+import { api } from '@/utils/api';
 
 type DialogContentProps = {
 	formState: FormStateData;
-	onNext?: (data?: unknown) => void;
+	setFormState: (data: FormStateData) => void;
+	onNext?: () => void;
 	onCancel?: () => void;
 };
 
 type FramePosCallbackData = {
 	frame_index: number;
 	lat: number;
-	lon: number;
-	pano_id: string;
+	lng: number;
+	altitude: number;
+	distance: number;
+	heading: number;
+	pitch: number;
+	roll: number;
+	track: number;
+	file_name: string;
+	google_image: {
+		pano_id: string;
+		lat: number;
+		lng: number;
+		heading: number;
+		pitch: number;
+		roll: number;
+		date: string | null;
+	};
 };
 
 type FormStateData = {
 	name: string;
-	date: Date | undefined;
+	date: Date;
+	path_id?: string;
 	framepos: FramePosCallbackData[];
 	survey: File[];
 	comparison: File[];
@@ -72,10 +90,12 @@ function InitialDialogContent(props: DialogContentProps) {
 		event.preventDefault();
 		void (async () => {
 			await handleSubmit((data) => {
-				props.onNext?.({
+				props.setFormState({
+					...props.formState,
 					name: data.name,
 					date: data.date,
 				});
+				props.onNext?.();
 			})(event);
 		})();
 	};
@@ -200,14 +220,20 @@ function FramePosDialogContent(props: DialogContentProps) {
 						type="button"
 						className="mt-2 sm:mt-0"
 						onClick={() => {
-							if (framePosData.length === 0)
+							if (framePosData.length) {
+								props.onNext?.();
+								props.setFormState({
+									...props.formState,
+									framepos: framePosData,
+								});
+							} else {
 								toaster.toast({
 									title: 'No data',
 									description: 'No data was recieved.',
 									variant: 'destructive',
 									duration: 5000,
 								});
-							else props.onNext?.(framePosData);
+							}
 						}}
 						disabled={processing || !finished}
 					>
@@ -256,7 +282,13 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 						type="button"
 						className="mt-2 sm:mt-0"
 						disabled={!finished}
-						onClick={() => props.onNext?.(files)}
+						onClick={() => {
+							props.setFormState({
+								...props.formState,
+								survey: files,
+							});
+							props.onNext?.();
+						}}
 					>
 						Next
 					</Button>
@@ -275,7 +307,7 @@ function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 	useEffect(() => {
 		// Find the panoramas and do not include duplicates
 		const panoramas = props.formState.framepos.map(
-			(framepos) => framepos.pano_id
+			(framepos) => framepos.google_image.pano_id
 		);
 
 		// Remove duplicates
@@ -336,7 +368,13 @@ function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 						type="button"
 						className="mt-2 sm:mt-0"
 						disabled={!finished}
-						onClick={() => props.onNext?.(files)}
+						onClick={() => {
+							props.setFormState({
+								...props.formState,
+								comparison: files,
+							});
+							props.onNext?.();
+						}}
 					>
 						Done
 					</Button>
@@ -353,11 +391,12 @@ export function NewPathDialog() {
 	const [open, setOpen] = useState(false);
 	const [formState, setFormState] = useState<FormStateData>({
 		name: '',
-		date: undefined,
+		date: new Date(),
 		framepos: [],
 		survey: [],
 		comparison: [],
 	});
+	const newPath = api.paths.new.useMutation();
 	const { socket } = useWebSocketContext();
 	const toaster = useToast();
 
@@ -379,11 +418,46 @@ export function NewPathDialog() {
 		setPage('initial');
 		setFormState({
 			name: '',
-			date: undefined,
+			date: new Date(),
 			framepos: [],
 			survey: [],
 			comparison: [],
 		});
+	};
+
+	const handleError = (error?: string) => {
+		toaster.toast({
+			title: 'Error',
+			description: error ?? 'Something went wrong.',
+			duration: 5000,
+			variant: 'destructive',
+		});
+
+		setOpen(false);
+		handleCancel();
+	};
+
+	const initialSubmit = (data: FormStateData) => {
+		void (async () => {
+			const path = await newPath.mutateAsync({
+				name: data.name,
+				date: data.date,
+			});
+
+			if (path) {
+				toaster.toast({
+					title: 'Success',
+					description: 'Path created in database.',
+					duration: 5000,
+				});
+
+				setFormState({
+					...data,
+					path_id: path.id,
+				});
+			} else
+				handleError('Path could not be created in database. Try again later.');
+		})();
 	};
 
 	useEffect(() => {
@@ -404,60 +478,37 @@ export function NewPathDialog() {
 				{page === 'initial' && (
 					<InitialDialogContent
 						formState={formState}
-						onNext={(data) => {
-							const formData = data as {
-								name: string;
-								date: Date;
-							};
-							setPage('framepos');
-							setFormState({
-								...formState,
-								name: formData.name,
-								date: formData.date,
-							});
-							console.log(formState);
-						}}
+						setFormState={initialSubmit}
+						onNext={() => setPage('framepos')}
 						onCancel={handleCancel}
 					/>
 				)}
 				{page === 'framepos' && (
 					<FramePosDialogContent
 						formState={formState}
-						onNext={(data) => {
-							setPage('survey');
-							setFormState({
-								...formState,
-								framepos: data as FramePosCallbackData[],
-							});
-						}}
+						setFormState={setFormState}
+						onNext={() => setPage('survey')}
 						onCancel={handleCancel}
 					/>
 				)}
 				{page === 'survey' && (
 					<SurveyPanoramasDialogContent
 						formState={formState}
-						onNext={(data) => {
-							setPage('comparison');
-							setFormState({
-								...formState,
-								survey: data as File[],
-							});
-						}}
+						setFormState={setFormState}
+						onNext={() => setPage('comparison')}
 						onCancel={handleCancel}
 					/>
 				)}
 				{page === 'comparison' && (
 					<ComparisonPanoramasDialogContent
 						formState={formState}
-						onNext={(data) => {
+						setFormState={(data) => {
+							setFormState(data);
+							console.log(data);
+						}}
+						onNext={() => {
 							setPage('initial');
 							handleOpen(false);
-							const finalState = {
-								...formState,
-								comparison: data as File[],
-							};
-							console.log(finalState);
-							setFormState(finalState);
 						}}
 						onCancel={handleCancel}
 					/>

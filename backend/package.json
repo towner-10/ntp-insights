@@ -12,7 +12,7 @@
     "prettier": "prettier --write \"src/**/*.ts\""
   },
   "dependencies": {
-    "@prisma/client": "^4.14.1",
+    "@prisma/client": "^4.15.0",
     "@types/node": "^20.1.0",
     "chalk": "4.1.2",
     "croner": "^6.0.3",

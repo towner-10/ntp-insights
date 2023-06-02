@@ -10,6 +10,7 @@ import {
 import { DataTable } from '@/components/data-tables/paths/data-table';
 import { NewPathDialog } from '@/components/dialogs/new-path-dialog';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
+import ServerStatusBadge from '@/components/server-status-badge';
 
 const Dashboard: NextPage = () => {
 	const session = useSession();
@@ -35,6 +36,7 @@ const Dashboard: NextPage = () => {
 					<div className="flex flex-row items-center space-x-4 pb-6">
 						<h3 className="text-2xl font-semibold tracking-tight">Paths</h3>
 						<NewPathDialog />
+						<ServerStatusBadge />
 					</div>
 					<DataTable columns={columns} data={paths} />
 				</div>
