@@ -34,3 +34,6 @@ Thumbs.db
 # Ignore built ts files
 dist/**/*
 build/**/*
+
+# Ignore images
+images

@@ -1,3 +1,4 @@
+import { promises as fs } from 'fs';
 import { logger } from '../../utils/logger';
 import { type Panorama, searchPanoramas } from './street_view';
 
@@ -16,14 +17,26 @@ type FramePosResult = {
 	google_image: Panorama;
 };
 
+type ImageResult = {
+	image_name: string;
+	image_url?: string;
+};
+
 // Data received from client
 type UploadData = {
 	uploadType: 'framepos' | 'survey' | 'comparison';
-	files: Buffer[];
+	id?: string;
+	files: {
+		name: string;
+		buffer: Buffer;
+	}[];
 };
 
 // Data sent to client
-type CallbackData = FramePosResult[] | null;
+type CallbackData = FramePosResult[] | ImageResult[] | null;
+
+const IMAGE_DIRECTORY =
+	'./images';
 
 export const handleUpload = async (
 	data: UploadData,
@@ -31,10 +44,10 @@ export const handleUpload = async (
 ) => {
 	switch (data.uploadType) {
 		case 'framepos':
-			if (data.files.length === 1) {
+			if (data.files?.length === 1) {
 				logger.debug('Received framepos file');
 
-				const framepos_text = data.files[0].toString('utf-8');
+				const framepos_text = data.files[0].buffer.toString('utf-8');
 				const images = [];
 				const framepos = framepos_text.split('\n');
 
@@ -85,7 +98,40 @@ export const handleUpload = async (
 			}
 			return;
 		case 'survey':
-			return logger.warn('Unimplemented');
+			const image_urls: ImageResult[] = [];
+
+			try {
+				await fs.mkdir(`${IMAGE_DIRECTORY}\\${data.id}`, {
+					recursive: true,
+				});
+			} catch (err) {
+				logger.error(`Error creating directory ${data.id}`);
+				logger.error(err);
+			}
+
+			for (const file of data.files) {
+				try {
+					const url = `${IMAGE_DIRECTORY}\\${data.id}\\${file.name}`;
+
+					await fs.writeFile(url, file.buffer);
+
+					image_urls.push({
+						image_name: file.name,
+						image_url: url,
+					});
+
+					logger.debug(`Saved ${file.name}`);
+				} catch (err) {
+					logger.error(`Error saving ${file.name}`);
+					logger.error(err);
+
+					image_urls.push({
+						image_name: file.name,
+					});
+				}
+			}
+
+			return callback(image_urls);
 		case 'comparison':
 			return logger.warn('Unimplemented');
 	}

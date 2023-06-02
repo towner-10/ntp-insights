@@ -118,6 +118,7 @@ model Path {
   images        Image360[] @relation("Path Images")
   name          String
   date          DateTime
+  archived      Boolean    @default(false)
   created_at    DateTime   @default(now())
   updated_at    DateTime   @default(now()) @updatedAt
   created_by    User       @relation("Path Created By", fields: [created_by_id], references: [id])

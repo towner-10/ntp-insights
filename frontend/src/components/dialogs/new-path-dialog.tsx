@@ -24,7 +24,18 @@ type DialogContentProps = {
 	onCancel?: () => void;
 };
 
-type FramePosCallbackData = {
+type Panorama = {
+	pano_id: string;
+	lat: number;
+	lng: number;
+	heading: number;
+	pitch: number;
+	roll: number;
+	date: string | null;
+};
+
+// Row data from framepos.txt
+type FramePosResult = {
 	frame_index: number;
 	lat: number;
 	lng: number;
@@ -35,22 +46,32 @@ type FramePosCallbackData = {
 	roll: number;
 	track: number;
 	file_name: string;
-	google_image: {
-		pano_id: string;
-		lat: number;
-		lng: number;
-		heading: number;
-		pitch: number;
-		roll: number;
-		date: string | null;
-	};
+	google_image: Panorama;
 };
+
+type ImageResult = {
+	image_name: string;
+	image_url?: string;
+};
+
+// Data received from client
+type UploadData = {
+	uploadType: 'framepos' | 'survey' | 'comparison';
+	id?: string;
+	files: {
+		name: string;
+		buffer: File;
+	}[];
+};
+
+// Data sent to client
+type CallbackData = FramePosResult[] | ImageResult[] | null;
 
 type FormStateData = {
 	name: string;
 	date: Date;
 	path_id?: string;
-	framepos: FramePosCallbackData[];
+	framepos: FramePosResult[];
 	survey: File[];
 	comparison: File[];
 };
@@ -171,7 +192,8 @@ function InitialDialogContent(props: DialogContentProps) {
 function FramePosDialogContent(props: DialogContentProps) {
 	const [finished, setFinished] = useState(false);
 	const [processing, setProcessing] = useState(false);
-	const [framePosData, setFramePosData] = useState<FramePosCallbackData[]>([]);
+	const [framePosData, setFramePosData] = useState<FramePosResult[]>([]);
+	const { socket } = useWebSocketContext();
 	const toaster = useToast();
 
 	return (
@@ -181,23 +203,38 @@ function FramePosDialogContent(props: DialogContentProps) {
 				processing={processing}
 				onFiles={(files) => {
 					setProcessing(files.length > 0);
-				}}
-				callback={(data) => {
-					const framePosData = data as FramePosCallbackData[];
 
-					if (framePosData.length === 0) {
-						toaster.toast({
-							title: 'No data',
-							description: 'No data was recieved. Check the file format.',
-							variant: 'destructive',
-							duration: 5000,
-						});
-					} else {
-						setFramePosData(framePosData);
-						setFinished(true);
+					if (socket?.connected) {
+						socket?.compress(false).emit(
+							'upload',
+							{
+								uploadType: 'framepos',
+								files: Array.from(files).map((file) => {
+									return {
+										name: file.name,
+										buffer: file,
+									};
+								}),
+							} as UploadData,
+							(data: CallbackData) => {
+								const framePosData = data as FramePosResult[];
+
+								if (framePosData.length === 0) {
+									toaster.toast({
+										title: 'No data',
+										description: 'No data was recieved. Check the file format.',
+										variant: 'destructive',
+										duration: 5000,
+									});
+								} else {
+									setFramePosData(framePosData);
+									setFinished(true);
+								}
+
+								setProcessing(false);
+							}
+						);
 					}
-
-					setProcessing(false);
 				}}
 			/>
 			<AlertDialogFooter className="flex-col items-center pt-2 sm:space-y-2 md:flex-row md:justify-between">
@@ -249,6 +286,101 @@ function FramePosDialogContent(props: DialogContentProps) {
 function SurveyPanoramasDialogContent(props: DialogContentProps) {
 	const [finished, setFinished] = useState(false);
 	const [files, setFiles] = useState<File[]>([]);
+	const [processing, setProcessing] = useState(false);
+	const newNTPImage = api.image360.newNTP.useMutation();
+	const { socket } = useWebSocketContext();
+	const toaster = useToast();
+
+	const handleUpload = () => {
+		setProcessing(true);
+		socket?.compress(false).emit(
+			'upload',
+			{
+				uploadType: 'survey',
+				id: props.formState.path_id,
+				files: Array.from(files).map((file) => {
+					return {
+						name: file.name,
+						buffer: file,
+					};
+				}),
+			} as UploadData,
+			(data: CallbackData) => {
+				const images = data as ImageResult[];
+
+				if (props.formState.path_id) {
+					for (const image of images) {
+						void (async () => {
+							// Fetch image data from the form state
+							const framepos = props.formState.framepos.find(
+								(framepos) => framepos.file_name === image.image_name
+							);
+							const file = files.find((file) => file.name === image.image_name);
+
+							// If the required data is present
+							if (
+								image.image_url &&
+								file?.size &&
+								(framepos?.frame_index != undefined ||
+									framepos?.frame_index != null) &&
+								framepos?.lng &&
+								framepos?.lat
+							) {
+								// Create the image in the database
+								const result = await newNTPImage.mutateAsync({
+									path_id: props.formState.path_id as string,
+									index: framepos?.frame_index,
+									image_size: file?.size,
+									url: image.image_url,
+									lng: framepos?.lng,
+									lat: framepos?.lat,
+									heading: framepos?.heading,
+									altitude: framepos?.altitude,
+									distance: framepos?.distance,
+									pitch: framepos?.pitch,
+									roll: framepos?.roll,
+									track: framepos?.track,
+								});
+
+								// If the image could not be created in the database
+								if (!result) {
+									toaster.toast({
+										title: 'Error',
+										description: 'Image could not be created in database.',
+										variant: 'destructive',
+										duration: 5000,
+									});
+
+									props.onCancel?.();
+								} else {
+									props.onNext?.();
+								}
+
+								setProcessing(false);
+							} else {
+								// When the required data is not present
+								console.log(
+									image.image_url,
+									file?.size,
+									framepos?.frame_index,
+									framepos?.lng,
+									framepos?.lat
+								);
+
+								toaster.toast({
+									title: 'Error',
+									description: 'Image could not be created in database.',
+									variant: 'destructive',
+									duration: 5000,
+								});
+								props.onCancel?.();
+							}
+						})();
+					}
+				}
+			}
+		);
+	};
 
 	return (
 		<>
@@ -261,7 +393,7 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 						setFinished(true);
 					else setFinished(false);
 				}}
-				processing={false}
+				processing={processing}
 			/>
 			<AlertDialogFooter className="flex-col items-center pt-2 sm:space-y-2 md:flex-row md:justify-between">
 				<DialogContentHeader
@@ -277,20 +409,17 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 					}
 				/>
 				<div className="flex w-full flex-row items-center justify-end space-x-2 md:w-auto">
-					<AlertDialogCancel onClick={props.onCancel}>Cancel</AlertDialogCancel>
+					<AlertDialogCancel onClick={props.onCancel} disabled={processing}>
+						Cancel
+					</AlertDialogCancel>
 					<Button
 						type="button"
 						className="mt-2 sm:mt-0"
-						disabled={!finished}
-						onClick={() => {
-							props.setFormState({
-								...props.formState,
-								survey: files,
-							});
-							props.onNext?.();
-						}}
+						disabled={!finished || processing}
+						onClick={handleUpload}
 					>
-						Next
+						{processing && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+						{processing ? 'Uploading' : 'Next'}
 					</Button>
 				</div>
 			</AlertDialogFooter>
@@ -414,7 +543,7 @@ export function NewPathDialog() {
 	};
 
 	const handleCancel = () => {
-		console.log('cancel');
+		setOpen(false);
 		setPage('initial');
 		setFormState({
 			name: '',
@@ -433,7 +562,6 @@ export function NewPathDialog() {
 			variant: 'destructive',
 		});
 
-		setOpen(false);
 		handleCancel();
 	};
 

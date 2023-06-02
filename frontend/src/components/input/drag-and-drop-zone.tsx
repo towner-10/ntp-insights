@@ -2,7 +2,6 @@ import { useRef, useState } from 'react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { LucideFilePlus, LucideTrash } from 'lucide-react';
-import { useWebSocketContext } from '../socket-context';
 import {
 	Table,
 	TableBody,
@@ -18,7 +17,6 @@ type DragAndDropZoneProps = {
 	processing: boolean;
 	requiredFiles?: FileList;
 	onFiles?: (files: File[]) => void;
-	callback?: (data: unknown) => void;
 };
 
 export function DragAndDropZone(props: DragAndDropZoneProps) {
@@ -26,26 +24,9 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 	const [dragOver, setDragOver] = useState(false);
 	const [files, setFiles] = useState<File[]>([]);
 
-	const { socket } = useWebSocketContext();
-
 	const handleFiles = (files: File[]) => {
 		if (props.onFiles) props.onFiles(files);
 		setFiles(files);
-
-		if (socket?.connected) {
-			if (props.type === 'framepos') {
-				socket?.compress(false).emit(
-					'upload',
-					{
-						uploadType: 'framepos',
-						files: Array.from(files),
-					},
-					(data: unknown) => {
-						if (props.callback) props.callback(data);
-					}
-				);
-			}
-		}
 	};
 
 	const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
