@@ -108,7 +108,7 @@ export const columns: ColumnDef<Path>[] = [
 						variant="ghost"
 						className="h-8 w-8 p-0"
 					>
-						<Link2Icon className="h-4 w-4" />
+						<Link2Icon className="h-4 w-4"/>
 					</Button>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
