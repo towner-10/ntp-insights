@@ -37,7 +37,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 	if (session?.user.ntpAuthenticated) {
 		return {
 			redirect: {
-				destination: '/dashboard',
+				destination: '/home',
 				permanent: false,
 			},
 		};

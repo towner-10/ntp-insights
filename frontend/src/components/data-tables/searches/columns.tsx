@@ -11,7 +11,7 @@ export const columns: ColumnDef<Search>[] = [
 		header: 'Name',
 		cell({ row }) {
 			return (
-				<Link href={`/search/${row.original.id}/view`}>
+				<Link href={`/social/${row.original.id}/view`}>
 					<Button variant="link">{row.original.name}</Button>
 				</Link>
 			);

@@ -12,8 +12,9 @@ import { DragAndDropZone } from '../input/drag-and-drop-zone';
 import { Input } from '../ui/input';
 import { useWebSocketContext } from '../socket-context';
 import { useToast } from '../ui/use-toast';
-import { useForm } from 'react-hook-form';
-import { Loader2 } from 'lucide-react';
+import { Controller, useForm } from 'react-hook-form';
+import { Loader2, LucideFootprints } from 'lucide-react';
+import { DatePicker } from '../ui/date-picker';
 
 type DialogContentProps = {
 	formState: FormStateData;
@@ -29,7 +30,8 @@ type FramePosCallbackData = {
 };
 
 type FormStateData = {
-	name?: string;
+	name: string;
+	date: Date | undefined;
 	framepos: FramePosCallbackData[];
 	survey: File[];
 	comparison: File[];
@@ -53,14 +55,16 @@ function DialogContentHeader(props: {
 	);
 }
 
-function NameDialogContent(props: DialogContentProps) {
+function InitialDialogContent(props: DialogContentProps) {
 	type Inputs = {
 		name: string;
+		date: Date;
 	};
 
 	const {
 		register,
 		handleSubmit,
+		control,
 		formState: { errors },
 	} = useForm<Inputs>();
 
@@ -68,14 +72,17 @@ function NameDialogContent(props: DialogContentProps) {
 		event.preventDefault();
 		void (async () => {
 			await handleSubmit((data) => {
-				props.onNext?.(data.name);
+				props.onNext?.({
+					name: data.name,
+					date: data.date,
+				});
 			})(event);
 		})();
 	};
 
 	return (
 		<form onSubmit={onSubmit}>
-			<AlertDialogFooter className="flex-col items-center sm:space-y-2 md:flex-row md:justify-between">
+			<div className="flex-col items-center sm:space-y-2 md:flex-row md:justify-between">
 				<div className="flex w-full flex-col md:w-96 lg:w-[500px]">
 					<Label htmlFor="event-name" className="pb-2">
 						Event Name
@@ -94,9 +101,47 @@ function NameDialogContent(props: DialogContentProps) {
 						</p>
 					)}
 				</div>
-				<div className="flex w-full flex-row items-center justify-end space-x-2 pt-2 sm:pt-0 md:w-auto">
+				<div className="flex w-full flex-col pt-4 md:w-96 lg:w-[500px]">
+					<Label htmlFor="event-date" className="pb-2">
+						Event Date
+					</Label>
+					<Controller
+						name="date"
+						control={control}
+						rules={{ required: true }}
+						render={({ field }) => {
+							return (
+								<DatePicker
+									id="event-date"
+									className="w-full"
+									value={field.value}
+									onChange={(e) => {
+										field.onChange(e);
+									}}
+								/>
+							);
+						}}
+					/>
+					{errors.date && (
+						<p className="pt-1 text-xs text-red-500">Date is required</p>
+					)}
+					{!errors.date && (
+						<p className="pt-1 text-xs text-muted-foreground">
+							Enter the date of this storm event.
+						</p>
+					)}
+				</div>
+			</div>
+			<AlertDialogFooter>
+				<div className="flex w-full flex-row items-center justify-end space-x-2 md:w-auto">
 					<AlertDialogCancel onClick={props.onCancel}>Cancel</AlertDialogCancel>
-					<Button type="submit">Next</Button>
+					<Button
+						type="submit"
+						disabled={errors.name !== undefined || errors.date !== undefined}
+						className="mt-2 sm:mt-0"
+					>
+						Next
+					</Button>
 				</div>
 			</AlertDialogFooter>
 		</form>
@@ -147,12 +192,13 @@ function FramePosDialogContent(props: DialogContentProps) {
 						'This stores the necessary geospatial data for each panorama.'
 					}
 				/>
-				<div className="flex w-full flex-row items-center justify-end space-x-2 pt-2 sm:pt-0 md:w-auto">
+				<div className="flex w-full flex-row items-center justify-end space-x-2 md:w-auto">
 					<AlertDialogCancel onClick={props.onCancel} disabled={processing}>
 						Cancel
 					</AlertDialogCancel>
 					<Button
 						type="button"
+						className="mt-2 sm:mt-0"
 						onClick={() => {
 							if (framePosData.length === 0)
 								toaster.toast({
@@ -204,10 +250,11 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 						</>
 					}
 				/>
-				<div className="flex w-full flex-row items-center justify-end space-x-2 pt-2 sm:pt-0 md:w-auto">
+				<div className="flex w-full flex-row items-center justify-end space-x-2 md:w-auto">
 					<AlertDialogCancel onClick={props.onCancel}>Cancel</AlertDialogCancel>
 					<Button
 						type="button"
+						className="mt-2 sm:mt-0"
 						disabled={!finished}
 						onClick={() => props.onNext?.(files)}
 					>
@@ -283,10 +330,11 @@ function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 						</>
 					}
 				/>
-				<div className="flex w-full flex-row items-center justify-end space-x-2 pt-2 sm:pt-0 md:w-auto">
+				<div className="flex w-full flex-row items-center justify-end space-x-2 md:w-auto">
 					<AlertDialogCancel onClick={props.onCancel}>Cancel</AlertDialogCancel>
 					<Button
 						type="button"
+						className="mt-2 sm:mt-0"
 						disabled={!finished}
 						onClick={() => props.onNext?.(files)}
 					>
@@ -298,12 +346,14 @@ function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 	);
 }
 
-export function New360ViewDialog() {
+export function NewPathDialog() {
 	const [page, setPage] = useState<
-		'name' | 'framepos' | 'survey' | 'comparison'
-	>('name');
+		'initial' | 'framepos' | 'survey' | 'comparison'
+	>('initial');
 	const [open, setOpen] = useState(false);
 	const [formState, setFormState] = useState<FormStateData>({
+		name: '',
+		date: undefined,
 		framepos: [],
 		survey: [],
 		comparison: [],
@@ -326,9 +376,10 @@ export function New360ViewDialog() {
 
 	const handleCancel = () => {
 		console.log('cancel');
-		setPage('name');
+		setPage('initial');
 		setFormState({
 			name: '',
+			date: undefined,
 			framepos: [],
 			survey: [],
 			comparison: [],
@@ -344,20 +395,27 @@ export function New360ViewDialog() {
 	return (
 		<AlertDialog open={open} onOpenChange={handleOpen}>
 			<AlertDialogTrigger asChild>
-				<Button className="ml-4" variant="outline">
-					Upload a new event capture
+				<Button>
+					<LucideFootprints className="pr-2" />
+					New Path
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent className="md:max-w-2xl lg:max-w-4xl">
-				{page === 'name' && (
-					<NameDialogContent
+				{page === 'initial' && (
+					<InitialDialogContent
 						formState={formState}
 						onNext={(data) => {
+							const formData = data as {
+								name: string;
+								date: Date;
+							};
 							setPage('framepos');
 							setFormState({
 								...formState,
-								name: data as string,
+								name: formData.name,
+								date: formData.date,
 							});
+							console.log(formState);
 						}}
 						onCancel={handleCancel}
 					/>
@@ -392,13 +450,14 @@ export function New360ViewDialog() {
 					<ComparisonPanoramasDialogContent
 						formState={formState}
 						onNext={(data) => {
-							setPage('name');
+							setPage('initial');
 							handleOpen(false);
-							setFormState({
+							const finalState = {
 								...formState,
 								comparison: data as File[],
-							});
-							console.log(formState);
+							};
+							console.log(finalState);
+							setFormState(finalState);
 						}}
 						onCancel={handleCancel}
 					/>

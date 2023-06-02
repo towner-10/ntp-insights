@@ -48,8 +48,10 @@ model User {
   image            String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @default(now()) @updatedAt
-  searches_created Search[]  @relation("Created By")
-  searches_updated Search[]  @relation("Updated By")
+  searches_created Search[]  @relation("Search Created By")
+  searches_updated Search[]  @relation("Search Updated By")
+  paths_created    Path[]    @relation("Path Created By")
+  paths_updated    Path[]    @relation("Path Updated By")
   accounts         Account[]
   sessions         Session[]
 }
@@ -83,9 +85,9 @@ model Search {
   last_run          DateTime?
   last_run_time     Float?
   tweet_count       Int[]
-  created_by        User      @relation("Created By", fields: [created_by_id], references: [id])
+  created_by        User      @relation("Search Created By", fields: [created_by_id], references: [id])
   created_by_id     String
-  updated_by        User      @relation("Updated By", fields: [updated_by_id], references: [id])
+  updated_by        User      @relation("Search Updated By", fields: [updated_by_id], references: [id])
   updated_by_id     String
 }
 
@@ -107,6 +109,50 @@ model Post {
   shares      Int?
   comments    Int?
   raw         Json?
-  search_id   String
   search      Search    @relation(fields: [search_id], references: [id])
+  search_id   String
+}
+
+model Path {
+  id            String     @id @unique @default(cuid())
+  images        Image360[] @relation("Path Images")
+  name          String
+  date          DateTime
+  created_at    DateTime
+  updated_at    DateTime
+  created_by    User       @relation("Path Created By", fields: [created_by_id], references: [id])
+  created_by_id String
+  updated_by    User       @relation("Path Updated By", fields: [updated_by_id], references: [id])
+  updated_by_id String
+}
+
+model Image360 {
+  id         String      @id @unique @default(cuid())
+  source     ImageSource @default(NTP)
+  path       Path        @relation("Path Images", fields: [path_id], references: [id])
+  path_id    String
+  index      Int
+  image_url  String
+  image_size BigInt
+  date_taken DateTime?
+  lng        Float
+  lat        Float
+  altitude   Float?
+  distance   Float?
+  heading    Float?
+  pitch      Float?
+  roll       Float?
+  track      Float?
+
+  // Before image is usually the Google Street View image
+  before_id String?   @unique
+  before    Image360? @relation("Image360 History", fields: [before_id], references: [id])
+
+  // After is used for Google Street View images to view the NTP image
+  after Image360? @relation("Image360 History")
+}
+
+enum ImageSource {
+  GOOGLE
+  NTP
 }

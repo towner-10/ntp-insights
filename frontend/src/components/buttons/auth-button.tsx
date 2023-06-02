@@ -13,9 +13,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import {
 	LucideHome,
 	LucideLogOut,
-	LucidePackagePlus,
 	LucideRotate3d,
 	LucideSettings,
+	LucideShare2,
 	LucideUser,
 	LucideX,
 } from 'lucide-react';
@@ -64,11 +64,11 @@ export default function AuthButton(props: Props) {
 						<DropdownMenuGroup>
 							<DropdownMenuItem
 								onClick={() => {
-									void router.push('/search/new');
+									void router.push('/social/dashboard');
 								}}
 							>
-								<LucidePackagePlus size={18} />
-								<span className="pl-2">New Search</span>
+								<LucideShare2 size={18} />
+								<span className="pl-2">Social</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								onClick={() => {

@@ -6,7 +6,7 @@ export function NewSearchButton() {
 	const router = useRouter();
 
 	return (
-		<Button onClick={() => void router.push('/search/new')}>
+		<Button onClick={() => void router.push('/social/new')}>
 			<LucidePackagePlus className="pr-2" />
 			New Search
 		</Button>

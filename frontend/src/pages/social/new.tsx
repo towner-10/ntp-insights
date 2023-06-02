@@ -64,7 +64,7 @@ const NewSearchPage = () => {
 
 					websocketInstance.socket?.emit('refresh');
 
-					return router.push(`/search/${data.id}/view`);
+					return router.push(`/social/${data.id}/view`);
 				},
 				onError(error) {
 					return toast({

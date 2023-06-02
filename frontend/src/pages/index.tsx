@@ -21,7 +21,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 	return {
 		redirect: {
-			destination: '/dashboard',
+			destination: '/home',
 			permanent: false,
 		},
 		props: {

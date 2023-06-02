@@ -5,10 +5,10 @@ import { Toaster } from '@/components/ui/toaster';
 import { useSession } from 'next-auth/react';
 import {
 	columns,
-	uploads,
-} from '../../components/data-tables/360-data-table/columns';
-import { DataTable } from '@/components/data-tables/360-data-table/data-table';
-import { New360ViewDialog } from '@/components/dialogs/new-360-view-dialog';
+	paths,
+} from '../../components/data-tables/paths/columns';
+import { DataTable } from '@/components/data-tables/paths/data-table';
+import { NewPathDialog } from '@/components/dialogs/new-path-dialog';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 
 const Dashboard: NextPage = () => {
@@ -24,20 +24,19 @@ const Dashboard: NextPage = () => {
 			<main className="h-screen">
 				<Header
 					title={
-						<>
+						<p>
 							NTP <span className="text-success">360</span>
-						</>
+						</p>
 					}
 					session={session.data}
 				/>
 				<Toaster />
-				<div className="items-left justify-left container flex flex-col p-6">
-					<h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-						Uploads
-						<New360ViewDialog />
-					</h3>
-					<br />
-					<DataTable columns={columns} data={uploads} />
+				<div className="container flex flex-col p-6">
+					<div className="flex flex-row items-center space-x-4 pb-6">
+						<h3 className="text-2xl font-semibold tracking-tight">Paths</h3>
+						<NewPathDialog />
+					</div>
+					<DataTable columns={columns} data={paths} />
 				</div>
 			</main>
 		</>

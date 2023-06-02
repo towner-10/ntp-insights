@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,36 +9,37 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ArrowUpDown, MoreHorizontal, UploadIcon } from 'lucide-react';
+import { parse, format } from 'date-fns';
 
-export type Upload = {
+export type Path = {
 	id: string;
 	name: string;
 	author: string;
 	date: Date;
 };
 
-export const uploads: Upload[] = [
+export const paths: Path[] = [
 	{
 		id: '1',
 		name: 'NTP 2023 Storm Event',
 		author: 'Tornado Man',
-		date: dayjs('05-29-2023').toDate(),
+		date: parse('05-29-2023', 'MM-dd-yyyy', new Date()),
 	},
 	{
 		id: '2',
 		name: 'London 2022 Derecho',
 		author: 'Kevin Manka',
-		date: dayjs('05-18-2022').toDate(),
+		date: parse('05-18-2022', 'MM-dd-yyyy', new Date()),
 	},
 	{
 		id: '3',
 		name: 'Barrie 2021 Tornado',
 		author: 'Collin Town',
-		date: dayjs('07-17-2021').toDate(),
+		date: parse('07-17-2021', 'MM-dd-yyyy', new Date()),
 	},
 ];
 
-export const columns: ColumnDef<Upload>[] = [
+export const columns: ColumnDef<Path>[] = [
 	{
 		accessorKey: 'name',
 		header: 'Name',
@@ -54,7 +54,7 @@ export const columns: ColumnDef<Upload>[] = [
 			return (
 				<Button
 					variant="ghost"
-					className='text-left'
+					className="text-left"
 					onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
 				>
 					{'Date created'}
@@ -65,8 +65,8 @@ export const columns: ColumnDef<Upload>[] = [
 		cell: ({ row }) => {
 			const upload = row.original;
 
-			return <span>{dayjs(upload.date).format('MMMM D, YYYY')}</span>;
-		}
+			return <span>{format(upload.date, 'MMMM d, yyyy')}</span>;
+		},
 	},
 	{
 		id: 'actions',

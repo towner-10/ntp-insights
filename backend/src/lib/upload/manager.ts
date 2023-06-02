@@ -10,7 +10,7 @@ type FramePosResult = {
 	pano_id: string;
 };
 
-// Data recieved from client
+// Data received from client
 type UploadData = {
 	uploadType: 'framepos' | 'survey' | 'comparison';
 	files: Buffer[];
@@ -47,6 +47,8 @@ export const handleUpload = async (
 							parseFloat(lat),
 							parseFloat(lon)
 						);
+
+						console.log(result[0]);
 
 						pano_ids.push({
 							frame_index: parseInt(frame_index),

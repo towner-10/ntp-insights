@@ -1,13 +1,13 @@
-import dayjs from 'dayjs';
 import { api } from '@/utils/api';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
 	CalendarDays,
 	LucidePackagePlus,
-	LucideRotate3d,
+	LucideFootprints,
 	LucideUser,
 } from 'lucide-react';
+import { format } from 'date-fns';
 import { Badge } from './ui/badge';
 
 export const UserHoverCard = ({ id }: { id: string }) => {
@@ -40,7 +40,7 @@ export const UserHoverCard = ({ id }: { id: string }) => {
 				<div className="flex items-center pt-2">
 					<CalendarDays className="mr-2 h-4 w-4 opacity-70" />{' '}
 					<span className="text-xs text-muted-foreground">
-						Joined {dayjs(user.data?.createdAt).format('MMMM YYYY')}
+						Joined {format(user.data?.createdAt || new Date(), 'MMMM yyyy')}
 					</span>
 				</div>
 				<div className="flex items-center pt-2">
@@ -52,9 +52,9 @@ export const UserHoverCard = ({ id }: { id: string }) => {
 					</span>
 				</div>
 				<div className="flex items-center pt-2">
-					<LucideRotate3d className="mr-2 h-4 w-4 opacity-70" />{' '}
+					<LucideFootprints className="mr-2 h-4 w-4 opacity-70" />{' '}
 					<span className="text-xs text-muted-foreground">
-						<b>3</b> tours created
+						<b>3</b> paths created
 					</span>
 				</div>
 			</HoverCardContent>
