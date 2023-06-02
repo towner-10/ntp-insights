@@ -34,9 +34,9 @@ const Dashboard: NextPage = () => {
 				<Toaster />
 				<div className="container flex flex-col p-6">
 					<div className="flex flex-row items-center space-x-4 pb-6">
-						<h3 className="text-2xl font-semibold tracking-tight">Paths</h3>
-						<NewPathDialog />
-						<ServerStatusBadge />
+						<h3 className=" text-2xl font-semibold">Paths</h3>
+						<div><ServerStatusBadge /></div>
+						<div className="w-11/12 text-end"><NewPathDialog /></div>
 					</div>
 					<DataTable columns={columns} data={paths} />
 				</div>

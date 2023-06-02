@@ -44,9 +44,9 @@ const CameraController = ({
 	useEffect(() => {
 		let lastAngle = 0;
 		const controls = new OrbitControls(camera, gl.domElement);
-		controls.rotateSpeed *= -0.3;
 
 		// Set camera configuration
+		controls.rotateSpeed *= -0.3;
 		controls.zoomSpeed = 3;
 		controls.maxDistance = 480;
 
@@ -72,6 +72,7 @@ const CameraController = ({
 
 export const View360 = (props: { className?: string }) => {
 	const [fullscreen, setFullscreen] = useState(false);
+
 	const [vr, setVR] = useState(false);
 	const [rotation, setRotation] = useState(111.4099445);
 	const fullscreenRef = useRef<HTMLDivElement>(null);
