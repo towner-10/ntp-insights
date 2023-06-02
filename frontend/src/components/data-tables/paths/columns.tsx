@@ -8,7 +8,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowUpDown, MoreHorizontal, UploadIcon } from 'lucide-react';
+import { ArrowUpDown, MoreHorizontal, Link2Icon } from 'lucide-react';
 import { parse, format } from 'date-fns';
 
 export type Path = {
@@ -42,16 +42,35 @@ export const paths: Path[] = [
 export const columns: ColumnDef<Path>[] = [
 	{
 		accessorKey: 'name',
-		header: 'Name',
+		// header: 'Name',
+		header: () => {
+			return (
+				<div className="text-left">
+					{'Name'}
+				</div>
+			)
+		}
 	},
 	{
 		accessorKey: 'author',
-		header: 'Created by',
+		// header: 'Created by',
+		header: () => {
+			return (
+				<div className="text-center">
+					{'Created by'}
+				</div>
+			)
+		},
+		cell: ({ row }) => {
+			const author = row.original;
+			return(<div className='text-center'>{author.author}</div>)
+		}
 	},
 	{
 		accessorKey: 'date',
 		header: ({ column }) => {
 			return (
+				<div className="text-center">
 				<Button
 					variant="ghost"
 					className="text-left"
@@ -60,28 +79,36 @@ export const columns: ColumnDef<Path>[] = [
 					{'Date created'}
 					<ArrowUpDown className="ml-2 h-4 w-4" />
 				</Button>
+				</div>
 			);
 		},
 		cell: ({ row }) => {
 			const upload = row.original;
 
-			return <span>{format(upload.date, 'MMMM d, yyyy')}</span>;
+			return <div className='text-center'><span>{format(upload.date, 'MMMM d, yyyy')}</span></div>;
 		},
 	},
 	{
 		id: 'actions',
-		header: 'Actions',
+		// header: 'Actions',
+		header: () => {
+			return (
+				<div className="text-center">
+					{'Actions'}
+				</div>
+			)
+		},
 		cell: ({ row }) => {
 			const upload = row.original;
 
 			return (
-				<div>
+				<div className='text-center'>
 					<Button
 						onClick={() => void navigator.clipboard.writeText(upload.id)}
 						variant="ghost"
 						className="h-8 w-8 p-0"
 					>
-						<UploadIcon className="h-4 w-4" />
+						<Link2Icon className="h-4 w-4" />
 					</Button>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>

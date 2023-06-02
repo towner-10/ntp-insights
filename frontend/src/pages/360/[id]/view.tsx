@@ -61,13 +61,17 @@ const View: NextPage = () => {
 						{id}
 					</h2>
 					<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-5 lg:grid-rows-2">
-						<View360 className="relative row-span-3 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[515px]" />
+						<View360 className="relative row-span-3 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[548px]" />
 						<Card className="lg:row-span-1">
 							<CardHeader>
 								<CardTitle>Details</CardTitle>
 								<CardDescription>About the current 360 view.</CardDescription>
 								<br />
 								<CardContent className="p-0">
+									<CardDescription>Event occurred on</CardDescription>
+									<p>
+										May 29, 2023
+									</p><br/>
 									<CardDescription>Located at</CardDescription>
 									<p>
 										{points[0]?.lng}, {points[0]?.lat}

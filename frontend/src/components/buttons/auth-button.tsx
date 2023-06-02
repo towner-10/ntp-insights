@@ -51,6 +51,8 @@ export default function AuthButton(props: Props) {
 					</Avatar>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent className="w-56">
+					<DropdownMenuLabel className="flex flex-row space-y-1 font-medium">
+						<span className="font-bold">NTP&nbsp;</span>Insights</DropdownMenuLabel>
 					<DropdownMenuLabel>
 						<div className="flex flex-col space-y-1">
 							<p className="font-medium">{sessionData.user.name}</p>
