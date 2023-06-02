@@ -8,8 +8,9 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowUpDown, MoreHorizontal, Link2Icon } from 'lucide-react';
+import { ArrowUpDown, Link2Icon, MoreHorizontal } from 'lucide-react';
 import { parse, format } from 'date-fns';
+import ClipboardButton from '@/components/buttons/clipboard-button';
 
 export type Path = {
 	id: string;
@@ -42,35 +43,16 @@ export const paths: Path[] = [
 export const columns: ColumnDef<Path>[] = [
 	{
 		accessorKey: 'name',
-		// header: 'Name',
-		header: () => {
-			return (
-				<div className="text-left">
-					{'Name'}
-				</div>
-			)
-		}
+		header: 'Name',
 	},
 	{
 		accessorKey: 'author',
-		// header: 'Created by',
-		header: () => {
-			return (
-				<div className="text-center">
-					{'Created by'}
-				</div>
-			)
-		},
-		cell: ({ row }) => {
-			const author = row.original;
-			return(<div className='text-center'>{author.author}</div>)
-		}
+		header: 'Created by',
 	},
 	{
 		accessorKey: 'date',
 		header: ({ column }) => {
 			return (
-				<div className="text-center">
 				<Button
 					variant="ghost"
 					className="text-left"
@@ -79,37 +61,25 @@ export const columns: ColumnDef<Path>[] = [
 					{'Date created'}
 					<ArrowUpDown className="ml-2 h-4 w-4" />
 				</Button>
-				</div>
 			);
 		},
 		cell: ({ row }) => {
 			const upload = row.original;
 
-			return <div className='text-center'><span>{format(upload.date, 'MMMM d, yyyy')}</span></div>;
+			return <span>{format(upload.date, 'MMMM d, yyyy')}</span>;
 		},
 	},
 	{
 		id: 'actions',
-		// header: 'Actions',
-		header: () => {
-			return (
-				<div className="text-center">
-					{'Actions'}
-				</div>
-			)
-		},
+		header: 'Actions',
 		cell: ({ row }) => {
 			const upload = row.original;
 
 			return (
-				<div className='text-center'>
-					<Button
-						onClick={() => void navigator.clipboard.writeText(upload.id)}
-						variant="ghost"
-						className="h-8 w-8 p-0"
-					>
-						<Link2Icon className="h-4 w-4"/>
-					</Button>
+				<div>
+					<ClipboardButton text={`${upload.id}`} notify>
+						<Link2Icon className="h-4 w-4" />
+					</ClipboardButton>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button variant="ghost" className="h-8 w-8 p-0">

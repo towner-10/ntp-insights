@@ -8,6 +8,7 @@ import {
 	AlertDialogTrigger,
 } from '../ui/alert-dialog';
 import { type FormEvent, useEffect, useState } from 'react';
+import { type Image360 } from '@prisma/client';
 import { DragAndDropZone } from '../input/drag-and-drop-zone';
 import { Input } from '../ui/input';
 import { useWebSocketContext } from '../socket-context';
@@ -16,6 +17,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Loader2, LucideFootprints } from 'lucide-react';
 import { DatePicker } from '../ui/date-picker';
 import { api } from '@/utils/api';
+import parseISO from 'date-fns/parseISO';
 
 type DialogContentProps = {
 	formState: FormStateData;
@@ -72,7 +74,7 @@ type FormStateData = {
 	date: Date;
 	path_id?: string;
 	framepos: FramePosResult[];
-	survey: File[];
+	surveys: Image360[];
 	comparison: File[];
 };
 
@@ -204,36 +206,49 @@ function FramePosDialogContent(props: DialogContentProps) {
 				onFiles={(files) => {
 					setProcessing(files.length > 0);
 
-					if (socket?.connected) {
-						socket?.compress(false).emit(
-							'upload',
-							{
-								uploadType: 'framepos',
-								files: Array.from(files).map((file) => {
-									return {
-										name: file.name,
-										buffer: file,
-									};
-								}),
-							} as UploadData,
-							(data: CallbackData) => {
-								const framePosData = data as FramePosResult[];
+					if (files.length > 0) {
+						if (files[0]?.type !== 'text/plain' && files[0]?.type !== 'text/csv') {
+							setProcessing(false);
+							return toaster.toast({
+								title: 'Error',
+								description: 'File must be a text file.',
+								variant: 'destructive',
+								duration: 5000,
+							});
+						}
 
-								if (framePosData.length === 0) {
-									toaster.toast({
-										title: 'No data',
-										description: 'No data was recieved. Check the file format.',
-										variant: 'destructive',
-										duration: 5000,
-									});
-								} else {
-									setFramePosData(framePosData);
-									setFinished(true);
+						if (socket?.connected) {
+							socket?.compress(false).emit(
+								'upload',
+								{
+									uploadType: 'framepos',
+									files: Array.from(files).map((file) => {
+										return {
+											name: file.name,
+											buffer: file,
+										};
+									}),
+								} as UploadData,
+								(data: CallbackData) => {
+									const framePosData = data as FramePosResult[];
+
+									if (framePosData.length === 0) {
+										toaster.toast({
+											title: 'No data',
+											description:
+												'No data was recieved. Check the file format.',
+											variant: 'destructive',
+											duration: 5000,
+										});
+									} else {
+										setFramePosData(framePosData);
+										setFinished(true);
+									}
+
+									setProcessing(false);
 								}
-
-								setProcessing(false);
-							}
-						);
+							);
+						}
 					}
 				}}
 			/>
@@ -293,6 +308,27 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 
 	const handleUpload = () => {
 		setProcessing(true);
+
+		// Check if the files match the framepos
+		if (
+			!files.every((file) =>
+				props.formState.framepos.some(
+					(framepos) => framepos.file_name === file.name
+				)
+			)
+		) {
+			toaster.toast({
+				title: 'Error',
+				description:
+					'The files do not match the framepos. Please upload the correct files.',
+				variant: 'destructive',
+				duration: 5000,
+			});
+
+			setProcessing(false);
+			return;
+		}
+
 		socket?.compress(false).emit(
 			'upload',
 			{
@@ -309,6 +345,8 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 				const images = data as ImageResult[];
 
 				if (props.formState.path_id) {
+					const surveys: Image360[] = [];
+
 					for (const image of images) {
 						void (async () => {
 							// Fetch image data from the form state
@@ -320,7 +358,7 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 							// If the required data is present
 							if (
 								image.image_url &&
-								file?.size &&
+								file &&
 								(framepos?.frame_index != undefined ||
 									framepos?.frame_index != null) &&
 								framepos?.lng &&
@@ -330,7 +368,8 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 								const result = await newNTPImage.mutateAsync({
 									path_id: props.formState.path_id as string,
 									index: framepos?.frame_index,
-									image_size: file?.size,
+									image_size: file.size,
+									date_taken: new Date(file.lastModified),
 									url: image.image_url,
 									lng: framepos?.lng,
 									lat: framepos?.lat,
@@ -351,12 +390,10 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 										duration: 5000,
 									});
 
-									props.onCancel?.();
+									return props.onCancel?.();
 								} else {
-									props.onNext?.();
+									surveys.push(result);
 								}
-
-								setProcessing(false);
 							} else {
 								// When the required data is not present
 								console.log(
@@ -373,10 +410,17 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 									variant: 'destructive',
 									duration: 5000,
 								});
-								props.onCancel?.();
+								return props.onCancel?.();
 							}
 						})();
 					}
+
+					props.onNext?.();
+					setProcessing(false);
+					props.setFormState({
+						...props.formState,
+						surveys,
+					});
 				}
 			}
 		);
@@ -431,6 +475,10 @@ function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 	const [finished, setFinished] = useState(false);
 	const [uniquePanoramas, setUniquePanoramas] = useState<string[]>([]);
 	const [files, setFiles] = useState<File[]>([]);
+	const [processing, setProcessing] = useState(false);
+	const newGoogleImage = api.image360.newGoogleImage.useMutation();
+	const setBeforeImage = api.image360.setBeforeImage.useMutation();
+	const { socket } = useWebSocketContext();
 	const toaster = useToast();
 
 	useEffect(() => {
@@ -443,11 +491,152 @@ function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 		setUniquePanoramas([...new Set(panoramas)]);
 	}, [props.formState.framepos]);
 
+	const handleUpload = () => {
+		setProcessing(true);
+
+		// Check if the files match the pano_ids
+		if (
+			!files.every((file) =>
+				uniquePanoramas.some(
+					(panorama) => panorama === (file.name.split('.')[0] as string)
+				)
+			)
+		) {
+			toaster.toast({
+				title: 'Error',
+				description:
+					'The files do not match the expected names. Please upload the correct files.',
+				variant: 'destructive',
+				duration: 5000,
+			});
+
+			return setProcessing(false);
+		}
+
+		socket?.compress(false).emit(
+			'upload',
+			{
+				uploadType: 'comparison',
+				id: props.formState.path_id,
+				files: Array.from(files).map((file) => {
+					return {
+						name: file.name,
+						buffer: file,
+					};
+				}),
+			} as UploadData,
+			(data: CallbackData) => {
+				const images = data as ImageResult[];
+
+				if (props.formState.path_id) {
+					for (const image of images) {
+						void (async () => {
+							// Fetch image data from the form state
+							const framepos = props.formState.framepos.find(
+								(framepos) =>
+									framepos.google_image.pano_id ===
+									image.image_name.split('.')[0]
+							);
+							const file = files.find((file) => file.name === image.image_name);
+
+							// If the required data is present
+							if (
+								image.image_url &&
+								file &&
+								framepos?.google_image.lng &&
+								framepos?.google_image.lat
+							) {
+								// Create the image in the database
+								const result = await newGoogleImage.mutateAsync({
+									path_id: props.formState.path_id as string,
+									image_size: file.size,
+									url: image.image_url,
+									lng: framepos?.google_image.lng,
+									lat: framepos?.google_image.lat,
+									heading: framepos?.google_image.heading,
+									pitch: framepos?.google_image.pitch,
+									roll: framepos?.google_image.roll,
+									date_taken: framepos.google_image.date
+										? parseISO(framepos.google_image.date)
+										: undefined,
+								});
+
+								// If the image could not be created in the database
+								if (!result) {
+									toaster.toast({
+										title: 'Error',
+										description: 'Image could not be created in database.',
+										variant: 'destructive',
+										duration: 5000,
+									});
+
+									return props.onCancel?.();
+								} else {
+									const image_ids = [
+										...props.formState.surveys
+											.filter((survey) => {
+												return props.formState.framepos
+													.filter((framepos) => {
+														return (
+															framepos.google_image.pano_id ===
+															image.image_name.split('.')[0]
+														);
+													})
+													.some((framepos) => {
+														return framepos.frame_index === survey.index;
+													});
+											})
+											.map((survey) => survey.id),
+									];
+
+									const before = await setBeforeImage.mutateAsync({
+										before_image_id: result.id,
+										image_ids,
+									});
+
+									if (!before) {
+										toaster.toast({
+											title: 'Error',
+											description: '',
+											variant: 'destructive',
+											duration: 5000,
+										});
+
+										return props.onCancel?.();
+									}
+								}
+
+								setProcessing(false);
+							} else {
+								toaster.toast({
+									title: 'Error',
+									description: 'Image could not be created in database.',
+									variant: 'destructive',
+									duration: 5000,
+								});
+
+								return props.onCancel?.();
+							}
+						})();
+					}
+
+					toaster.toast({
+						title: 'Success',
+						description:
+							'Path created in database with images. You can now view the path in the dashboard.',
+						duration: 5000,
+					});
+					props.onNext?.();
+				}
+			}
+		);
+	};
+
 	return (
 		<>
 			<DragAndDropZone
 				type="comparison"
-				processing={false}
+				processing={processing}
 				onFiles={(data) => {
 					setFiles(data);
 
@@ -492,20 +681,17 @@ function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 					}
 				/>
 				<div className="flex w-full flex-row items-center justify-end space-x-2 md:w-auto">
-					<AlertDialogCancel onClick={props.onCancel}>Cancel</AlertDialogCancel>
+					<AlertDialogCancel onClick={props.onCancel} disabled={processing}>
+						Cancel
+					</AlertDialogCancel>
 					<Button
 						type="button"
 						className="mt-2 sm:mt-0"
-						disabled={!finished}
-						onClick={() => {
-							props.setFormState({
-								...props.formState,
-								comparison: files,
-							});
-							props.onNext?.();
-						}}
+						disabled={!finished || processing}
+						onClick={handleUpload}
 					>
-						Done
+						{processing && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+						{processing ? 'Uploading' : 'Done'}
 					</Button>
 				</div>
 			</AlertDialogFooter>
@@ -522,7 +708,7 @@ export function NewPathDialog() {
 		name: '',
 		date: new Date(),
 		framepos: [],
-		survey: [],
+		surveys: [],
 		comparison: [],
 	});
 	const newPath = api.paths.new.useMutation();
@@ -549,7 +735,7 @@ export function NewPathDialog() {
 			name: '',
 			date: new Date(),
 			framepos: [],
-			survey: [],
+			surveys: [],
 			comparison: [],
 		});
 	};

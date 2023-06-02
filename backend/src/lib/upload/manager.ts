@@ -36,7 +36,7 @@ type UploadData = {
 type CallbackData = FramePosResult[] | ImageResult[] | null;
 
 const IMAGE_DIRECTORY =
-	'./images';
+	'.\\images';
 
 export const handleUpload = async (
 	data: UploadData,
@@ -98,6 +98,7 @@ export const handleUpload = async (
 			}
 			return;
 		case 'survey':
+		case 'comparison':
 			const image_urls: ImageResult[] = [];
 
 			try {
@@ -132,7 +133,5 @@ export const handleUpload = async (
 			}
 
 			return callback(image_urls);
-		case 'comparison':
-			return logger.warn('Unimplemented');
 	}
 };

@@ -132,7 +132,7 @@ model Image360 {
   source     ImageSource @default(NTP)
   path       Path        @relation("Path Images", fields: [path_id], references: [id])
   path_id    String
-  index      Int
+  index      Int?
   image_url  String
   image_size BigInt
   date_taken DateTime?
@@ -146,7 +146,7 @@ model Image360 {
   track      Float?
 
   // Before image is usually the Google Street View image
-  before_id String?   @unique
+  before_id String?
   before    Image360? @relation("Image360 History", fields: [before_id], references: [id])
 
   // After is used for Google Street View images to view the NTP image
