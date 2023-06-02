@@ -149,7 +149,8 @@ model Image360 {
   before    Image360? @relation("Image360 History", fields: [before_id], references: [id])
 
   // After is used for Google Street View images to view the NTP image
-  after Image360? @relation("Image360 History")
+  // Since Google Street View images can have multiple NTP images, we use a list
+  after Image360[] @relation("Image360 History")
 }
 
 enum ImageSource {
