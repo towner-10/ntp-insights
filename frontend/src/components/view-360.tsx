@@ -44,9 +44,10 @@ const CameraController = ({
 	useEffect(() => {
 		let lastAngle = 0;
 		const controls = new OrbitControls(camera, gl.domElement);
+		controls.rotateSpeed *= -0.3;
 
 		// Set camera configuration
-		controls.zoomSpeed = 0.5;
+		controls.zoomSpeed = 3;
 		controls.maxDistance = 480;
 
 		// Set initial camera angle
