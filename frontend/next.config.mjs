@@ -12,6 +12,14 @@ const withBundleAnalyzer = NextBundleAnalyzer({
 /** @type {import("next").NextConfig} */
 const config = withBundleAnalyzer({
   reactStrictMode: true,
+  async rewrites() {
+    return [
+      {
+        source: '/google_maps/:path*',
+        destination: 'https://maps.googleapis.com/:path*',
+      },
+    ]
+  },
 
   /**
    * If you have `experimental: { appDir: true }` set, then you must comment the below `i18n` config

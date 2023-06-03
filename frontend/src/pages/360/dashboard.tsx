@@ -5,7 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { useSession } from 'next-auth/react';
 import { columns } from '../../components/data-tables/paths/columns';
 import { DataTable } from '@/components/data-tables/paths/data-table';
-import { NewPathDialog } from '@/components/dialogs/new-path-dialog';
+import { NewPathDialog } from '@/components/dialogs/new-path/dialog';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import ServerStatusBadge from '@/components/server-status-badge';
 import { api } from '@/utils/api';
@@ -47,7 +47,20 @@ const Dashboard: NextPage = () => {
 							<Skeleton className="h-96 w-full" />
 						</div>
 					)}
-					{paths.data && <DataTable columns={columns} data={paths.data} />}
+					{paths.data && (
+						<DataTable
+							columns={columns}
+							data={paths.data.sort((a, b) => {
+								if (a.date < b.date) {
+									return 1;
+								}
+								if (a.date > b.date) {
+									return -1;
+								}
+								return 0;
+							})}
+						/>
+					)}
 				</div>
 			</main>
 		</>

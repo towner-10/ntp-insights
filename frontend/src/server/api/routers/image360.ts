@@ -43,9 +43,11 @@ export const image360Router = createTRPCRouter({
 			return image;
 		}),
 	newGoogleImage: ntpProtectedProcedure
-		.input(image360Schema.omit({
-            index: true
-        }))
+		.input(
+			image360Schema.omit({
+				index: true,
+			})
+		)
 		.mutation(async ({ input }) => {
 			const image = await prisma.image360.create({
 				data: {
@@ -85,9 +87,9 @@ export const image360Router = createTRPCRouter({
 				},
 			});
 
-            if (result.count !== input.image_ids.length) {
-                throw new Error('Failed to set before image');
-            }
+			if (result.count !== input.image_ids.length) {
+				throw new Error('Failed to set before image');
+			}
 
 			return result;
 		}),
