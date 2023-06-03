@@ -23,7 +23,7 @@ export const UserHoverCard = ({ id }: { id: string }) => {
 				</a>
 			</HoverCardTrigger>
 			<HoverCardContent className="max-w-80 w-auto">
-				<div className="flex space-x-4 items-center pb-2">
+				<div className="flex items-center space-x-4 pb-2">
 					<Avatar>
 						<AvatarImage src={user.data?.image || ''} />
 						<AvatarFallback>
@@ -54,7 +54,9 @@ export const UserHoverCard = ({ id }: { id: string }) => {
 				<div className="flex items-center pt-2">
 					<LucideFootprints className="mr-2 h-4 w-4 opacity-70" />{' '}
 					<span className="text-xs text-muted-foreground">
-						<b>3</b> paths created
+						<b>{user.data?._count.paths_created}</b>{' '}
+						{user.data?._count.paths_created === 1 ? 'path' : 'paths'}{' '}
+						created
 					</span>
 				</div>
 			</HoverCardContent>

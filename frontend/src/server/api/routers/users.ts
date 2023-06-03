@@ -80,6 +80,7 @@ export const usersRouter = createTRPCRouter({
 					_count: {
 						select: {
 							searches_created: true,
+							paths_created: true
 						}
 					}
 				},

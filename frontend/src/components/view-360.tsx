@@ -13,13 +13,21 @@ import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { Controllers, VRButton, XR } from '@react-three/xr';
 import { radToDeg } from 'three/src/math/MathUtils';
+import { type Image360 } from '@prisma/client';
 
-const StreetViewImage = () => {
-	const texture = useLoader(THREE.TextureLoader, '/test.jpg');
+const StreetViewImage = (props: { image: string }) => {
+	const texture = useLoader(
+		THREE.TextureLoader,
+		`${props.image.replace('.', 'http://localhost:8000')}`
+	);
 	texture.mapping = THREE.EquirectangularReflectionMapping;
 	texture.minFilter = texture.magFilter = THREE.LinearFilter;
 	texture.wrapS = THREE.RepeatWrapping;
 	texture.repeat.x = -1;
+
+	useEffect(() => {
+		texture.needsUpdate = true;
+	}, [texture]);
 
 	return (
 		<mesh>
@@ -54,7 +62,6 @@ const CameraController = ({
 		onRotation?.(radToDeg(controls.getAzimuthalAngle()) - startAngle);
 
 		controls.addEventListener('change', () => {
-			console.log(radToDeg(controls.getAzimuthalAngle()));
 			const angle = radToDeg(controls.getAzimuthalAngle()) - startAngle;
 			if (angle !== lastAngle) {
 				onRotation?.(angle);
@@ -70,11 +77,19 @@ const CameraController = ({
 	return null;
 };
 
-export const View360 = (props: { className?: string }) => {
+export const View360 = (props: {
+	image?: Image360 & {
+		before: Image360 | null;
+	};
+	onNext?: () => void;
+	onPrevious?: () => void;
+	className?: string;
+}) => {
 	const [fullscreen, setFullscreen] = useState(false);
-
 	const [vr, setVR] = useState(false);
-	const [rotation, setRotation] = useState(111.4099445);
+	const [startingAngle, setStartingAngle] = useState(props.image?.heading || 0);
+	const [rotation, setRotation] = useState(props.image?.heading || 0);
+	const [currentImage, setCurrentImage] = useState<'before' | 'after'>('after');
 	const fullscreenRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -88,6 +103,16 @@ export const View360 = (props: { className?: string }) => {
 			});
 		};
 	});
+
+	useEffect(() => {
+		if (currentImage === 'before')
+			setStartingAngle(props.image?.before?.heading || 0);
+		else
+			setStartingAngle(props.image?.heading || 0);
+	}, [props.image, currentImage])
+
+	if (!props.image) return null;
+	if (!props.image.before) return null;
 
 	const toggleFullscreen = async () => {
 		if (fullscreen) {
@@ -105,14 +130,27 @@ export const View360 = (props: { className?: string }) => {
 				<span className="font-bold">NTP</span> 360
 			</div>
 			<div className="absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg bg-background/60 p-2 text-lg backdrop-blur">
-				<RadioGroup defaultChecked defaultValue="option-two">
+				<RadioGroup
+					onValueChange={(value) => {
+						if (value === 'before') {
+							setStartingAngle(props.image?.before?.heading || 0);
+							setCurrentImage('before');
+						} else {
+							setStartingAngle(props.image?.heading || 0);
+							setCurrentImage('after');
+						}
+					}}
+					value={currentImage}
+					defaultChecked
+					defaultValue="after"
+				>
 					<div className="flex items-center space-x-2">
-						<RadioGroupItem value="option-one" id="option-one" />
-						<Label htmlFor="option-one">Before</Label>
+						<RadioGroupItem value="before" id="before" />
+						<Label htmlFor="before">Before</Label>
 					</div>
 					<div className="flex items-center space-x-2">
-						<RadioGroupItem value="option-two" id="option-two" />
-						<Label htmlFor="option-two">After</Label>
+						<RadioGroupItem value="after" id="after" />
+						<Label htmlFor="after">After</Label>
 					</div>
 				</RadioGroup>
 			</div>
@@ -128,12 +166,10 @@ export const View360 = (props: { className?: string }) => {
 				/>
 			</div>
 			<div className="absolute bottom-1/2 right-0 top-1/2 z-10 m-2 flex flex-col items-center justify-center gap-4">
-				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
-					{/* TODO: Add onClick functionality */}
+				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background" onClick={() => props.onNext?.()}>
 					<LucideArrowUp />
 				</div>
-				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background">
-					{/* TODO: Add onClick functionality */}
+				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background" onClick={() => props.onPrevious?.()}>
 					<LucideArrowDown />
 				</div>
 			</div>
@@ -164,11 +200,17 @@ export const View360 = (props: { className?: string }) => {
 					{vr ? null : (
 						<CameraController
 							onRotation={setRotation}
-							startAngle={111.4099445}
+							startAngle={startingAngle}
 						/>
 					)}
-					<Suspense fallback={null}>
-						<StreetViewImage />
+					<Suspense fallback={<></>}>
+						<StreetViewImage
+							image={
+								currentImage === 'after'
+									? props.image.image_url
+									: props.image.before.image_url
+							}
+						/>
 					</Suspense>
 				</XR>
 			</Canvas>

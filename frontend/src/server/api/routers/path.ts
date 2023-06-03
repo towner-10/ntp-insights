@@ -40,6 +40,11 @@ export const pathsRouter = createTRPCRouter({
 					id: input.id,
 				},
 				include: {
+					images: {
+						include: {
+							before: true
+						}
+					},
 					created_by: false,
 					updated_by: false,
 				},
@@ -51,6 +56,11 @@ export const pathsRouter = createTRPCRouter({
 
 			return path;
 		}),
+	// TODO: Add pagination
+	getAllPublic: publicProcedure.query(async () => {
+		const paths = await prisma.path.findMany();
+		return paths;
+	}),
 	new: ntpProtectedProcedure
 		.input(
 			z.object({

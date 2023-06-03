@@ -3,17 +3,17 @@ import Head from 'next/head';
 import Header from '@/components/header';
 import { Toaster } from '@/components/ui/toaster';
 import { useSession } from 'next-auth/react';
-import {
-	columns,
-	paths,
-} from '../../components/data-tables/paths/columns';
+import { columns } from '../../components/data-tables/paths/columns';
 import { DataTable } from '@/components/data-tables/paths/data-table';
 import { NewPathDialog } from '@/components/dialogs/new-path-dialog';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import ServerStatusBadge from '@/components/server-status-badge';
+import { api } from '@/utils/api';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Dashboard: NextPage = () => {
 	const session = useSession();
+	const paths = api.paths.getAllPublic.useQuery();
 
 	return (
 		<>
@@ -35,10 +35,19 @@ const Dashboard: NextPage = () => {
 				<div className="container flex flex-col p-6">
 					<div className="flex flex-row items-center space-x-4 pb-6">
 						<h3 className=" text-2xl font-semibold">Paths</h3>
-						<div><ServerStatusBadge /></div>
-						<div className="w-11/12 text-end"><NewPathDialog /></div>
+						<div>
+							<ServerStatusBadge />
+						</div>
+						<div className="w-11/12 text-end">
+							<NewPathDialog />
+						</div>
 					</div>
-					<DataTable columns={columns} data={paths} />
+					{paths.isLoading && (
+						<div className="flex flex-col items-center justify-center">
+							<Skeleton className="h-96 w-full" />
+						</div>
+					)}
+					{paths.data && <DataTable columns={columns} data={paths.data} />}
 				</div>
 			</main>
 		</>

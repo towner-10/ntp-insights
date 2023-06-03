@@ -19,7 +19,6 @@ export default function ClipboardButton(
 				props.notify &&
 					toaster.toast({
 						title: 'Copied to clipboard',
-						description: `Copied "${props.text}" to clipboard`,
 						duration: 2000,
 					});
 			}}

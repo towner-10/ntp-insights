@@ -9,45 +9,33 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ArrowUpDown, Link2Icon, MoreHorizontal } from 'lucide-react';
-import { parse, format } from 'date-fns';
+import { format } from 'date-fns';
 import ClipboardButton from '@/components/buttons/clipboard-button';
-
-export type Path = {
-	id: string;
-	name: string;
-	author: string;
-	date: Date;
-};
-
-export const paths: Path[] = [
-	{
-		id: '1',
-		name: 'NTP 2023 Storm Event',
-		author: 'Tornado Man',
-		date: parse('05-29-2023', 'MM-dd-yyyy', new Date()),
-	},
-	{
-		id: '2',
-		name: 'London 2022 Derecho',
-		author: 'Kevin Manka',
-		date: parse('05-18-2022', 'MM-dd-yyyy', new Date()),
-	},
-	{
-		id: '3',
-		name: 'Barrie 2021 Tornado',
-		author: 'Collin Town',
-		date: parse('07-17-2021', 'MM-dd-yyyy', new Date()),
-	},
-];
+import { type Path } from '@prisma/client';
+import { UserHoverCard } from '@/components/user-hover-card';
+import Link from 'next/link';
+import { DeletePathDialog } from '@/components/dialogs/delete-path-dialog';
 
 export const columns: ColumnDef<Path>[] = [
 	{
 		accessorKey: 'name',
 		header: 'Name',
+		cell: ({ row }) => {
+			const path = row.original;
+
+			return (
+				<Link href={`/360/${path.id}/view`}>
+					<Button variant={'link'}>{path.name}</Button>
+				</Link>
+			);
+		},
 	},
 	{
-		accessorKey: 'author',
+		accessorKey: 'created_by_id',
 		header: 'Created by',
+		cell: ({ row }) => {
+			return <UserHoverCard id={row.original.created_by_id} />;
+		},
 	},
 	{
 		accessorKey: 'date',
@@ -64,20 +52,31 @@ export const columns: ColumnDef<Path>[] = [
 			);
 		},
 		cell: ({ row }) => {
-			const upload = row.original;
+			const path = row.original;
 
-			return <span>{format(upload.date, 'MMMM d, yyyy')}</span>;
+			return <span>{format(path.date, 'MMMM d, yyyy')}</span>;
 		},
 	},
 	{
 		id: 'actions',
 		header: 'Actions',
 		cell: ({ row }) => {
-			const upload = row.original;
+			const path = row.original;
+
+			const copyLink = () => {
+				if (typeof window !== 'undefined') {
+					const hostname = window.location.hostname;
+
+					// TODO: Change this to the actual hostname
+					return `${hostname}:3000/360/${path.id}/view`;
+				}
+
+				return 'Not available';
+			};
 
 			return (
 				<div>
-					<ClipboardButton text={`${upload.id}`} notify>
+					<ClipboardButton text={copyLink()} notify>
 						<Link2Icon className="h-4 w-4" />
 					</ClipboardButton>
 					<DropdownMenu>
@@ -90,15 +89,21 @@ export const columns: ColumnDef<Path>[] = [
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Actions</DropdownMenuLabel>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem>View</DropdownMenuItem>
+							<Link href={`/360/${path.id}/view`}>
+								<DropdownMenuItem>View</DropdownMenuItem>
+							</Link>
 							<DropdownMenuItem
-								onClick={() => void navigator.clipboard.writeText(upload.id)}
+								onClick={() => {
+									void navigator.clipboard.writeText(copyLink());
+								}}
 							>
 								Copy link
 							</DropdownMenuItem>
 							<DropdownMenuSeparator />
 							<DropdownMenuItem>Rename</DropdownMenuItem>
-							<DropdownMenuItem>Delete</DropdownMenuItem>
+							<DeletePathDialog path={path}>
+								<DropdownMenuItem>Delete</DropdownMenuItem>
+							</DeletePathDialog>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</div>

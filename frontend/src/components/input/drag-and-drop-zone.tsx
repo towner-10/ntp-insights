@@ -83,7 +83,7 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 								</TableCell>
 								<TableCell>{Math.round(file.size / 1024)}</TableCell>
 								<TableCell>
-									{format(file.lastModified, 'MMMM dd, yyyy')}
+									{format(file.lastModified, 'MMMM d, yyyy')}
 								</TableCell>
 								<TableCell className="p-0 pr-2">
 									<Button
