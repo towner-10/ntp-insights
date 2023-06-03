@@ -105,6 +105,7 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 				type="file"
 				multiple={props.type !== 'framepos'}
 				ref={fileRef}
+				value={''}
 				onChange={handleFileChange}
 				className="hidden"
 				disabled={props.processing}

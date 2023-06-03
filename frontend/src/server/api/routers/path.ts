@@ -42,8 +42,8 @@ export const pathsRouter = createTRPCRouter({
 				include: {
 					images: {
 						include: {
-							before: true
-						}
+							before: true,
+						},
 					},
 					created_by: false,
 					updated_by: false,
@@ -58,7 +58,11 @@ export const pathsRouter = createTRPCRouter({
 		}),
 	// TODO: Add pagination
 	getAllPublic: publicProcedure.query(async () => {
-		const paths = await prisma.path.findMany();
+		const paths = await prisma.path.findMany({
+			where: {
+				archived: false,
+			}
+		});
 		return paths;
 	}),
 	new: ntpProtectedProcedure
@@ -78,6 +82,53 @@ export const pathsRouter = createTRPCRouter({
 							id: ctx.session.user.id,
 						},
 					},
+					updated_by: {
+						connect: {
+							id: ctx.session.user.id,
+						},
+					},
+				},
+			});
+
+			return path;
+		}),
+	rename: ntpProtectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+				name: z.string(),
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			const path = await prisma.path.update({
+				where: {
+					id: input.id,
+				},
+				data: {
+					name: input.name,
+					updated_by: {
+						connect: {
+							id: ctx.session.user.id,
+						},
+					},
+				},
+			});
+			
+			return path;
+		}),
+	archive: ntpProtectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			const path = await prisma.path.update({
+				where: {
+					id: input.id,
+				},
+				data: {
+					archived: true,
 					updated_by: {
 						connect: {
 							id: ctx.session.user.id,

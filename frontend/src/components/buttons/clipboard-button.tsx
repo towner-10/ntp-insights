@@ -1,9 +1,15 @@
-import { type PropsWithChildren } from 'react';
+import { type ReactNode, type PropsWithChildren } from 'react';
 import { useToast } from '../ui/use-toast';
-import { Button } from '../ui/button';
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from '../ui/tooltip';
 
 type ClipboardButtonProps = {
 	text: string;
+	tooltip?: ReactNode;
 	notify?: boolean;
 };
 
@@ -13,19 +19,26 @@ export default function ClipboardButton(
 	const toaster = useToast();
 
 	return (
-		<Button
-			onClick={() => {
-				void navigator.clipboard.writeText(props.text);
-				props.notify &&
-					toaster.toast({
-						title: 'Copied to clipboard',
-						duration: 2000,
-					});
-			}}
-			variant="ghost"
-			className="h-8 w-8 p-0"
-		>
-			{props.children}
-		</Button>
+		<TooltipProvider>
+			<Tooltip disableHoverableContent={props.tooltip === undefined}>
+				<TooltipTrigger asChild>
+					<a
+						onClick={() => {
+							void navigator.clipboard.writeText(props.text);
+							props.notify &&
+								toaster.toast({
+									title: 'Copied to clipboard',
+									duration: 2000,
+								});
+						}}
+					>
+						{props.children}
+					</a>
+				</TooltipTrigger>
+				<TooltipContent className={`${props.tooltip ? '' : 'hidden'}`}>
+					{props.tooltip || 'Copy to clipboard'}
+				</TooltipContent>
+			</Tooltip>
+		</TooltipProvider>
 	);
 }

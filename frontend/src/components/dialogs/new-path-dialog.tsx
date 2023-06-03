@@ -207,7 +207,10 @@ function FramePosDialogContent(props: DialogContentProps) {
 					setProcessing(files.length > 0);
 
 					if (files.length > 0) {
-						if (files[0]?.type !== 'text/plain' && files[0]?.type !== 'text/csv') {
+						if (
+							files[0]?.type !== 'text/plain' &&
+							files[0]?.type !== 'text/csv'
+						) {
 							setProcessing(false);
 							return toaster.toast({
 								title: 'Error',
@@ -329,6 +332,7 @@ function SurveyPanoramasDialogContent(props: DialogContentProps) {
 			return;
 		}
 
+		// TODO: This is not secure, but is the only way to send files to the server as of now
 		socket?.compress(false).emit(
 			'upload',
 			{
@@ -513,6 +517,7 @@ function ComparisonPanoramasDialogContent(props: DialogContentProps) {
 			return setProcessing(false);
 		}
 
+		// TODO: This is not secure, but is the only way to send files to the server as of now
 		socket?.compress(false).emit(
 			'upload',
 			{
@@ -720,7 +725,8 @@ export function NewPathDialog() {
 		else {
 			toaster.toast({
 				title: 'Error',
-				description: 'Not connected to server',
+				description:
+					'Lost connection to server. Check your internet connection & try again.',
 				duration: 5000,
 				variant: 'destructive',
 			});
