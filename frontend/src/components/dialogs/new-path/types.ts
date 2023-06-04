@@ -17,16 +17,6 @@ export type DialogContentProps = {
 	onCancel?: () => void;
 };
 
-export type Panorama = {
-	pano_id: string;
-	lat: number;
-	lng: number;
-	heading: number;
-	pitch: number;
-	roll: number;
-	date: string | null;
-};
-
 export type ImageResult = {
 	image_name: string;
 	image_url?: string;
@@ -34,8 +24,8 @@ export type ImageResult = {
 
 // Data received from client
 export type UploadData = {
-	uploadType: 'framepos' | 'survey' | 'comparison';
-	id?: string;
+	uploadType: 'survey' | 'comparison';
+	id: string;
 	files: {
 		name: string;
 		buffer: File;

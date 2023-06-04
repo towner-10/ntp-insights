@@ -39,7 +39,11 @@ type Input = {
 	name: string;
 };
 
-export function PathContextMenu(props: { path: Path; link: string }) {
+export function PathContextMenu(props: {
+	path: Path;
+	link: string;
+	onRefresh: () => void;
+}) {
 	const toaster = useToast();
 	const archivePath = api.paths.archive.useMutation();
 	const renamePath = api.paths.rename.useMutation();
@@ -55,7 +59,6 @@ export function PathContextMenu(props: { path: Path; link: string }) {
 	const onSubmit = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
-		console.log('HELP');
 		void (async () => {
 			await handleSubmit(async (data) => {
 				const path = await renamePath.mutateAsync({
@@ -65,11 +68,12 @@ export function PathContextMenu(props: { path: Path; link: string }) {
 
 				if (path) {
 					toaster.toast({
-						title: 'Path renamed. Refresh to see changes.',
-						description: `${props.path.name} has been renamed to ${data.name}.`,
+						title: 'Path renamed.',
+						description: 'The path has been renamed.',
 						duration: 5000,
 					});
 					setShowRenameDialog(false);
+					props.onRefresh();
 				}
 			})(event);
 		})();
@@ -127,10 +131,11 @@ export function PathContextMenu(props: { path: Path; link: string }) {
 							onClick={() => {
 								void archivePath.mutateAsync({ id: props.path.id }).then(() => {
 									toaster.toast({
-										title: 'Path deleted. Refresh to see changes.',
-										description: `${props.path.name} has been archived and can be retrieved later if required.`,
+										title: 'Path archived.',
+										description: 'Request to restore it later.',
 										duration: 5000,
 									});
+									props.onRefresh();
 								});
 							}}
 						>
@@ -155,7 +160,7 @@ export function PathContextMenu(props: { path: Path; link: string }) {
 						})}
 					/>
 					{errors.name && <span>This field is required</span>}
-					<DialogFooter className='pt-4'>
+					<DialogFooter className="pt-4">
 						<Button
 							variant="outline"
 							onClick={() => {

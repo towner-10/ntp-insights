@@ -141,9 +141,5 @@ export async function processFramepos(input: {
 		}
 	}
 
-	if (input.onProgress) {
-		input.onProgress(images.length / framepos.length);
-	}
-
 	return images;
 }

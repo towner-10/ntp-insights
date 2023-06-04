@@ -8,73 +8,83 @@ import { UserHoverCard } from '@/components/user-hover-card';
 import Link from 'next/link';
 import { PathContextMenu } from '@/components/dialogs/path-context-menu';
 
-export const columns: ColumnDef<Path>[] = [
-	{
-		accessorKey: 'name',
-		header: 'Name',
-		cell: ({ row }) => {
-			const path = row.original;
+export const columns = (onRefresh: () => void) => {
+	return [
+		{
+			accessorKey: 'name',
+			header: 'Name',
+			cell: ({ row }) => {
+				const path = row.original;
 
-			return (
-				<Link href={`/360/${path.id}/view`}>
-					<Button variant={'link'}>{path.name}</Button>
-				</Link>
-			);
+				return (
+					<Link href={`/360/${path.id}/view`}>
+						<Button variant={'link'}>{path.name}</Button>
+					</Link>
+				);
+			},
 		},
-	},
-	{
-		accessorKey: 'created_by_id',
-		header: 'Created by',
-		cell: ({ row }) => {
-			return <UserHoverCard id={row.original.created_by_id} />;
+		{
+			accessorKey: 'created_by_id',
+			header: 'Created by',
+			cell: ({ row }) => {
+				return <UserHoverCard id={row.original.created_by_id} />;
+			},
 		},
-	},
-	{
-		accessorKey: 'date',
-		header: ({ column }) => {
-			return (
-				<a
-					className="flex cursor-pointer flex-row items-center text-left hover:text-primary hover:underline"
-					onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-				>
-					{'Date created'}
-					<ArrowUpDown className="ml-2 h-4 w-4" />
-				</a>
-			);
+		{
+			accessorKey: 'date',
+			header: ({ column }) => {
+				return (
+					<a
+						className="flex cursor-pointer flex-row items-center text-left hover:text-primary hover:underline"
+						onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+					>
+						{'Date created'}
+						<ArrowUpDown className="ml-2 h-4 w-4" />
+					</a>
+				);
+			},
+			cell: ({ row }) => {
+				const path = row.original;
+
+				return <span>{format(path.date, 'MMMM d, yyyy')}</span>;
+			},
 		},
-		cell: ({ row }) => {
-			const path = row.original;
+		{
+			id: 'actions',
+			header: 'Actions',
+			cell: ({ row }) => {
+				const path = row.original;
 
-			return <span>{format(path.date, 'MMMM d, yyyy')}</span>;
+				const copyLink = () => {
+					if (typeof window !== 'undefined') {
+						const hostname = window.location.hostname;
+
+						// TODO: Change this to the actual hostname
+						return `${hostname}:3000/360/${path.id}/view`;
+					}
+
+					return 'Not available';
+				};
+
+				return (
+					<div className="flex gap-2">
+						<ClipboardButton
+							text={copyLink()}
+							notify
+							tooltip="Copy to clipboard"
+						>
+							<Button variant="ghost" className="h-8 w-8 p-0">
+								<Link2Icon className="h-4 w-4" />
+							</Button>
+						</ClipboardButton>
+						<PathContextMenu
+							path={path}
+							link={copyLink()}
+							onRefresh={onRefresh}
+						/>
+					</div>
+				);
+			},
 		},
-	},
-	{
-		id: 'actions',
-		header: 'Actions',
-		cell: ({ row }) => {
-			const path = row.original;
-
-			const copyLink = () => {
-				if (typeof window !== 'undefined') {
-					const hostname = window.location.hostname;
-
-					// TODO: Change this to the actual hostname
-					return `${hostname}:3000/360/${path.id}/view`;
-				}
-
-				return 'Not available';
-			};
-
-			return (
-				<div className="flex gap-2">
-					<ClipboardButton text={copyLink()} notify tooltip="Copy to clipboard">
-						<Button variant="ghost" className="h-8 w-8 p-0">
-							<Link2Icon className="h-4 w-4" />
-						</Button>
-					</ClipboardButton>
-					<PathContextMenu path={path} link={copyLink()} />
-				</div>
-			);
-		},
-	},
-];
+	] as ColumnDef<Path>[];
+};

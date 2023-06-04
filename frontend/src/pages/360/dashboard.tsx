@@ -8,8 +8,8 @@ import { DataTable } from '@/components/data-tables/paths/data-table';
 import { NewPathDialog } from '@/components/dialogs/new-path/dialog';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import ServerStatusBadge from '@/components/server-status-badge';
-import { api } from '@/utils/api';
 import { Skeleton } from '@/components/ui/skeleton';
+import { api } from '@/utils/api';
 
 const Dashboard: NextPage = () => {
 	const session = useSession();
@@ -49,7 +49,7 @@ const Dashboard: NextPage = () => {
 					)}
 					{paths.data && (
 						<DataTable
-							columns={columns}
+							columns={columns(() => void paths.refetch())}
 							data={paths.data.sort((a, b) => {
 								if (a.date < b.date) {
 									return 1;
