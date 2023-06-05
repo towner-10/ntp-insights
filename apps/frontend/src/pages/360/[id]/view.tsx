@@ -1,4 +1,6 @@
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { type NextPage } from 'next';
+import { type Image360 } from 'database';
 import Head from 'next/head';
 import Header from '@/components/header';
 import { Toaster } from '@/components/ui/toaster';
@@ -45,7 +47,7 @@ const View: NextPage = () => {
 		.filter((image) => {
 			return image.source === 'NTP';
 		})
-		.sort((a, b) => {
+		.sort((a: Image360, b: Image360) => {
 			if (b.index === null && a.index !== null) return -1;
 			else if (a.index === null && b.index !== null) return 1;
 			else if (a.index === null && b.index === null) return 0;
@@ -53,10 +55,7 @@ const View: NextPage = () => {
 		});
 
 	const points = imagesSorted?.map((image) => {
-		return LngLat.convert({
-			lat: image.lat,
-			lng: image.lng,
-		});
+		return new LngLat(image.lng, image.lat);
 	});
 
 	if (
@@ -203,7 +202,8 @@ const View: NextPage = () => {
 						<div className="col-span-1 lg:row-span-1 ">
 							<View360Map
 								points={points || []}
-								className="h-[400px] overflow-hidden rounded-md lg:h-40"
+								currentIndex={currentIndex}
+								className="h-[400px] w-full overflow-hidden rounded-md lg:h-40"
 							/>
 						</div>
 					</div>

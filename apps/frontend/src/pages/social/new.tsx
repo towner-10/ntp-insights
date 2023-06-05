@@ -1,3 +1,4 @@
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { type FormEvent } from 'react';
 import { type GetServerSidePropsContext } from 'next';
 import { type SearchData } from '@/utils/types/searchData';
@@ -8,7 +9,6 @@ import ServerStatusBadge from '@/components/server-status-badge';
 import { CalendarDateRangePicker } from '@/components/ui/calendar-range';
 import { MapWithMarkerCard } from '@/components/map';
 import { Controller, useForm } from 'react-hook-form';
-import 'mapbox-gl/dist/mapbox-gl.css';
 import {
 	Card,
 	CardContent,
