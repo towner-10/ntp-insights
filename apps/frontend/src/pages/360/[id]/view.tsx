@@ -39,6 +39,7 @@ const View: NextPage = () => {
 		}
 	);
 	const [currentIndex, setCurrentIndex] = useState(0);
+	const [currentImage, setCurrentImage] = useState<'before' | 'after'>('after');
 
 	const imagesSorted = path.data?.images
 		.filter((image) => {
@@ -127,6 +128,8 @@ const View: NextPage = () => {
 					<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-5 lg:grid-rows-2">
 						<View360
 							image={imagesSorted?.[currentIndex]}
+							currentImage={currentImage}
+							setCurrentImage={setCurrentImage}
 							onNext={() => {
 								if (imagesSorted && currentIndex + 1 < imagesSorted?.length) {
 									setCurrentIndex(currentIndex + 1);
@@ -148,18 +151,44 @@ const View: NextPage = () => {
 									<CardDescription>Event occurred on</CardDescription>
 									<p>{format(path.data?.date, 'MMMM d, yyyy')}</p>
 									<br />
+									<CardDescription>Date taken</CardDescription>
+									<p>
+										{(() => {
+											try {
+												return format(
+													currentImage === 'after'
+														? path.data?.date
+														: imagesSorted?.[currentIndex]?.before.date_taken,
+													'MMMM d, yyyy'
+												);
+											} catch (err) {
+												return 'N/A';
+											}
+										})()}
+									</p>
+									<br />
 									<CardDescription>Located at</CardDescription>
 									<p>
-										{imagesSorted?.[currentIndex]?.lng},{' '}
-										{imagesSorted?.[currentIndex]?.lat}
+										{currentImage === 'after'
+											? imagesSorted?.[currentIndex]?.lng
+											: imagesSorted?.[currentIndex]?.before.lng}
+										,{' '}
+										{currentImage === 'after'
+											? imagesSorted?.[currentIndex]?.lat
+											: imagesSorted?.[currentIndex]?.before.lat}
 									</p>
 									<br />
 									{imagesSorted?.[currentIndex - 1] && (
 										<>
 											<CardDescription>Previous location</CardDescription>
 											<p>
-												{imagesSorted?.[currentIndex - 1]?.lng},{' '}
-												{imagesSorted?.[currentIndex - 1]?.lat}
+												{currentImage === 'after'
+													? imagesSorted?.[currentIndex - 1]?.lng
+													: imagesSorted?.[currentIndex - 1]?.before.lng}
+												,{' '}
+												{currentImage === 'after'
+													? imagesSorted?.[currentIndex - 1]?.lat
+													: imagesSorted?.[currentIndex - 1]?.before.lat}
 											</p>
 											<br />
 										</>

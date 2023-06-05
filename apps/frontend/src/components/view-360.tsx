@@ -81,6 +81,8 @@ export const View360 = (props: {
 	image?: Image360 & {
 		before: Image360 | null;
 	};
+	currentImage: 'before' | 'after';
+	setCurrentImage: (image: 'before' | 'after') => void;
 	onNext?: () => void;
 	onPrevious?: () => void;
 	className?: string;
@@ -89,7 +91,6 @@ export const View360 = (props: {
 	const [vr, setVR] = useState(false);
 	const [startingAngle, setStartingAngle] = useState(props.image?.heading || 0);
 	const [rotation, setRotation] = useState(props.image?.heading || 0);
-	const [currentImage, setCurrentImage] = useState<'before' | 'after'>('after');
 	const fullscreenRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -105,11 +106,11 @@ export const View360 = (props: {
 	});
 
 	useEffect(() => {
-		if (currentImage === 'before')
+		if (props.currentImage === 'before')
 			setStartingAngle(props.image?.before?.heading || 0);
 		else
 			setStartingAngle(props.image?.heading || 0);
-	}, [props.image, currentImage])
+	}, [props.image, props.currentImage])
 
 	if (!props.image) return null;
 	if (!props.image.before) return null;
@@ -124,6 +125,16 @@ export const View360 = (props: {
 		}
 	};
 
+	const onValueChange = (value: 'before' | 'after') => {
+		if (value === 'before') {
+			setStartingAngle(props.image?.before?.heading || 0);
+			return props.setCurrentImage('before');
+		}
+
+		setStartingAngle(props.image?.heading || 0);
+		return props.setCurrentImage('after');
+	}
+
 	return (
 		<div className={props.className} ref={fullscreenRef}>
 			<div className="absolute bottom-3 left-5 z-10 text-2xl">
@@ -131,16 +142,8 @@ export const View360 = (props: {
 			</div>
 			<div className="absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg bg-background/60 p-2 text-lg backdrop-blur">
 				<RadioGroup
-					onValueChange={(value) => {
-						if (value === 'before') {
-							setStartingAngle(props.image?.before?.heading || 0);
-							setCurrentImage('before');
-						} else {
-							setStartingAngle(props.image?.heading || 0);
-							setCurrentImage('after');
-						}
-					}}
-					value={currentImage}
+					onValueChange={onValueChange}
+					value={props.currentImage}
 					defaultChecked
 					defaultValue="after"
 				>
@@ -203,10 +206,10 @@ export const View360 = (props: {
 							startAngle={startingAngle}
 						/>
 					)}
-					<Suspense fallback={<></>}>
+					<Suspense fallback={null}>
 						<StreetViewImage
 							image={
-								currentImage === 'after'
+								props.currentImage === 'after'
 									? props.image.image_url
 									: props.image.before.image_url
 							}
