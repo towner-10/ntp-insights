@@ -204,7 +204,7 @@ export function View360Map(props: View360MapProps) {
 		if (!map.current) return;
 
 		map.current.on('load', () => {
-			map.current?.addSource('route', {
+			map.current.addSource('route', {
 				type: 'geojson',
 				data: {
 					type: 'Feature',
@@ -216,7 +216,7 @@ export function View360Map(props: View360MapProps) {
 				},
 			});
 
-			map.current?.addLayer({
+			map.current.addLayer({
 				id: 'route',
 				type: 'line',
 				source: 'route',
@@ -226,7 +226,7 @@ export function View360Map(props: View360MapProps) {
 				},
 				paint: {
 					'line-color': '#888',
-					'line-width': 8,
+					'line-width': 3,
 				},
 			});
 
@@ -238,9 +238,9 @@ export function View360Map(props: View360MapProps) {
 				return bounds;
 			};
 
-			map.current?.fitBounds(getBounds(props.points), {
+			map.current.fitBounds(getBounds(props.points), {
 				padding: 20,
-				maxZoom: 15,
+				maxZoom: 20,
 			});
 		});
 	});

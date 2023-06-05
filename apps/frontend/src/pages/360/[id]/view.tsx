@@ -51,16 +51,12 @@ const View: NextPage = () => {
 			else return (a.index || 0) - (b.index || 0);
 		});
 
-	const points = path.data?.images
-		.filter((image) => {
-			return image.source === 'NTP';
-		})
-		.map((image) => {
-			return LngLat.convert({
-				lat: image.lat,
-				lng: image.lng,
-			});
+	const points = imagesSorted?.map((image) => {
+		return LngLat.convert({
+			lat: image.lat,
+			lng: image.lng,
 		});
+	});
 
 	if (
 		path.isLoading ||
@@ -88,7 +84,10 @@ const View: NextPage = () => {
 					<Toaster />
 					<div className="container flex flex-col items-center justify-center p-6">
 						<h2 className="mb-4 flex w-full flex-row items-center gap-4 text-left text-2xl font-medium">
-							{!path.data?.images.length ? 'Path incomplete...' : 'Loading...'}
+							{!path.data?.images.length &&
+							!(path.isLoading || !path.data || path.isFetching || path.isError)
+								? 'Path incomplete...'
+								: 'Loading...'}
 						</h2>
 						<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-5 lg:grid-rows-2">
 							<Skeleton className="relative row-span-3 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[548px]" />
@@ -151,15 +150,20 @@ const View: NextPage = () => {
 									<br />
 									<CardDescription>Located at</CardDescription>
 									<p>
-										{points?.[0]?.lng}, {points?.[0]?.lat}
+										{imagesSorted?.[currentIndex]?.lng},{' '}
+										{imagesSorted?.[currentIndex]?.lat}
 									</p>
 									<br />
-									<CardDescription>Previous location</CardDescription>
-									<p>
-										{points?.[points.length - 1]?.lng},{' '}
-										{points?.[points.length - 1]?.lat}
-									</p>
-									<br />
+									{imagesSorted?.[currentIndex - 1] && (
+										<>
+											<CardDescription>Previous location</CardDescription>
+											<p>
+												{imagesSorted?.[currentIndex - 1]?.lng},{' '}
+												{imagesSorted?.[currentIndex - 1]?.lat}
+											</p>
+											<br />
+										</>
+									)}
 									<CardDescription>Panorama capture</CardDescription>
 									<p>{`${currentIndex + 1} / ${
 										imagesSorted?.length || currentIndex + 1
