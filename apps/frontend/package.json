@@ -67,6 +67,7 @@
 		"tailwind-merge": "^1.12.0",
 		"tailwindcss-animate": "^1.0.5",
 		"three": "^0.152.2",
+		"database": "*",
 		"zod": "^3.21.4"
 	},
 	"devDependencies": {
@@ -89,7 +90,6 @@
 		"tailwindcss": "^3.3.2",
 		"typescript": "^5.0.4",
 		"config": "*",
-		"database": "*",
 		"tsconfig": "*"
 	},
 	"ct3aMetadata": {

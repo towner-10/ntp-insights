@@ -26,6 +26,7 @@
     "socket.io": "^4.6.1",
     "twitter-api-v2": "^1.14.2",
     "typescript": "^5.0.4",
+    "database": "*",
     "ws": "^8.13.0"
   },
   "devDependencies": {
@@ -39,7 +40,6 @@
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
     "config": "*",
-		"database": "*",
 		"tsconfig": "*"
   }
 }

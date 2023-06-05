@@ -1,4 +1,6 @@
-import { prisma, Post, Search } from 'database';
+import { PrismaClient, Post, Search } from 'database';
+
+const prisma = new PrismaClient();
 
 export const getSearches = async () => {
 	return await prisma.search.findMany();

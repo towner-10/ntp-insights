@@ -18,12 +18,16 @@
 	],
 	"pipeline": {
 		"build": {
-			"dependsOn": ["^build"],
+			"dependsOn": ["^db:generate", "^build"],
 			"outputs": ["dist/**", ".next/**", "!.next/cache/**"]
 		},
 		"dev": {
+			"dependsOn": ["^db:generate"],
 			"cache": false,
 			"persistent": true
+		},
+		"db:generate": {
+			"cache": false
 		},
 		"lint": {},
 		"test": {},
