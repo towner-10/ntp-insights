@@ -124,7 +124,7 @@ const View: NextPage = () => {
 					<h2 className="mb-4 flex w-full flex-row items-center gap-4 text-left text-2xl font-medium">
 						{path.data?.name || 'Loading...'}
 					</h2>
-					<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-5 lg:grid-rows-2">
+					<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-6 lg:grid-rows-2">
 						<View360
 							image={imagesSorted?.[currentIndex]}
 							currentImage={currentImage}
@@ -139,18 +139,22 @@ const View: NextPage = () => {
 									setCurrentIndex(currentIndex - 1);
 								}
 							}}
-							className="relative row-span-3 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[548px]"
+							className="relative row-span-2 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[505px]"
 						/>
-						<Card className="lg:row-span-1">
+						<Card className="lg:row-span-1 lg:col-span-2">
 							<CardHeader>
 								<CardTitle>Details</CardTitle>
 								<CardDescription>About the current 360 view.</CardDescription>
 								<br />
 								<CardContent className="p-0">
+									<div className="flex flex-row">
+										<div className="flex flex-col w-1/2">
 									<CardDescription>Event occurred on</CardDescription>
 									<p>{format(path.data?.date, 'MMMM d, yyyy')}</p>
 									<br />
-									<CardDescription>Date taken</CardDescription>
+									</div>
+									<div className="flex flex-col">
+									<CardDescription>Capture taken on</CardDescription>
 									<p>
 										{(() => {
 											try {
@@ -166,6 +170,10 @@ const View: NextPage = () => {
 										})()}
 									</p>
 									<br />
+									</div>
+									</div>
+									<div className="flex flex-row">
+									<div className="flex flex-col">
 									<CardDescription>Located at</CardDescription>
 									<p>
 										{currentImage === 'after'
@@ -177,9 +185,11 @@ const View: NextPage = () => {
 											: imagesSorted?.[currentIndex]?.before.lat}
 									</p>
 									<br />
+									</div>
+									<div className="flex flex-col">
 									{imagesSorted?.[currentIndex - 1] && (
 										<>
-											<CardDescription>Previous location</CardDescription>
+											<CardDescription>Previous location at</CardDescription>
 											<p>
 												{currentImage === 'after'
 													? imagesSorted?.[currentIndex - 1]?.lng
@@ -192,6 +202,8 @@ const View: NextPage = () => {
 											<br />
 										</>
 									)}
+									</div>
+									</div>
 									<CardDescription>Panorama capture</CardDescription>
 									<p>{`${currentIndex + 1} / ${
 										imagesSorted?.length || currentIndex + 1
@@ -199,7 +211,7 @@ const View: NextPage = () => {
 								</CardContent>
 							</CardHeader>
 						</Card>
-						<div className="col-span-1 lg:row-span-1 ">
+						<div className="lg:row-span-2 lg:col-span-2">
 							<View360Map
 								points={points || []}
 								currentIndex={currentIndex}
