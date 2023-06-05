@@ -1,4 +1,4 @@
-export default {
+export default interface FacebookSelectors {
 	login_form: {
 		email: 'input#email',
 		password: 'input[type="password"]',

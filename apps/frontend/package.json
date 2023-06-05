@@ -67,8 +67,9 @@
 		"tailwind-merge": "^1.12.0",
 		"tailwindcss-animate": "^1.0.5",
 		"three": "^0.152.2",
+		"zod": "^3.21.4",
 		"database": "*",
-		"zod": "^3.21.4"
+		"types": "*"
 	},
 	"devDependencies": {
 		"@next/bundle-analyzer": "^13.4.1",

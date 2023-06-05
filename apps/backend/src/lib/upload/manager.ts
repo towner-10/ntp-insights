@@ -1,23 +1,6 @@
 import { promises as fs } from 'fs';
 import { logger } from '../../utils/logger';
-
-type ImageResult = {
-	image_name: string;
-	image_url?: string;
-};
-
-// Data received from client
-type UploadData = {
-	uploadType: 'framepos' | 'survey' | 'comparison';
-	id?: string;
-	files: {
-		name: string;
-		buffer: Buffer;
-	}[];
-};
-
-// Data sent to client
-type CallbackData = ImageResult[] | null;
+import { UploadData, CallbackData, ImageResult } from 'types';
 
 const IMAGE_DIRECTORY =
 	'.\\images';
@@ -27,8 +10,6 @@ export const handleUpload = async (
 	callback: (data: CallbackData) => void
 ) => {
 	switch (data.uploadType) {
-		case 'framepos':
-			return logger.warn('Framepos deprecated');
 		case 'survey':
 		case 'comparison':
 			const image_urls: ImageResult[] = [];

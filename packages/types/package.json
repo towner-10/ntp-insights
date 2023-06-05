@@ -1,0 +1,19 @@
+{
+	"name": "types",
+	"version": "0.0.0",
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist/**"
+	],
+    "scripts": {
+        "build": "tsup src/index.ts --format cjs,esm --dts-resolve --minify --clean --sourcemap --legacy-output --dts",
+        "dev": "tsup src/index.ts --format cjs,esm --dts-resolve --watch --sourcemap --legacy-output --dts"
+    },
+	"devDependencies": {
+		"eslint": "^8.42.0",
+		"tsconfig": "*",
+		"tsup": "^6.7.0"
+	}
+}

@@ -14,7 +14,8 @@
 		"SENDGRID_API_KEY",
 		"EMAIL_FROM",
 		"BACKEND_URL",
-		"PORT"
+		"PORT",
+		"ANALYZE"
 	],
 	"pipeline": {
 		"build": {
