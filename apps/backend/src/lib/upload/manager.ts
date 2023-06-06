@@ -3,7 +3,7 @@ import { logger } from '../../utils/logger';
 import { UploadData, CallbackData, ImageResult } from 'types';
 
 const IMAGE_DIRECTORY =
-	'.\\images';
+	'./images';
 
 export const handleUpload = async (
 	data: UploadData,
@@ -15,7 +15,7 @@ export const handleUpload = async (
 			const image_urls: ImageResult[] = [];
 
 			try {
-				await fs.mkdir(`${IMAGE_DIRECTORY}\\${data.id}`, {
+				await fs.mkdir(`${IMAGE_DIRECTORY}/${data.id}`, {
 					recursive: true,
 				});
 			} catch (err) {
@@ -25,7 +25,7 @@ export const handleUpload = async (
 
 			for (const file of data.files) {
 				try {
-					const url = `${IMAGE_DIRECTORY}\\${data.id}\\${file.name}`;
+					const url = `${IMAGE_DIRECTORY}/${data.id}/${file.name}`;
 
 					await fs.writeFile(url, file.buffer);
 

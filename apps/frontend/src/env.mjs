@@ -19,6 +19,7 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: z.string(),
     SENDGRID_API_KEY: z.string(),
     EMAIL_FROM: z.string().email(),
+    BACKEND_URL: z.string().url(),
   },
   client: {
     NEXT_PUBLIC_MAPBOX_TOKEN: z.string().min(1),
@@ -34,5 +35,6 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM,
+    BACKEND_URL: process.env.BACKEND_URL,
   },
 });

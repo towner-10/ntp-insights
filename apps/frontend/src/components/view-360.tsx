@@ -10,7 +10,7 @@ import {
 	LucideChevronDown,
 	LucideChevronsUp,
 	LucideChevronsDown,
-	LucideShrink
+	LucideShrink,
 } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
@@ -21,7 +21,7 @@ import { type Image360 } from '@prisma/client';
 const StreetViewImage = (props: { image: string }) => {
 	const texture = useLoader(
 		THREE.TextureLoader,
-		`${props.image.replace('.', 'http://localhost:8000')}`
+		`${props.image.replace('.', '/backend')}`
 	);
 	texture.mapping = THREE.EquirectangularReflectionMapping;
 	texture.minFilter = texture.magFilter = THREE.LinearFilter;
@@ -113,9 +113,8 @@ export const View360 = (props: {
 	useEffect(() => {
 		if (props.currentImage === 'before')
 			setStartingAngle(props.image?.before?.heading || 0);
-		else
-			setStartingAngle(props.image?.heading || 0);
-	}, [props.image, props.currentImage])
+		else setStartingAngle(props.image?.heading || 0);
+	}, [props.image, props.currentImage]);
 
 	if (!props.image) return null;
 	if (!props.image.before) return null;
@@ -138,20 +137,25 @@ export const View360 = (props: {
 
 		setStartingAngle(props.image?.heading || 0);
 		return props.setCurrentImage('after');
-	}
+	};
 
 	return (
-		<div className={props.className} ref={fullscreenRef} tabIndex={0} onKeyDown = {(e) => {
-			if (e.key == 'ArrowUp') {
-				props.onNext?.();
-			} else if (e.key == 'ArrowDown') {
-				props.onPrevious?.();
-			}
-		}}>
+		<div
+			className={props.className}
+			ref={fullscreenRef}
+			tabIndex={0}
+			onKeyDown={(e) => {
+				if (e.key == 'ArrowUp') {
+					props.onNext?.();
+				} else if (e.key == 'ArrowDown') {
+					props.onPrevious?.();
+				}
+			}}
+		>
 			<div className="absolute bottom-3 left-5 z-10 text-2xl">
 				<span className="font-bold">NTP</span> 360
 			</div>
-			<div className="absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg bg-background/60 p-2 text-lg backdrop-blur">
+			<div className="bg-background/60 absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg p-2 text-lg backdrop-blur">
 				<RadioGroup
 					onValueChange={onValueChange}
 					value={props.currentImage}
@@ -169,7 +173,7 @@ export const View360 = (props: {
 				</RadioGroup>
 			</div>
 			<div
-				className="absolute right-0 z-10 m-2 rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background"
+				className="bg-background/60 hover:bg-foreground/40 hover:text-background absolute right-0 z-10 m-2 rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
 				onClick={() => setRotation(0)}
 			>
 				<LucideNavigation2
@@ -180,16 +184,28 @@ export const View360 = (props: {
 				/>
 			</div>
 			<div className="absolute bottom-1/2 right-0 top-1/2 z-10 m-2 flex flex-col items-center justify-center gap-4">
-				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background" onClick={() => props.onJumpNext?.()}>
+				<div
+					className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+					onClick={() => props.onJumpNext?.()}
+				>
 					<LucideChevronsUp />
 				</div>
-				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background" onClick={() => props.onNext?.()}>
+				<div
+					className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+					onClick={() => props.onNext?.()}
+				>
 					<LucideChevronUp />
 				</div>
-				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background" onClick={() => props.onPrevious?.()}>
+				<div
+					className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+					onClick={() => props.onPrevious?.()}
+				>
 					<LucideChevronDown />
 				</div>
-				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background" onClick={() => props.onJumpPrevious?.()}>
+				<div
+					className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+					onClick={() => props.onJumpPrevious?.()}
+				>
 					<LucideChevronsDown />
 				</div>
 			</div>
@@ -198,7 +214,7 @@ export const View360 = (props: {
 					onClick={() => {
 						setVR(!vr);
 					}}
-					className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background"
+					className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
 				>
 					<LucideGlasses />
 				</button>
@@ -208,7 +224,7 @@ export const View360 = (props: {
 							await toggleFullscreen();
 						})();
 					}}
-					className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background"
+					className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
 				>
 					{fullscreen ? <LucideShrink /> : <LucideExpand />}
 				</button>
