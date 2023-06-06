@@ -34,8 +34,6 @@ function DetailsRow(
 }
 
 export function View360Details(props: View360DetailsProps) {
-    const index = Number(props.index);
-
 	return (
 		<Card className={cn('lg:col-span-2 lg:row-span-2', props.className)}>
 			<CardHeader>
@@ -54,7 +52,7 @@ export function View360Details(props: View360DetailsProps) {
 									return format(
 										props.imageType === 'after'
 											? props.path.date
-											: props.sortedImages?.[index].before.date_taken,
+											: props.sortedImages?.[props.index].before.date_taken,
 										'MMMM d, yyyy'
 									);
 								} catch (err) {
@@ -67,28 +65,28 @@ export function View360Details(props: View360DetailsProps) {
 				<div className="grid grid-cols-2">
 					<DetailsRow
 						label="Located at"
-						className={!props.sortedImages?.[index - 1] && 'col-span-2'}
+						className={!props.sortedImages?.[props.index - 1] && 'col-span-2'}
 					>
 						<p>
 							{props.imageType === 'after'
-								? props.sortedImages?.[index]?.lng
-								: props.sortedImages?.[index]?.before.lng}
+								? props.sortedImages?.[props.index]?.lng
+								: props.sortedImages?.[props.index]?.before.lng}
 							,{' '}
 							{props.imageType === 'after'
-								? props.sortedImages?.[index]?.lat
-								: props.sortedImages?.[index]?.before.lat}
+								? props.sortedImages?.[props.index]?.lat
+								: props.sortedImages?.[props.index]?.before.lat}
 						</p>
 					</DetailsRow>
-					{props.sortedImages?.[index - 1] && (
+					{props.sortedImages?.[props.index - 1] && (
 						<DetailsRow label="Previous location at">
 							<p>
 								{props.imageType === 'after'
-									? props.sortedImages?.[index - 1]?.lng
-									: props.sortedImages?.[index - 1]?.before.lng}
+									? props.sortedImages?.[props.index - 1]?.lng
+									: props.sortedImages?.[props.index - 1]?.before.lng}
 								,{' '}
 								{props.imageType === 'after'
-									? props.sortedImages?.[index - 1]?.lat
-									: props.sortedImages?.[index - 1]?.before.lat}
+									? props.sortedImages?.[props.index - 1]?.lat
+									: props.sortedImages?.[props.index - 1]?.before.lat}
 							</p>
 						</DetailsRow>
 					)}
@@ -97,9 +95,9 @@ export function View360Details(props: View360DetailsProps) {
 					<DetailsRow label="Elevation">
 						<p>
 							{props.imageType === 'after'
-								? `${props.sortedImages?.[index]?.altitude.toFixed(1)} m`
-								: props.sortedImages?.[index]?.before.altitude != null
-								? `${props.sortedImages?.[index]?.before.altitude.toFixed(
+								? `${props.sortedImages?.[props.index]?.altitude.toFixed(1)} m`
+								: props.sortedImages?.[props.index]?.before.altitude != null
+								? `${props.sortedImages?.[props.index]?.before.altitude.toFixed(
 										1
 								  )} m`
 								: 'N/A'}
@@ -108,14 +106,14 @@ export function View360Details(props: View360DetailsProps) {
                     <DetailsRow label="Image size">
 						<p>
 							{props.imageType === 'after'
-								? `${props.sortedImages?.[index]?.image_size / BigInt(1024)} kB`
-								: `${props.sortedImages?.[index]?.before.image_size / BigInt(1024)} kB`}
+								? `${props.sortedImages?.[props.index]?.image_size / BigInt(1024)} kB`
+								: `${props.sortedImages?.[props.index]?.before.image_size / BigInt(1024)} kB`}
 						</p>
 					</DetailsRow>
 				</div>
 				<CardDescription>Panorama capture</CardDescription>
-				<p>{`${+index + +1} / ${
-					props.sortedImages.length || index + 1
+				<p>{`${+props.index + +1} / ${
+					props.sortedImages.length || props.index + 1
 				}`}</p>
 			</CardContent>
 		</Card>

@@ -179,7 +179,7 @@ export function View360Map(props: View360MapProps) {
 	);
 
 	useEffect(() => {
-		setCurrentPosition(props.points[Number(props.currentIndex)]);
+		setCurrentPosition(props.points[props.currentIndex]);
 	}, [props.currentIndex, props.points]);
 
 	useEffect(() => {
@@ -201,6 +201,7 @@ export function View360Map(props: View360MapProps) {
 		<div className={props.className}>
 			<Map
 				ref={mapRef}
+				reuseMaps
 				initialViewState={{
 					longitude: -81.3,
 					latitude: 42.97,
