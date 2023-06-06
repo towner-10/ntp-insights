@@ -19,7 +19,7 @@ const View: NextPage = () => {
 	const router = useRouter();
 	const {
 		id,
-		start
+		start,
 	}: {
 		id?: string;
 		start?: number;
@@ -49,16 +49,17 @@ const View: NextPage = () => {
 			else return (a.index || 0) - (b.index || 0);
 		});
 
+	// Set current index to a user defined start index
+	useEffect(() => {
+		if (start && Number(start) < imagesSorted?.length && Number(start) >= 0) {
+			setCurrentIndex(Number(start));
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [start]);
+
 	const points = imagesSorted?.map((image) => {
 		return new LngLat(image.lng, image.lat);
 	});
-
-	// Set current index to a user defined start index
-	useEffect(() => {
-		if (start && start < imagesSorted?.length && start >= 0) {
-			setCurrentIndex(start);
-		}
-	}, [start, imagesSorted]);
 
 	if (
 		path.isLoading ||
@@ -93,9 +94,9 @@ const View: NextPage = () => {
 						</h2>
 						<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-5 lg:grid-rows-2">
 							<Skeleton className="relative row-span-3 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[548px]" />
-							<Skeleton className="h-full lg:row-span-1" />
+							<Skeleton className="h-full lg:row-span-3" />
 
-							<div className="col-span-1 lg:row-span-1 ">
+							<div className="lg:col-span-full ">
 								<Skeleton className="h-[400px] overflow-hidden rounded-md lg:h-40" />
 							</div>
 						</div>
