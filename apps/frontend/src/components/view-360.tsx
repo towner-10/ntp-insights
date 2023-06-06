@@ -136,7 +136,13 @@ export const View360 = (props: {
 	}
 
 	return (
-		<div className={props.className} ref={fullscreenRef}>
+		<div className={props.className} ref={fullscreenRef} tabIndex={0} onKeyDown = {(e) => {
+			if (e.key == 'ArrowUp') {
+				props.onNext?.();
+			} else if (e.key == 'ArrowDown') {
+				props.onPrevious?.();
+			}
+		}}>
 			<div className="absolute bottom-3 left-5 z-10 text-2xl">
 				<span className="font-bold">NTP</span> 360
 			</div>
