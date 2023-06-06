@@ -6,6 +6,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from './ui/card';
+import {Input} from './ui/input';
 import { cn } from '@/lib/utils';
 import { Image360, Path } from 'database';
 import { PropsWithChildren, type ReactNode } from 'react';
@@ -114,9 +115,13 @@ export function View360Details(props: View360DetailsProps) {
 					</DetailsRow>
 				</div>
 				<CardDescription>Panorama capture</CardDescription>
-				<p>{`${+index + +1} / ${
+				<div className='flex flex-row items-center py-1'>
+				<Input className='w-10 h-8 p-0.5 mr-2 text-center' type='panonum'></Input>
+				{`${+index + +1}`}
+				{` / ${
 					props.sortedImages.length || index + 1
-				}`}</p>
+				}`}
+				</div>
 			</CardContent>
 		</Card>
 	);
