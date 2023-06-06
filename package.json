@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "turbo run build --no-daemon",
+    "start:backend": "turbo run start --filter=backend --filter=types --continue --no-daemon",
     "dev": "turbo run dev --continue --no-daemon",
     "dev:frontend": "turbo run dev --filter=frontend --filter=types --continue --no-daemon",
     "dev:backend": "turbo run dev --filter=backend --filter=types --continue --no-daemon",
