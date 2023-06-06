@@ -13,6 +13,7 @@ import { PropsWithChildren, type ReactNode } from 'react';
 
 type View360DetailsProps = {
 	index: number;
+	onIndexChange: (value: number) => void;
 	imageType: 'before' | 'after';
 	className?: string;
 	path: Path;
@@ -43,10 +44,10 @@ export function View360Details(props: View360DetailsProps) {
 			</CardHeader>
 			<CardContent className="flex flex-col justify-around">
 				<div className="grid grid-cols-2">
-					<DetailsRow label="Event occurred on">
+					<DetailsRow label="Event date">
 						<p>{format(props.path.date, 'MMMM d, yyyy')}</p>
 					</DetailsRow>
-					<DetailsRow label="Capture taken on">
+					<DetailsRow label="Capture date">
 						<p>
 							{(() => {
 								try {
@@ -65,7 +66,7 @@ export function View360Details(props: View360DetailsProps) {
 				</div>
 				<div className="grid grid-cols-2">
 					<DetailsRow
-						label="Located at"
+						label="Location"
 						className={!props.sortedImages?.[props.index - 1] && 'col-span-2'}
 					>
 						<p>
@@ -79,7 +80,7 @@ export function View360Details(props: View360DetailsProps) {
 						</p>
 					</DetailsRow>
 					{props.sortedImages?.[props.index - 1] && (
-						<DetailsRow label="Previous location at">
+						<DetailsRow label="Previous location">
 							<p>
 								{props.imageType === 'after'
 									? props.sortedImages?.[props.index - 1]?.lng
@@ -114,8 +115,10 @@ export function View360Details(props: View360DetailsProps) {
 				</div>
 				<CardDescription>Panorama capture</CardDescription>
 				<div className='flex flex-row items-center py-1'>
-				<Input className='w-10 h-8 p-0.5 mr-2 text-center' type='panonum'></Input>
-				{`${+props.index + +1} / ${
+				<Input className='w-14 h-8 p-0.5 mr-2 text-center' type="number" value={props.index + 1} step={1} min={0} max={props.sortedImages.length + 1} onChange={(event) => {
+					props.onIndexChange(Number(event.currentTarget.value) - 1);
+				}} />
+				{`/ ${
 					props.sortedImages.length || props.index + 1
 				}`}
 				</div>
