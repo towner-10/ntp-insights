@@ -161,6 +161,7 @@ const View: NextPage = () => {
 						<View360Details
 							path={path.data}
 							index={currentIndex}
+							onIndexChange={(value) => setCurrentIndex(value)}
 							imageType={currentImage}
 							sortedImages={imagesSorted || []}
 						/>
