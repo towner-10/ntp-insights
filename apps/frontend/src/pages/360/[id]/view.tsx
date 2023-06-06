@@ -139,6 +139,20 @@ const View: NextPage = () => {
 									setCurrentIndex(currentIndex - 1);
 								}
 							}}
+							onJumpNext={() => {
+								if (imagesSorted && currentIndex + 5 < imagesSorted?.length) {
+									setCurrentIndex(currentIndex + 5);
+								} else {
+									setCurrentIndex(imagesSorted?.length - 1);
+								}
+							}}
+							onJumpPrevious={() => {
+								if (imagesSorted && currentIndex - 5 >= 0) {
+									setCurrentIndex(currentIndex - 5);
+								} else {
+									setCurrentIndex(0);
+								}
+							}}
 							className="relative row-span-2 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[505px]"
 						/>
 						<Card className="lg:row-span-1 lg:col-span-2">

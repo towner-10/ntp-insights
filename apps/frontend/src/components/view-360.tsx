@@ -6,8 +6,10 @@ import {
 	LucideNavigation2,
 	LucideExpand,
 	LucideGlasses,
-	LucideArrowUp,
-	LucideArrowDown,
+	LucideChevronUp,
+	LucideChevronDown,
+	LucideChevronsUp,
+	LucideChevronsDown
 } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
@@ -84,7 +86,9 @@ export const View360 = (props: {
 	currentImage: 'before' | 'after';
 	setCurrentImage: (image: 'before' | 'after') => void;
 	onNext?: () => void;
+	onJumpNext?: () => void;
 	onPrevious?: () => void;
+	onJumpPrevious?: () => void;
 	className?: string;
 }) => {
 	const [fullscreen, setFullscreen] = useState(false);
@@ -175,11 +179,17 @@ export const View360 = (props: {
 				/>
 			</div>
 			<div className="absolute bottom-1/2 right-0 top-1/2 z-10 m-2 flex flex-col items-center justify-center gap-4">
+				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background" onClick={() => props.onJumpNext?.()}>
+					<LucideChevronsUp />
+				</div>
 				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background" onClick={() => props.onNext?.()}>
-					<LucideArrowUp />
+					<LucideChevronUp />
 				</div>
 				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background" onClick={() => props.onPrevious?.()}>
-					<LucideArrowDown />
+					<LucideChevronDown />
+				</div>
+				<div className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background" onClick={() => props.onJumpPrevious?.()}>
+					<LucideChevronsDown />
 				</div>
 			</div>
 			<div className="absolute bottom-0 right-0 z-10 m-2 flex flex-row gap-4">
