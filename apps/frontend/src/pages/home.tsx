@@ -26,6 +26,7 @@ const Home: NextPage = () => {
 					<div className="text-6xl">
 						<span className="font-bold">NTP</span> Insights
 					</div>
+					 <h3 className=" text-2xl font-semibold">v1.0</h3> {/* TODO: Get version number from GitHub */}
 					<div className="flex flex-row items-start space-x-4">
 						<Link href="/social/dashboard">
 							<Button className="flex flex-row space-x-2">
