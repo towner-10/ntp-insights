@@ -6,28 +6,23 @@ import Header from '@/components/header';
 import { Toaster } from '@/components/ui/toaster';
 import { useSession } from 'next-auth/react';
 import { View360 } from '@/components/view-360';
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from '@/components/ui/card';
 import { View360Map } from '@/components/map';
 import { LngLat } from 'mapbox-gl';
 import { useRouter } from 'next/router';
 import { api } from '@/utils/api';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useState } from 'react';
-import format from 'date-fns/format';
+import { useEffect, useState } from 'react';
+import { View360Details } from '@/components/view-360-details';
 
 const View: NextPage = () => {
 	const session = useSession();
 	const router = useRouter();
 	const {
 		id,
+		start
 	}: {
 		id?: string;
+		start?: number;
 	} = router.query;
 	const path = api.paths.getPublic.useQuery(
 		{
@@ -57,6 +52,13 @@ const View: NextPage = () => {
 	const points = imagesSorted?.map((image) => {
 		return new LngLat(image.lng, image.lat);
 	});
+
+	// Set current index to a user defined start index
+	useEffect(() => {
+		if (start && start < imagesSorted?.length && start >= 0) {
+			setCurrentIndex(start);
+		}
+	}, [start, imagesSorted]);
 
 	if (
 		path.isLoading ||
@@ -155,81 +157,17 @@ const View: NextPage = () => {
 							}}
 							className="relative row-span-2 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[505px]"
 						/>
-						<Card className="lg:row-span-1 lg:col-span-2">
-							<CardHeader>
-								<CardTitle>Details</CardTitle>
-								<CardDescription>About the current 360 view.</CardDescription>
-								<br />
-								<CardContent className="p-0">
-									<div className="flex flex-row">
-										<div className="flex flex-col w-1/2">
-									<CardDescription>Event occurred on</CardDescription>
-									<p>{format(path.data?.date, 'MMMM d, yyyy')}</p>
-									<br />
-									</div>
-									<div className="flex flex-col">
-									<CardDescription>Capture taken on</CardDescription>
-									<p>
-										{(() => {
-											try {
-												return format(
-													currentImage === 'after'
-														? path.data?.date
-														: imagesSorted?.[currentIndex]?.before.date_taken,
-													'MMMM d, yyyy'
-												);
-											} catch (err) {
-												return 'N/A';
-											}
-										})()}
-									</p>
-									<br />
-									</div>
-									</div>
-									<div className="flex flex-row">
-									<div className="flex flex-col">
-									<CardDescription>Located at</CardDescription>
-									<p>
-										{currentImage === 'after'
-											? imagesSorted?.[currentIndex]?.lng
-											: imagesSorted?.[currentIndex]?.before.lng}
-										,{' '}
-										{currentImage === 'after'
-											? imagesSorted?.[currentIndex]?.lat
-											: imagesSorted?.[currentIndex]?.before.lat}
-									</p>
-									<br />
-									</div>
-									<div className="flex flex-col">
-									{imagesSorted?.[currentIndex - 1] && (
-										<>
-											<CardDescription>Previous location at</CardDescription>
-											<p>
-												{currentImage === 'after'
-													? imagesSorted?.[currentIndex - 1]?.lng
-													: imagesSorted?.[currentIndex - 1]?.before.lng}
-												,{' '}
-												{currentImage === 'after'
-													? imagesSorted?.[currentIndex - 1]?.lat
-													: imagesSorted?.[currentIndex - 1]?.before.lat}
-											</p>
-											<br />
-										</>
-									)}
-									</div>
-									</div>
-									<CardDescription>Panorama capture</CardDescription>
-									<p>{`${currentIndex + 1} / ${
-										imagesSorted?.length || currentIndex + 1
-									}`}</p>
-								</CardContent>
-							</CardHeader>
-						</Card>
-						<div className="lg:row-span-2 lg:col-span-2">
+						<View360Details
+							path={path.data}
+							index={currentIndex}
+							imageType={currentImage}
+							sortedImages={imagesSorted || []}
+						/>
+						<div className="lg:col-span-full">
 							<View360Map
 								points={points || []}
 								currentIndex={currentIndex}
-								className="h-[400px] w-full overflow-hidden rounded-md lg:h-40"
+								className="h-[400px] w-full overflow-hidden rounded-md lg:h-96"
 							/>
 						</div>
 					</div>

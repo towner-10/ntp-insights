@@ -179,7 +179,7 @@ export function View360Map(props: View360MapProps) {
 	);
 
 	useEffect(() => {
-		setCurrentPosition(props.points[props.currentIndex]);
+		setCurrentPosition(props.points[Number(props.currentIndex)]);
 	}, [props.currentIndex, props.points]);
 
 	useEffect(() => {

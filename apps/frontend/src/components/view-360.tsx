@@ -9,7 +9,8 @@ import {
 	LucideChevronUp,
 	LucideChevronDown,
 	LucideChevronsUp,
-	LucideChevronsDown
+	LucideChevronsDown,
+	LucideShrink
 } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
@@ -209,7 +210,7 @@ export const View360 = (props: {
 					}}
 					className="rounded-lg bg-background/60 p-2 backdrop-blur transition hover:cursor-pointer hover:bg-foreground/40 hover:text-background"
 				>
-					<LucideExpand />
+					{fullscreen ? <LucideShrink /> : <LucideExpand />}
 				</button>
 			</div>
 			{vr ? <VRButton /> : null}
