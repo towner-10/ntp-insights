@@ -7,9 +7,9 @@ export const getSearches = async () => {
 };
 
 export const verifyAccessToken = async (token: string) => {
-	return await prisma.account.findFirst({
+	return await prisma.session.findFirst({
 		where: {
-			access_token: token
+			sessionToken: token
 		},
 	})
 }

@@ -46,13 +46,15 @@ export default class NTPServer {
 				if (req.url === '/api/upload') {
 					const cookies = parseCookies(req);
 
-					if (!cookies['next-auth.session-token'] || !cookies['__Secure-next-auth.session-token']) {
-						logger.error('Missing token');
-						res.writeHead(400, {
-							'Content-Type': 'text/plain',
-						});
-						res.end('Missing token');
-						return;
+					if (!cookies['next-auth.session-token']) {
+						if (!cookies['__Secure-next-auth.session-token']) {
+							logger.error('Missing token');
+							res.writeHead(400, {
+								'Content-Type': 'text/plain',
+							});
+							res.end('Missing token');
+							return;
+						}
 					}
 
 					// Verify auth token
@@ -67,16 +69,7 @@ export default class NTPServer {
 						return;
 					}
 
-					if (!session.expires_at) {
-						logger.error('Invalid token');
-						res.writeHead(400, {
-							'Content-Type': 'text/plain',
-						});
-						res.end('Invalid token');
-						return;
-					}
-
-					if (new Date(session.expires_at) < new Date()) {
+					if (session.expires < new Date()) {
 						logger.error('Token expired');
 						res.writeHead(400, {
 							'Content-Type': 'text/plain',

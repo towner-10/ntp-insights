@@ -16,7 +16,6 @@ import {
 import { DialogContentHeader } from './header';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import { arrayBufferToBase64 } from '@/lib/utils';
 import { z } from 'zod';
 
 export const SurveyPanoramasDialogContent = (props: DialogContentProps) => {
@@ -52,19 +51,19 @@ export const SurveyPanoramasDialogContent = (props: DialogContentProps) => {
 		(async () => {
 			const body = new FormData();
 
-			const base64Files = await Promise.all(
+			const bufferFiles = await Promise.all(
 				files.map(async (file) => {
 					return {
 						name: file.name,
-						base64: arrayBufferToBase64(await file.arrayBuffer()),
+						buffer: await file.arrayBuffer(),
 					};
 				})
 			);
 
 			body.append('path_id', props.formState.path_id.toString());
 
-			for (const image of base64Files) {
-				body.append('images', image.base64, image.name);
+			for (const image of bufferFiles) {
+				body.append('images', new Blob([image.buffer]), image.name);
 			}
 
 			const response = await fetch('/backend/api/upload', {

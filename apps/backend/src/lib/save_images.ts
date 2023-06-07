@@ -31,7 +31,9 @@ export const handleUpload = async (data: {
 
 			const url = `${IMAGE_DIRECTORY}/${data.id}/${filename}`;
 
-			await fs.writeFile(url, file.toString());
+			const oldFile = await fs.readFile(file.filepath);
+
+			await fs.writeFile(url, oldFile);
 
 			image_urls.push({
 				image_name: filename,
