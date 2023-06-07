@@ -26,7 +26,7 @@
 			"dependsOn": ["^db:generate", "^build"]
 		},
 		"dev": {
-			"dependsOn": ["^db:generate"],
+			"dependsOn": ["^db:generate", "^build"],
 			"cache": false,
 			"persistent": true
 		},
