@@ -9,7 +9,6 @@
   "license": "MIT",
   "scripts": {
     "build": "tsup",
-    "tsup": "^5.11.13",
     "start": "ts-node src/_app.ts",
     "dev": "ts-node-dev --respawn --transpile-only src/_app.ts",
     "test": "jest",

@@ -10,11 +10,13 @@
 	],
 	"scripts": {
 		"build": "tsup",
-		"dev": "tsup --watch --dev",
+		"dev": "tsup --watch",
+		"lint": "eslint \"src/**/*.ts\"",
 		"db:migrate:deploy": "prisma migrate deploy",
 		"db:migrate:dev": "prisma migrate dev",
 		"db:push": "prisma db push",
-		"db:generate": "prisma generate",
+		"generate": "prisma generate",
+		"prebuild": "yarn generate",
 		"format": "prisma format",
 		"studio": "prisma studio"
 	},
