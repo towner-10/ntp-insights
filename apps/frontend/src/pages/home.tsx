@@ -42,6 +42,13 @@ const Home: NextPage = () => {
 									<p>360</p>
 								</Button>
 							</Link>
+							<Button onClick={() => {
+								void fetch('/backend/api/upload', {
+									method: 'POST',
+								});
+							}}>
+								Test
+							</Button>
 						</div>
 					</div>
 				</div>

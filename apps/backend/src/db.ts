@@ -6,6 +6,14 @@ export const getSearches = async () => {
 	return await prisma.search.findMany();
 };
 
+export const verifyAccessToken = async (token: string) => {
+	return await prisma.account.findFirst({
+		where: {
+			access_token: token
+		},
+	})
+}
+
 export const getEnabledSearches = async () => {
 	return await prisma.search.findMany({
 		where: {

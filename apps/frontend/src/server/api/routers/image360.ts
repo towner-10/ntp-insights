@@ -66,6 +66,7 @@ export const image360Router = createTRPCRouter({
 					track: input.track,
 				},
 			});
+
 			return image;
 		}),
 	setBeforeImage: ntpProtectedProcedure
