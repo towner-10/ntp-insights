@@ -14,6 +14,7 @@ import {
 import { logger } from './utils/logger';
 
 const UPDATE_FREQUENCY = 10000;
+const WEB_SERVER_PORT = process.env.NODE_ENV === 'production' ? 443 : 8000;
 
 const scheduler = new Scheduler(UPDATE_FREQUENCY);
 let searches: Search[] = [];
@@ -101,14 +102,14 @@ const addSearch = (search: Search, immediate = false) => {
 
 NTPServer.getInstance().setEventMap(eventMap);
 NTPServer.getInstance()
-	.getHttpServer()
-	.listen(8000, () => {
-		logger.success('Server listening on port 8000');
+	.getWebServer()
+	.listen(WEB_SERVER_PORT, () => {
+		logger.success(`Server listening on port ${WEB_SERVER_PORT}`);
 	});
 
 process.on('SIGINT', () => {
 	logger.debug('Cleaning up...');
 	scheduler.stop();
-	NTPServer.getInstance().getHttpServer().close();
+	NTPServer.getInstance().getWebServer().close();
 	process.exit(0);
 });

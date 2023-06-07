@@ -1,21 +1,34 @@
+import fs from 'fs';
+import path from 'path';
 import http from 'http';
+import https from 'https';
 import { Server } from 'socket.io';
 import { logger } from './utils/logger';
 import { handleRequest } from './lib/server_handlers';
 
 export default class NTPServer {
 	private static instance: NTPServer;
-	private httpServer: http.Server;
+	private webServer: http.Server | https.Server;
 	private wss: Server;
 	private eventMap: { [key: string]: () => Promise<void> };
 
 	private constructor() {
-		this.httpServer = http.createServer(handleRequest);
-		this.wss = new Server(this.httpServer, {
+		if (process.env.NODE_ENV === 'production')
+			this.webServer = https.createServer(
+				{
+					key: fs.readFileSync(path.join(__dirname,'../ssl/key.pem')),
+					cert: fs.readFileSync(path.join(__dirname,'../ssl/cert.pem')),
+				},
+				handleRequest
+			);
+		else this.webServer = http.createServer(handleRequest);
+
+		this.wss = new Server(this.webServer, {
 			cors: {
 				origin: '*',
 			},
 		});
+
 		this.eventMap = {};
 
 		this.wss.on('connection', (socket) => {
@@ -51,8 +64,8 @@ export default class NTPServer {
 		this.eventMap = eventMap;
 	}
 
-	public getHttpServer() {
-		return this.httpServer;
+	public getWebServer() {
+		return this.webServer;
 	}
 
 	public getWebSocketServer() {

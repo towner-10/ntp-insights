@@ -3,8 +3,6 @@ version: '3'
 services:
   backend:
     container_name: backend
-    expose:
-      - 8000
     environment:
       - NODE_ENV=production
     env_file:
@@ -14,4 +12,5 @@ services:
       dockerfile: ./apps/backend/Dockerfile
     restart: always
     ports:
+      - 443:443
       - 8000:8000
