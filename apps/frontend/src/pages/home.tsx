@@ -7,7 +7,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import { LucideRotate3d, LucideShare2 } from 'lucide-react';
+import { LucideRotate3d, LucideShare2, LucideTrendingUp } from 'lucide-react';
 import Image from 'next/image';
 
 const Home: NextPage = () => {
@@ -34,7 +34,7 @@ const Home: NextPage = () => {
 								src="/weng.png"
 							/>
 						</div>
-						<div className="container flex flex-col justify-center space-y-4 p-6">
+						<div className="container flex flex-col justify-center space-y-1 p-6">
 							<div className="py-4 text-7xl">
 								<br />
 								<span className="font-bold">NTP</span> Insights
@@ -53,6 +53,10 @@ const Home: NextPage = () => {
 										<p>360</p>
 									</Button>
 								</Link>
+								<Button disabled className="flex flex-row space-x-2">
+									<LucideTrendingUp />
+									<p>Trends</p>
+								</Button>
 							</div>
 						</div>
 					</main>
