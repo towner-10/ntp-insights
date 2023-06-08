@@ -77,7 +77,10 @@ export const handleRequest = async (
 				return;
 			}
 
-			const form = formidable({ multiples: true });
+			const form = formidable({
+				multiples: true,
+				maxFileSize: 4 * 1024 * 1024 * 1024,
+			});
 
 			form.parse(req, async (err, fields, files) => {
 				if (err) {
