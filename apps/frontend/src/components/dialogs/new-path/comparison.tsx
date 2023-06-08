@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import type {
-	CallbackData,
 	DialogContentProps,
 	ImageResult,
-	UploadData,
 } from './types';
 import { api } from '@/utils/api';
 import { useToast } from '@/components/ui/use-toast';

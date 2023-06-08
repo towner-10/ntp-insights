@@ -176,9 +176,7 @@ const handleUpload = async (data: { id: string; files: formidable.File[] }) => {
 
 			const url = `${IMAGE_DIRECTORY}/${data.id}/${filename}`;
 
-			const oldFile = await fs.readFile(file.filepath);
-
-			await fs.writeFile(url, oldFile);
+			await fs.rename(file.filepath, url);
 
 			image_urls.push({
 				image_name: filename,

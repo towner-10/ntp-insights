@@ -61,6 +61,7 @@ export const FrameposDialogContent = (props: DialogContentProps) => {
 						duration: 5000,
 					});
 				} else {
+					console.log(frameposResult);
 					setFramePosData(frameposResult);
 					setFinished(true);
 				}

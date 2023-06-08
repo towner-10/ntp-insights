@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import type {
-	CallbackData,
 	DialogContentProps,
 	ImageResult,
-	UploadData,
 } from './types';
 import type { Image360 } from '@prisma/client';
 import { api } from '@/utils/api';

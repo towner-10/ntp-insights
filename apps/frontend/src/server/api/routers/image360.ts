@@ -1,26 +1,11 @@
 import { createTRPCRouter, ntpProtectedProcedure } from '@/server/api/trpc';
 import { prisma } from '@/server/db';
+import { image360DataSchema } from '@/utils/types/image360Data';
 import { z } from 'zod';
-
-const image360Schema = z.object({
-	path_id: z.string(),
-	index: z.number(),
-	url: z.string(),
-	image_size: z.number(),
-	date_taken: z.date().optional(),
-	lng: z.number(),
-	lat: z.number(),
-	altitude: z.number().optional(),
-	distance: z.number().optional(),
-	heading: z.number().optional(),
-	pitch: z.number().optional(),
-	roll: z.number().optional(),
-	track: z.number().optional(),
-});
 
 export const image360Router = createTRPCRouter({
 	newNTP: ntpProtectedProcedure
-		.input(image360Schema)
+		.input(image360DataSchema)
 		.mutation(async ({ input }) => {
 			const image = await prisma.image360.create({
 				data: {
@@ -44,7 +29,7 @@ export const image360Router = createTRPCRouter({
 		}),
 	newGoogleImage: ntpProtectedProcedure
 		.input(
-			image360Schema.omit({
+			image360DataSchema.omit({
 				index: true,
 			})
 		)
