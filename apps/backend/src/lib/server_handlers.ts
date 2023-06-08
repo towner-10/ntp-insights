@@ -98,9 +98,22 @@ export const handleRequest = async (
 					return;
 				}
 
+				if (!files.images) {
+					logger.error('Missing images');
+					res.writeHead(400, {
+						'Content-Type': 'text/plain',
+					});
+					res.end('Missing images');
+					return;
+				}
+
+				const isMultiple = Array.isArray(files.images);
+
 				const data = {
 					id: fields.path_id as string,
-					files: files.images as formidable.File[],
+					files: isMultiple
+						? (files.images as formidable.File[])
+						: [files.images as formidable.File],
 				};
 
 				const response = await handleUpload(data);
@@ -126,10 +139,7 @@ export const handleRequest = async (
 	}
 };
 
-const handleUpload = async (data: {
-	id: string;
-	files: formidable.File[];
-}) => {
+const handleUpload = async (data: { id: string; files: formidable.File[] }) => {
 	const image_urls: ImageResult[] = [];
 
 	try {
@@ -143,10 +153,7 @@ const handleUpload = async (data: {
 
 	for (const file of data.files) {
 		try {
-			const filename = file.originalFilename?.replace(
-				/[^a-z0-9.]/gi,
-				'_'
-			);
+			const filename = file.originalFilename;
 
 			if (!filename) {
 				throw new Error('Invalid filename');
