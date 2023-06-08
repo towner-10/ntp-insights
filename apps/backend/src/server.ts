@@ -16,8 +16,9 @@ export default class NTPServer {
 		if (process.env.NODE_ENV === 'production')
 			this.webServer = https.createServer(
 				{
-					key: fs.readFileSync(path.join(__dirname,'../ssl/key.pem')),
-					cert: fs.readFileSync(path.join(__dirname,'../ssl/cert.pem')),
+					key: fs.readFileSync(path.join(__dirname,'../ssl/privkey.pem'), 'utf8'),
+					cert: fs.readFileSync(path.join(__dirname,'../ssl/cert.pem'), 'utf8'),
+					ca: fs.readFileSync(path.join(__dirname,'../ssl/chain.pem'), 'utf8'),
 				},
 				handleRequest
 			);
