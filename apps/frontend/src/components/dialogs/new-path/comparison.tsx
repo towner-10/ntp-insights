@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
-import type {
-	DialogContentProps,
-	ImageResult,
-} from './types';
+import type { DialogContentProps, ImageResult } from './types';
 import { api } from '@/utils/api';
 import { useToast } from '@/components/ui/use-toast';
-import { useWebSocketContext } from '@/components/socket-context';
 import parseISO from 'date-fns/parseISO';
 import { DragAndDropZone } from '@/components/input/drag-and-drop-zone';
 import {
@@ -15,7 +11,8 @@ import {
 import { DialogContentHeader } from './header';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import { z } from 'zod';
+import { uploadImages } from './helpers';
+import { Prisma } from 'database';
 
 export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 	const [finished, setFinished] = useState(false);
@@ -28,9 +25,10 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 
 	useEffect(() => {
 		// Find the panoramas and do not include duplicates
-		const panoramas = props.formState.framepos.map(
-			(framepos) => framepos.google_image.pano_id
-		);
+		const panoramas = props.formState.framepos.map((framepos) => {
+			if (!framepos.google_image) return;
+			return framepos.google_image.pano_id;
+		});
 
 		// Remove duplicates
 		setUniquePanoramas([...new Set(panoramas)]);
@@ -56,144 +54,75 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 			return setProcessing(false);
 		}
 
-		(async () => {
-			const body = new FormData();
-
-			const bufferFiles = await Promise.all(
-				files.map(async (file) => {
-					return {
-						name: file.name,
-						buffer: await file.arrayBuffer(),
-					};
-				})
-			);
-
-			body.append('path_id', props.formState.path_id.toString());
-
-			for (const image of bufferFiles) {
-				body.append('images', new Blob([image.buffer]), image.name);
-			}
-
-			const response = await fetch('/backend/api/upload', {
-				method: 'POST',
-				body: body,
+		// Check if the path_id is defined
+		if (!props.formState.path_id) {
+			toaster.toast({
+				title: 'Error',
+				description: 'Path ID is not defined.',
+				variant: 'destructive',
+				duration: 5000,
 			});
 
-			if (!response.ok) {
-				console.error('Failed to upload images. Make sure you are uploading < 4GB.', response.status);
-				return null;
-			}
+			setProcessing(false);
+			return props.onCancel?.();
+		}
 
-			const data = await response.json();
-
-			const responseType = z.array(
-				z.object({
-					image_name: z.string(),
-					image_url: z.string(),
-				})
+		(async () => {
+			const result = await uploadImages(
+				files,
+				props.formState.path_id,
+				({ userMessage, consoleMessage }) => {
+					console.error(consoleMessage);
+					toaster.toast({
+						title: 'Error',
+						description: userMessage,
+						variant: 'destructive',
+						duration: 5000,
+					});
+					setProcessing(false);
+					props.onCancel?.();
+				}
 			);
 
-			if (!responseType.safeParse(data).success) {
-				throw new Error('Invalid response from backend');
-			}
+			if (!result) return;
 
-			const imageResults = responseType.parse(data) as ImageResult[];
+			const promises: Promise<Prisma.BatchPayload>[] = [];
 
-			// If the images could not be uploaded
-			if (!imageResults || !imageResults.length) {
-				toaster.toast({
-					title: 'Error',
-					description: 'Images could not be uploaded to the server. Check the console for more information.',
-					variant: 'destructive',
-					duration: 5000,
-				});
+			for (const image of result) {
+				const pano_id = image.image_name.split('.').shift()!;
 
-				setProcessing(false);
-				return props.onCancel?.();
-			}
+				// Fetch image data from the form state
+				const framepos = props.formState.framepos.find(
+					(framepos) => framepos.google_image.pano_id.trim() === pano_id.trim()
+				);
+				const file = files.find(
+					(file) => file.name.trim() === image.image_name.trim()
+				);
 
-			if (props.formState.path_id) {
-				for (const image of imageResults) {
-					const pano_id = image.image_name.split('.')[0];
+				// If the required data is present
+				if (
+					image.image_url &&
+					file &&
+					framepos?.google_image.lng &&
+					framepos?.google_image.lat
+				) {
+					// Create the image in the database
+					const result = await newGoogleImage.mutateAsync({
+						path_id: props.formState.path_id,
+						image_size: file.size,
+						url: image.image_url,
+						lng: framepos?.google_image.lng,
+						lat: framepos?.google_image.lat,
+						heading: framepos?.google_image.heading,
+						pitch: framepos?.google_image.pitch,
+						roll: framepos?.google_image.roll,
+						date_taken: framepos.google_image.date
+							? parseISO(framepos.google_image.date)
+							: undefined,
+					});
 
-					// Fetch image data from the form state
-					const framepos = props.formState.framepos.find(
-						(framepos) =>
-							framepos.google_image.pano_id.trim() === pano_id.trim()
-					);
-					const file = files.find(
-						(file) => file.name.trim() === image.image_name.trim()
-					);
-
-					// If the required data is present
-					if (
-						image.image_url &&
-						file &&
-						framepos?.google_image.lng &&
-						framepos?.google_image.lat
-					) {
-						// Create the image in the database
-						const result = await newGoogleImage.mutateAsync({
-							path_id: props.formState.path_id,
-							image_size: file.size,
-							url: image.image_url,
-							lng: framepos?.google_image.lng,
-							lat: framepos?.google_image.lat,
-							heading: framepos?.google_image.heading,
-							pitch: framepos?.google_image.pitch,
-							roll: framepos?.google_image.roll,
-							date_taken: framepos.google_image.date
-								? parseISO(framepos.google_image.date)
-								: undefined,
-						});
-
-						// If the image could not be created in the database
-						if (!result) {
-							toaster.toast({
-								title: 'Error',
-								description: 'Image could not be created in database.',
-								variant: 'destructive',
-								duration: 5000,
-							});
-
-							return props.onCancel?.();
-						}
-
-						const image_ids = [
-							...props.formState.surveys
-								.filter((survey) => {
-									return props.formState.framepos
-										.filter((framepos) => {
-											return (
-												framepos.google_image.pano_id ===
-												image.image_name.split('.')[0]
-											);
-										})
-										.some((framepos) => {
-											return framepos.frame_index === survey.index;
-										});
-								})
-								.map((survey) => survey.id),
-						];
-
-						const before = await setBeforeImage.mutateAsync({
-							before_image_id: result.id,
-							image_ids,
-						});
-
-						if (!before) {
-							toaster.toast({
-								title: 'Error',
-								description: '',
-								variant: 'destructive',
-								duration: 5000,
-							});
-
-							return props.onCancel?.();
-						}
-
-						setProcessing(false);
-					} else {
+					// If the image could not be created in the database
+					if (!result) {
 						toaster.toast({
 							title: 'Error',
 							description: 'Image could not be created in database.',
@@ -203,16 +132,42 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 
 						return props.onCancel?.();
 					}
-				}
 
-				toaster.toast({
-					title: 'Success',
-					description:
-						'Path created in database with images. You can now view the path in the dashboard.',
-					duration: 5000,
-				});
-				props.onNext?.();
+					// Find image indexes that match the current image pano_id
+					const image_indexes = props.formState.framepos
+						.filter((framepos) => {
+							return framepos.google_image.pano_id === pano_id;
+						})
+						.map((framepos) => framepos.frame_index);
+
+					promises.push(
+						setBeforeImage.mutateAsync({
+							before_image_id: result.id,
+							image_indexes,
+						})
+					);
+				} else {
+					toaster.toast({
+						title: 'Error',
+						description: 'Image could not be created in database.',
+						variant: 'destructive',
+						duration: 5000,
+					});
+
+					return props.onCancel?.();
+				}
 			}
+
+			await Promise.all(promises);
+
+			toaster.toast({
+				title: 'Success',
+				description:
+					'Path created in database with images. You can now view the path in the dashboard.',
+				duration: 5000,
+			});
+			setProcessing(false);
+			props.onNext?.();
 		})();
 	};
 

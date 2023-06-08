@@ -24,8 +24,6 @@ export const NewPathDialog = () => {
 		name: '',
 		date: new Date(),
 		framepos: [],
-		surveys: [],
-		comparison: [],
 	});
 	const newPath = api.paths.new.useMutation();
 	const { socket } = useWebSocketContext();
@@ -52,8 +50,6 @@ export const NewPathDialog = () => {
 			name: '',
 			date: new Date(),
 			framepos: [],
-			surveys: [],
-			comparison: [],
 		});
 	};
 

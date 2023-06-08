@@ -1,5 +1,4 @@
 import type { FrameposResult } from "@/utils/types/framepos";
-import { type Image360 } from "@prisma/client";
 export * from 'types';
 
 export type FormStateData = {
@@ -7,8 +6,6 @@ export type FormStateData = {
 	date: Date;
 	path_id?: string;
 	framepos: FrameposResult[];
-	surveys: Image360[];
-	comparison: File[];
 };
 
 export type DialogContentProps = {

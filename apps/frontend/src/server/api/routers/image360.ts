@@ -5,24 +5,24 @@ import { z } from 'zod';
 
 export const image360Router = createTRPCRouter({
 	newNTP: ntpProtectedProcedure
-		.input(image360DataSchema)
+		.input(image360DataSchema.array())
 		.mutation(async ({ input }) => {
-			const image = await prisma.image360.create({
-				data: {
-					path_id: input.path_id,
-					index: input.index,
-					image_url: input.url,
-					image_size: input.image_size,
-					date_taken: input.date_taken,
-					lng: input.lng,
-					lat: input.lat,
-					altitude: input.altitude,
-					distance: input.distance,
-					heading: input.heading,
-					pitch: input.pitch,
-					roll: input.roll,
-					track: input.track,
-				},
+			const image = await prisma.image360.createMany({
+				data: input.map((image) => ({
+					path_id: image.path_id,
+					index: image.index,
+					image_url: image.url,
+					image_size: image.image_size,
+					date_taken: image.date_taken,
+					lng: image.lng,
+					lat: image.lat,
+					altitude: image.altitude,
+					distance: image.distance,
+					heading: image.heading,
+					pitch: image.pitch,
+					roll: image.roll,
+					track: image.track,
+				})),
 			});
 
 			return image;
@@ -58,14 +58,14 @@ export const image360Router = createTRPCRouter({
 		.input(
 			z.object({
 				before_image_id: z.string(),
-				image_ids: z.array(z.string()),
+				image_indexes: z.array(z.number()),
 			})
 		)
 		.mutation(async ({ input }) => {
 			const result = await prisma.image360.updateMany({
 				where: {
-					id: {
-						in: input.image_ids,
+					index: {
+						in: input.image_indexes,
 					},
 				},
 				data: {
@@ -73,7 +73,7 @@ export const image360Router = createTRPCRouter({
 				},
 			});
 
-			if (result.count !== input.image_ids.length) {
+			if (result.count !== input.image_indexes.length) {
 				throw new Error('Failed to set before image');
 			}
 

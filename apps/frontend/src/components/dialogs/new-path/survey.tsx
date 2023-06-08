@@ -1,8 +1,5 @@
 import { useState } from 'react';
-import type {
-	DialogContentProps,
-	ImageResult,
-} from './types';
+import type { DialogContentProps, ImageResult } from './types';
 import type { Image360 } from '@prisma/client';
 import { api } from '@/utils/api';
 import { useToast } from '@/components/ui/use-toast';
@@ -14,7 +11,8 @@ import {
 import { DialogContentHeader } from './header';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import { z } from 'zod';
+import { Image360Data } from '@/utils/types/image360Data';
+import { uploadImages } from './helpers';
 
 export const SurveyPanoramasDialogContent = (props: DialogContentProps) => {
 	const [finished, setFinished] = useState(false);
@@ -46,139 +44,107 @@ export const SurveyPanoramasDialogContent = (props: DialogContentProps) => {
 			return;
 		}
 
-		(async () => {
-			const body = new FormData();
-
-			const bufferFiles = await Promise.all(
-				files.map(async (file) => {
-					return {
-						name: file.name,
-						buffer: await file.arrayBuffer(),
-					};
-				})
-			);
-
-			body.append('path_id', props.formState.path_id.toString());
-
-			for (const image of bufferFiles) {
-				body.append('images', new Blob([image.buffer]), image.name);
-			}
-
-			const response = await fetch('/backend/api/upload', {
-				method: 'POST',
-				body: body,
+		if (!props.formState.path_id) {
+			toaster.toast({
+				title: 'Error',
+				description: 'Path ID is not defined.',
+				variant: 'destructive',
+				duration: 5000,
 			});
 
-			if (!response.ok) {
-				console.error('Failed to upload images. Make sure you are uploading < 4GB.', response.status);
-				return null;
-			}
+			setProcessing(false);
+			return props.onCancel?.();
+		}
 
-			const data = await response.json();
-
-			const responseType = z.array(
-				z.object({
-					image_name: z.string(),
-					image_url: z.string(),
-				})
+		(async () => {
+			const result = await uploadImages(
+				files,
+				props.formState.path_id,
+				({ userMessage, consoleMessage }) => {
+					console.error(consoleMessage);
+					toaster.toast({
+						title: 'Error',
+						description: userMessage,
+						variant: 'destructive',
+						duration: 5000,
+					});
+					setProcessing(false);
+					props.onCancel?.();
+				}
 			);
 
-			if (!responseType.safeParse(data).success) {
-				throw new Error('Invalid response from backend');
+			if (!result) return;
+
+			const images: Image360Data[] = [];
+
+			for (const image of result) {
+				// Fetch image data from the form state
+				const framepos = props.formState.framepos.find(
+					(framepos) => framepos.file_name === image.image_name
+				);
+				const file = files.find((file) => file.name === image.image_name);
+
+				// If the required data is present
+				if (
+					image.image_url &&
+					file &&
+					(framepos?.frame_index != undefined ||
+						framepos?.frame_index != null) &&
+					framepos?.lng &&
+					framepos?.lat
+				) {
+					// Create the image in the database
+					images.push({
+						path_id: props.formState.path_id,
+						index: framepos?.frame_index,
+						image_size: file.size,
+						date_taken: new Date(file.lastModified),
+						url: image.image_url,
+						lng: framepos?.lng,
+						lat: framepos?.lat,
+						heading: framepos?.heading,
+						altitude: framepos?.altitude,
+						distance: framepos?.distance,
+						pitch: framepos?.pitch,
+						roll: framepos?.roll,
+						track: framepos?.track,
+					});
+				} else {
+					// When the required data is not present
+					console.log(
+						image.image_url,
+						file?.size,
+						framepos?.frame_index,
+						framepos?.lng,
+						framepos?.lat
+					);
+
+					toaster.toast({
+						title: 'Error',
+						description: 'Image could not be created in database.',
+						variant: 'destructive',
+						duration: 5000,
+					});
+					return props.onCancel?.();
+				}
 			}
 
-			const result = responseType.parse(data) as ImageResult[];
-
-			// If the images could not be uploaded
-			if (!result || !result.length) {
+			// Create the images in the database
+			try {
+				await newNTPImage.mutateAsync(images);
+				props.onNext?.();
+			} catch (error) {
+				console.error(error);
 				toaster.toast({
 					title: 'Error',
-					description: 'Images could not be uploaded to the server. Check the console for more information.',
+					description: 'Image could not be created in database.',
 					variant: 'destructive',
 					duration: 5000,
 				});
 
+				props.onCancel?.();
+			} finally {
 				setProcessing(false);
-				return props.onCancel?.();
-			}
-
-			if (props.formState.path_id) {
-				const images: Image360[] = [];
-
-				for (const image of result) {
-					void (async () => {
-						// Fetch image data from the form state
-						const framepos = props.formState.framepos.find(
-							(framepos) => framepos.file_name === image.image_name
-						);
-						const file = files.find((file) => file.name === image.image_name);
-
-						// If the required data is present
-						if (
-							image.image_url &&
-							file &&
-							(framepos?.frame_index != undefined ||
-								framepos?.frame_index != null) &&
-							framepos?.lng &&
-							framepos?.lat
-						) {
-							// Create the image in the database
-							const result = await newNTPImage.mutateAsync({
-								path_id: props.formState.path_id,
-								index: framepos?.frame_index,
-								image_size: file.size,
-								date_taken: new Date(file.lastModified),
-								url: image.image_url,
-								lng: framepos?.lng,
-								lat: framepos?.lat,
-								heading: framepos?.heading,
-								altitude: framepos?.altitude,
-								distance: framepos?.distance,
-								pitch: framepos?.pitch,
-								roll: framepos?.roll,
-								track: framepos?.track,
-							});
-
-							// If the image could not be created in the database
-							if (!result) {
-								toaster.toast({
-									title: 'Error',
-									description: 'Image could not be created in database.',
-									variant: 'destructive',
-									duration: 5000,
-								});
-
-								return props.onCancel?.();
-							} else {
-								images.push(result);
-							}
-						} else {
-							// When the required data is not present
-							console.log(
-								image.image_url,
-								file?.size,
-								framepos?.frame_index,
-								framepos?.lng,
-								framepos?.lat
-							);
-
-							toaster.toast({
-								title: 'Error',
-								description: 'Image could not be created in database.',
-								variant: 'destructive',
-								duration: 5000,
-							});
-							return props.onCancel?.();
-						}
-					})();
-				}
-
-				props.onNext?.();
-				setProcessing(false);
-				props.setFormState({
-					...props.formState,
-					surveys: images,
-				});
 			}
 		})();
 	};

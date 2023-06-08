@@ -71,6 +71,31 @@ export const FrameposDialogContent = (props: DialogContentProps) => {
 		}
 	};
 
+	const currentDescription = () => {
+		const baseDescription = `This stores the necessary geospatial data for each panorama.`;
+
+		const missingPanos = framePosData.filter(
+			(framepos) => !framepos.google_image
+		);
+
+		return finished ? (
+			!missingPanos.length ? (
+				baseDescription
+			) : (
+				<span>
+					This stores the necessary geospatial data for each panorama.{' '}
+					{missingPanos && (
+						<span className='font-bold'>{missingPanos.length} Google panoramas could not be found!</span>
+					)}
+				</span>
+			)
+		) : (
+			`${baseDescription}${
+				progress > 0 ? ` (${(progress * 100).toFixed(1)}%)` : ''
+			}`
+		);
+	};
+
 	return (
 		<>
 			<DragAndDropZone
@@ -86,9 +111,7 @@ export const FrameposDialogContent = (props: DialogContentProps) => {
 							Upload the <code>framepos</code> text file
 						</span>
 					}
-					description={`This stores the necessary geospatial data for each panorama.${
-						progress > 0 ? ` (${(progress * 100).toFixed(1)}%)` : ''
-					}`}
+					description={currentDescription()}
 				/>
 				<div className="flex w-full flex-row items-center justify-end space-x-2 md:w-auto">
 					<AlertDialogCancel onClick={props.onCancel} disabled={processing}>
