@@ -82,60 +82,72 @@ export const handleRequest = async (
 				maxFileSize: 4 * 1024 * 1024 * 1024,
 			});
 
-			form.parse(req, async (err, fields, files) => {
-				if (err) {
-					logger.error(err);
-					res.writeHead(err.httpCode || 400, {
-						'Content-Type': 'text/plain',
+			try {
+				form.parse(req, async (err, fields, files) => {
+					if (err) {
+						logger.error(err);
+						res.writeHead(err.httpCode || 400, {
+							'Content-Type': 'text/plain',
+						});
+						res.end(String(err));
+						return;
+					}
+
+					if (!fields.path_id) {
+						logger.error('Missing path_id');
+						res.writeHead(400, {
+							'Content-Type': 'text/plain',
+						});
+						res.end('Missing path_id');
+						return;
+					}
+
+					if (!files.images) {
+						logger.error('Missing images');
+						res.writeHead(400, {
+							'Content-Type': 'text/plain',
+						});
+						res.end('Missing images');
+						return;
+					}
+
+					const isMultiple = Array.isArray(files.images);
+
+					const data = {
+						id: fields.path_id as string,
+						files: isMultiple
+							? (files.images as formidable.File[])
+							: [files.images as formidable.File],
+					};
+
+					const response = await handleUpload(data);
+
+					if (
+						!response.length ||
+						response.length !== data.files.length
+					) {
+						logger.error('Error saving images');
+						res.writeHead(500, {
+							'Content-Type': 'text/plain',
+						});
+						res.end('Error saving images');
+						return;
+					}
+
+					res.writeHead(200, {
+						'Content-Type': 'application/json',
 					});
-					res.end(String(err));
-					return;
-				}
 
-				if (!fields.path_id) {
-					logger.error('Missing path_id');
-					res.writeHead(400, {
-						'Content-Type': 'text/plain',
-					});
-					res.end('Missing path_id');
-					return;
-				}
-
-				if (!files.images) {
-					logger.error('Missing images');
-					res.writeHead(400, {
-						'Content-Type': 'text/plain',
-					});
-					res.end('Missing images');
-					return;
-				}
-
-				const isMultiple = Array.isArray(files.images);
-
-				const data = {
-					id: fields.path_id as string,
-					files: isMultiple
-						? (files.images as formidable.File[])
-						: [files.images as formidable.File],
-				};
-
-				const response = await handleUpload(data);
-
-				if (!response.length || response.length !== data.files.length) {
-					logger.error('Error saving images');
-					res.writeHead(500, {
-						'Content-Type': 'text/plain',
-					});
-					res.end('Error saving images');
-					return;
-				}
-
-				res.writeHead(200, {
-					'Content-Type': 'application/json',
+					res.end(JSON.stringify(response));
 				});
-
-				res.end(JSON.stringify(response));
-			});
+			} catch (err) {
+				logger.error(err);
+				res.writeHead(500, {
+					'Content-Type': 'text/plain',
+				});
+				res.end('Error saving images');
+				return;
+			}
 
 			return;
 		}

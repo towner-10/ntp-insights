@@ -82,7 +82,7 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 			});
 
 			if (!response.ok) {
-				console.error('Failed to upload images', response.status);
+				console.error('Failed to upload images. Make sure you are uploading < 4GB.', response.status);
 				return null;
 			}
 
@@ -105,7 +105,7 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 			if (!imageResults || !imageResults.length) {
 				toaster.toast({
 					title: 'Error',
-					description: 'Images could not be uploaded to the server.',
+					description: 'Images could not be uploaded to the server. Check the console for more information.',
 					variant: 'destructive',
 					duration: 5000,
 				});
