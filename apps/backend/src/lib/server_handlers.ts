@@ -191,7 +191,7 @@ const verifyRequest = async (
 
 	if (!session) {
 		logger.error('Invalid token');
-		res.writeHead(400, {
+		res.writeHead(401, {
 			'Content-Type': 'text/plain',
 		});
 		res.end('Invalid token');
@@ -200,7 +200,7 @@ const verifyRequest = async (
 
 	if (session.expires < new Date()) {
 		logger.error('Token expired');
-		res.writeHead(400, {
+		res.writeHead(401, {
 			'Content-Type': 'text/plain',
 		});
 		res.end('Token expired');

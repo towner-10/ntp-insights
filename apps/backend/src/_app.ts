@@ -101,11 +101,6 @@ const addSearch = (search: Search, immediate = false) => {
 })();
 
 NTPServer.getInstance().setEventMap(eventMap);
-NTPServer.getInstance()
-	.getWebServer()
-	.listen(WEB_SERVER_PORT, () => {
-		logger.success(`Server listening on port ${WEB_SERVER_PORT}`);
-	});
 
 process.on('SIGINT', () => {
 	logger.debug('Cleaning up...');

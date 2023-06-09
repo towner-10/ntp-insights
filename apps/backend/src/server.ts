@@ -14,15 +14,33 @@ export default class NTPServer {
 
 	private constructor() {
 		if (process.env.NODE_ENV === 'production')
-			this.webServer = https.createServer(
-				{
-					key: fs.readFileSync(path.join(__dirname,'../ssl/privkey.pem'), 'utf8'),
-					cert: fs.readFileSync(path.join(__dirname,'../ssl/cert.pem'), 'utf8'),
-					ca: fs.readFileSync(path.join(__dirname,'../ssl/chain.pem'), 'utf8'),
-				},
-				handleRequest
-			);
-		else this.webServer = http.createServer(handleRequest);
+			this.webServer = https
+				.createServer(
+					{
+						key: fs.readFileSync(
+							path.join(__dirname, '../ssl/privkey.pem'),
+							'utf8'
+						),
+						cert: fs.readFileSync(
+							path.join(__dirname, '../ssl/cert.pem'),
+							'utf8'
+						),
+						ca: fs.readFileSync(
+							path.join(__dirname, '../ssl/chain.pem'),
+							'utf8'
+						),
+					},
+					handleRequest
+				)
+				.listen(443, () => {
+					logger.success(`Server listening on port 443`);
+				});
+		else
+			this.webServer = http
+				.createServer(handleRequest)
+				.listen(8000, () => {
+					logger.success(`Server listening on port 8000`);
+				});
 
 		this.wss = new Server(this.webServer, {
 			cors: {
