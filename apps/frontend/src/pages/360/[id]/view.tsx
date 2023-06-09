@@ -6,7 +6,7 @@ import Header from '@/components/header';
 import { Toaster } from '@/components/ui/toaster';
 import { useSession } from 'next-auth/react';
 import { View360 } from '@/components/view-360';
-import { View360Map } from '@/components/map';
+import { View360Map } from '@/components/maps';
 import { LngLat } from 'mapbox-gl';
 import { useRouter } from 'next/router';
 import { api } from '@/utils/api';

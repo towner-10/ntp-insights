@@ -18,6 +18,7 @@ type Props = {
 	className?: string;
 	onChange?: (...event: unknown[]) => void;
 	value?: DateRange | undefined;
+	disabled?: boolean;
 };
 
 export function CalendarDateRangePicker(props: Props) {
@@ -35,6 +36,7 @@ export function CalendarDateRangePicker(props: Props) {
 					<Button
 						id="date"
 						variant={'outline'}
+						disabled={props.disabled}
 						className={cn(
 							'justify-start text-left font-normal',
 							!date && 'text-muted-foreground'

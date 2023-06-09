@@ -1,3 +1,4 @@
+import mapboxgl from 'mapbox-gl';
 import Map, { Layer, MapRef, Marker, Source } from 'react-map-gl';
 import { useRef, useEffect, useState } from 'react';
 import {
@@ -16,13 +17,21 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from './ui/tooltip';
-import mapboxgl from 'mapbox-gl';
 
 interface DefaultProps {
 	className?: string;
 }
 
-interface MapCardProps extends DefaultProps {
+interface SearchViewMapProps extends DefaultProps {
+	start?: {
+		lng: number;
+		lat: number;
+		radius: number;
+	};
+	points?: mapboxgl.LngLat[];
+}
+
+interface MapCardProps extends SearchViewMapProps {
 	title: string;
 	description: string;
 }
@@ -46,6 +55,8 @@ interface MapCardMarkerProps extends MapCardProps {
 }
 
 export function MapCard(props: MapCardProps) {
+	console.log(props.start);
+
 	return (
 		<Card className={props.className}>
 			<CardHeader>
@@ -53,7 +64,11 @@ export function MapCard(props: MapCardProps) {
 				<CardDescription>{props.description}</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<MapDebug className="h-[600px]" />
+				<SearchViewMap
+					className="h-[600px]"
+					start={props.start}
+					points={props.points}
+				/>
 			</CardContent>
 		</Card>
 	);
@@ -269,22 +284,36 @@ export function StaticMap(props: StaticMapProps) {
 	);
 }
 
-export function MapDebug(props: DefaultProps) {
+export function SearchViewMap(props: SearchViewMapProps) {
 	const { resolvedTheme } = useTheme();
-	const [viewState, setViewState] = useState({
+	const [viewState, setViewState] = useState(props.start ? {
+		longitude: props.start.lng,
+		latitude: props.start.lat,
+	} : {
 		longitude: -81.3,
 		latitude: 42.97,
-		zoom: 9,
 	});
 
 	return (
 		<div className={props.className}>
 			<div className="bg-background/60 absolute z-10 m-2 flex max-w-xs flex-col items-center justify-center rounded-lg p-2 backdrop-blur">
-				Longitude: {viewState.longitude} | Latitude: {viewState.latitude} |
-				Zoom: {viewState.zoom}
+				Longitude: {viewState.longitude.toFixed(5)} | Latitude:{' '}
+				{viewState.latitude.toFixed(5)}
 			</div>
 			<Map
-				{...viewState}
+				initialViewState={{
+					bounds: props.start
+						? new mapboxgl.LngLat(props.start.lng, props.start.lat).toBounds(
+								props.start.radius * 1000
+						  )
+						: undefined,
+					fitBoundsOptions: {
+						animate: true,
+						duration: 1000,
+						padding: 20,
+						maxZoom: 20,
+					},
+				}}
 				onMove={(event) => setViewState(event.viewState)}
 				mapStyle={
 					resolvedTheme === 'light'

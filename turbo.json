@@ -11,6 +11,7 @@
 		"NEXTAUTH_URL",
 		"DISCORD_CLIENT_ID",
 		"DISCORD_CLIENT_SECRET",
+		"TWITTER_BEARER_TOKEN",
 		"SENDGRID_API_KEY",
 		"EMAIL_FROM",
 		"BACKEND_URL",
@@ -31,6 +32,9 @@
 			"persistent": true
 		},
 		"lint": {},
+		"migrate": {
+			"outputs": []
+		},
 		"test": {},
 		"test:watch": {
 			"cache": false

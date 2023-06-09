@@ -62,7 +62,9 @@ model VerificationToken {
 model Search {
   id                String    @id @default(cuid())
   name              String
-  location          Json?
+  longitude         Float
+  latitude          Float
+  radius            Float
   location_keywords String[]
   province          String?
   start_date        DateTime

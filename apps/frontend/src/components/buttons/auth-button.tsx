@@ -22,6 +22,7 @@ import {
 import { useRouter } from 'next/router';
 import { type Session } from 'next-auth';
 import { Badge } from '../ui/badge';
+import { LucideTrendingUp } from 'lucide-react';
 
 type Props = {
 	session: Session;
@@ -81,6 +82,12 @@ export default function AuthButton(props: Props) {
 							>
 								<LucideRotate3d size={18} />
 								<span className="pl-2">360</span>
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								disabled={true}
+							>
+								<LucideTrendingUp size={18} />
+								<span className="pl-2">Trends</span>
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 					) : (

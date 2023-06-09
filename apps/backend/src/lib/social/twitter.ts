@@ -1,6 +1,6 @@
 import { Search } from '@prisma/client';
 import { TwitterApi } from 'twitter-api-v2';
-import { setTweetCount } from '../database';
+import { setTweetCount } from '../../db';
 
 const client = new TwitterApi(process.env.TWITTER_BEARER_TOKEN || '');
 const readOnlyClient = client.readOnly;
@@ -28,16 +28,17 @@ const buildKeywordQuery = (search: Search) => {
 
 export const twitter = {
 	getTweetCount: async (search: Search) => {
-		const response = await readOnlyClient.v2.tweetCountRecent(buildKeywordQuery(search), {
-			granularity: 'day',
-		});
+		const response = await readOnlyClient.v2.tweetCountRecent(
+			buildKeywordQuery(search),
+			{
+				granularity: 'day',
+			}
+		);
 
 		const tweetCounts =
 			response.data?.map((data) => data.tweet_count) || [];
 
 		await setTweetCount(search, tweetCounts);
 	},
-	getTweets: async (search: Search) => {
-		
-	}
+	getTweets: async (search: Search) => {},
 };

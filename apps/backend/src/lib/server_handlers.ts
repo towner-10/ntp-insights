@@ -40,40 +40,7 @@ export const handleRequest = async (
 		}
 	} else if (req.method === 'POST') {
 		if (req.url === '/api/upload') {
-			const cookies = parseCookies(req);
-
-			if (!cookies['next-auth.session-token']) {
-				if (!cookies['__Secure-next-auth.session-token']) {
-					logger.error('Missing token');
-					res.writeHead(400, {
-						'Content-Type': 'text/plain',
-					});
-					res.end('Missing token');
-					return;
-				}
-			}
-
-			// Verify auth token
-			const session = await verifyAccessToken(
-				cookies['next-auth.session-token'] ||
-					cookies['__Secure-next-auth.session-token']
-			);
-
-			if (!session) {
-				logger.error('Invalid token');
-				res.writeHead(400, {
-					'Content-Type': 'text/plain',
-				});
-				res.end('Invalid token');
-				return;
-			}
-
-			if (session.expires < new Date()) {
-				logger.error('Token expired');
-				res.writeHead(400, {
-					'Content-Type': 'text/plain',
-				});
-				res.end('Token expired');
+			if (!(await verifyRequest(req, res))) {
 				return;
 			}
 
@@ -195,4 +162,51 @@ const handleUpload = async (data: { id: string; files: formidable.File[] }) => {
 	}
 
 	return image_urls;
+};
+
+const verifyRequest = async (
+	req: http.IncomingMessage,
+	res: http.ServerResponse<http.IncomingMessage> & {
+		req: http.IncomingMessage;
+	}
+) => {
+	const cookies = parseCookies(req);
+
+	if (!cookies['next-auth.session-token']) {
+		if (!cookies['__Secure-next-auth.session-token']) {
+			logger.error('Missing token');
+			res.writeHead(400, {
+				'Content-Type': 'text/plain',
+			});
+			res.end('Missing token');
+			return false;
+		}
+	}
+
+	// Verify auth token
+	const session = await verifyAccessToken(
+		cookies['next-auth.session-token'] ||
+			cookies['__Secure-next-auth.session-token']
+	);
+
+	if (!session) {
+		logger.error('Invalid token');
+		res.writeHead(400, {
+			'Content-Type': 'text/plain',
+		});
+		res.end('Invalid token');
+		return false;
+	}
+
+	if (session.expires < new Date()) {
+		logger.error('Token expired');
+		res.writeHead(400, {
+			'Content-Type': 'text/plain',
+		});
+		res.end('Token expired');
+		return false;
+	}
+
+	logger.debug('Token verified');
+	return true;
 };

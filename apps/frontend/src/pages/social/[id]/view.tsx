@@ -6,7 +6,7 @@ import { DownloadButton } from '@/components/buttons/download-button';
 import { CalendarDateRangePicker } from '@/components/ui/calendar-range';
 import ExampleGraph from '@/components/examples/example-graph';
 import ExampleStatCard from '@/components/examples/example-stat-card';
-import { MapCard } from '@/components/map';
+import { MapCard } from '@/components/maps';
 import ServerStatusBadge from '@/components/server-status-badge';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { addDays } from 'date-fns';
@@ -18,7 +18,9 @@ import { useSession } from 'next-auth/react';
 const ViewSearchPage = () => {
 	const session = useSession();
 	const router = useRouter();
-	const { id }: {
+	const {
+		id,
+	}: {
 		id?: string;
 	} = router.query;
 
@@ -28,6 +30,8 @@ const ViewSearchPage = () => {
 		return <div>Loading...</div>;
 	} else if (search.isError) {
 		return <div>Error: {search.error.message}</div>;
+	} else if (!search.data) {
+		return <div>Not found</div>;
 	}
 
 	return (
@@ -38,7 +42,10 @@ const ViewSearchPage = () => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<main className="h-screen">
-				<Header title={`${search.data?.name || 'View Search'}`} session={session.data} />
+				<Header
+					title={`${search.data?.name || 'View Search'}`}
+					session={session.data}
+				/>
 				<Toaster />
 				<div className="container flex flex-col items-center justify-center p-6">
 					<div className="flex w-full flex-row items-center">
@@ -55,9 +62,14 @@ const ViewSearchPage = () => {
 					</div>
 					<div className="grid w-full grid-cols-1 gap-4 py-8 lg:grid-cols-5">
 						<MapCard
-							title="Testing"
-							description="Map for testing. Does not display actual info."
+							title="Overview"
+							description="Map of search area. View posts by clicking on the markers."
 							className="min-w-[400px] md:col-span-4 md:row-span-4"
+							start={{
+								lng: search.data.longitude,
+								lat: search.data.latitude,
+								radius: search.data.radius,
+							}}
 						/>
 						<ExampleStatCard
 							title="Total Posts"
@@ -71,7 +83,7 @@ const ViewSearchPage = () => {
 						<ExampleStatCard
 							title="User Growth"
 							description="Total number of users"
-							value={<h2 className="text-4xl font-bold text-success">+50</h2>}
+							value={<h2 className="text-success text-4xl font-bold">+50</h2>}
 						/>
 						<ExampleStatCard
 							title="Total Users"

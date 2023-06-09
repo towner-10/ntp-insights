@@ -24,7 +24,7 @@ const Home: NextPage = () => {
 			<div className="bg-hero bg-[url('https://images.pexels.com/photos/158163/clouds-cloudporn-weather-lookup-158163.jpeg?cs=srgb&dl=pexels-pixabay-158163.jpg&fm=jpg')] bg-cover bg-fixed bg-center bg-no-repeat">
 				<div className="bg-gradient-to-r from-[background]">
 					<main className="flex h-screen">
-						<Header title="Welcome" session={session.data} />
+						<Header session={session.data} />
 						<Toaster />
 						<div className="absolute bottom-0 right-0 m-4">
 							<Image

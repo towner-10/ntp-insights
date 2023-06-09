@@ -7,7 +7,7 @@ import Head from 'next/head';
 import Header from '@/components/header';
 import ServerStatusBadge from '@/components/server-status-badge';
 import { CalendarDateRangePicker } from '@/components/ui/calendar-range';
-import { MapWithMarkerCard } from '@/components/map';
+import { MapWithMarkerCard } from '@/components/maps';
 import { Controller, useForm } from 'react-hook-form';
 import {
 	Card,
