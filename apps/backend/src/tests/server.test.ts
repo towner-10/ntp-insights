@@ -3,12 +3,13 @@ dotenv.config({ override: true });
 
 import NTPServer from '../server';
 import { expect, test } from '@jest/globals';
+import { logger } from '../utils/logger';
+
+beforeAll(() => {
+	NTPServer.getInstance();
+});
 
 describe('API Upload', () => {
-	beforeAll(() => {
-		NTPServer.getInstance();
-	});
-
 	test('Verify auth cookies', async () => {
 		const response = await fetch('http://localhost:8000/api/upload', {
 			method: 'POST',
@@ -46,8 +47,27 @@ describe('API Upload', () => {
 
 		expect(response.status).toBe(401);
 	});
+});
 
-	afterAll(() => {
-		NTPServer.getInstance().getWebServer().close();
+describe('Image Fetch', () => {
+	test('Directory Traverse Attack', async () => {
+		const response = await fetch(
+			'http://localhost:8000/images/../../../../../../etc/passwd'
+		);
+
+		expect(response.status).toBe(404);
 	});
+
+	test('Invalid image path', async () => {
+		const response = await fetch(
+			'http://localhost:8000/images/invalid/path.jpg'
+		);
+
+		expect(response.status).toBe(404);
+	});
+});
+
+
+afterAll(() => {
+	NTPServer.getInstance().getWebServer().close();
 });

@@ -26,6 +26,14 @@ export const handleRequest = async (
 		// Check if the request is for one of the files in the images directory
 		if (req.url?.startsWith('/images/')) {
 			try {
+				testImageRequest(req.url);
+			} catch (err) {
+				logger.error(err);
+				res.writeHead(403);
+				res.end();
+			}
+
+			try {
 				const file = await fs.readFile(`./${req.url}`);
 				res.writeHead(200, {
 					'Content-Type': 'image/jpeg',
@@ -37,6 +45,9 @@ export const handleRequest = async (
 				res.writeHead(404);
 				res.end();
 			}
+		} else {
+			res.writeHead(404);
+			res.end();
 		}
 	} else if (req.method === 'POST') {
 		if (req.url === '/api/upload') {
@@ -117,6 +128,9 @@ export const handleRequest = async (
 			}
 
 			return;
+		} else {
+			res.writeHead(404);
+			res.end();
 		}
 	}
 };
@@ -208,5 +222,18 @@ const verifyRequest = async (
 	}
 
 	logger.debug('Token verified');
+	return true;
+};
+
+export const testImageRequest = (path: string) => {
+	// Check REGEX to make sure the path is valid
+	if (
+		!/^\/images\/[a-zA-Z0-9]+\/[a-zA-Z0-9]+\.(jpg|jpeg|png|gif)$/g.test(
+			path
+		)
+	) {
+		throw new Error('Invalid path');
+	}
+
 	return true;
 };
