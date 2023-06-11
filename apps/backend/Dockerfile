@@ -37,4 +37,6 @@ RUN adduser --system --uid 1001 http_server
 USER http_server
 COPY --from=installer /app .
 
+ENV NODE_ENV=production
+
 CMD node ./apps/backend/dist/_app.js
