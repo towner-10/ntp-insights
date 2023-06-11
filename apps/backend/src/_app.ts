@@ -14,7 +14,6 @@ import {
 import { logger } from './utils/logger';
 
 const UPDATE_FREQUENCY = 10000;
-const WEB_SERVER_PORT = process.env.NODE_ENV === 'production' ? 443 : 8000;
 
 const scheduler = new Scheduler(UPDATE_FREQUENCY);
 let searches: Search[] = [];

@@ -3,7 +3,6 @@ dotenv.config({ override: true });
 
 import NTPServer from '../server';
 import { expect, test } from '@jest/globals';
-import { logger } from '../utils/logger';
 
 beforeAll(() => {
 	NTPServer.getInstance();
