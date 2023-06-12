@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "turbo run build --no-daemon",
-    "migrate": "turbo run migrate --no-daemon",
+    "migrate": "prisma migrate dev --skip-generate",
     "start:backend": "turbo run start --filter=backend --no-daemon",
     "dev": "turbo run dev --continue --no-daemon",
     "dev:frontend": "turbo run dev --filter=frontend --continue --no-daemon",
