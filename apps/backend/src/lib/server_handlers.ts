@@ -22,7 +22,7 @@ export const handleRequest = async (
 		'Origin, X-Requested-With, Content-Type, Accept'
 	);
 
-	if (req.method === 'GET') {
+	if (req.method === 'GET' && process.env.NODE_ENV !== 'production') {
 		// Check if the request is for one of the files in the images directory
 		if (req.url?.startsWith('/images/')) {
 			try {
