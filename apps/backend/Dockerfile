@@ -32,11 +32,7 @@ RUN yarn turbo run build --filter=backend
 FROM base AS runner
 WORKDIR /app
 
-RUN addgroup --system --gid 1001 backend
-RUN adduser --system --uid 1001 backend
-USER backend
 COPY --from=installer /app .
-
 ENV NODE_ENV=production
 
 CMD node ./apps/backend/dist/_app.js

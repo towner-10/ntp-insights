@@ -22,7 +22,7 @@ export const handleRequest = async (
 		'Origin, X-Requested-With, Content-Type, Accept'
 	);
 
-	if (req.method === 'GET' && process.env.NODE_ENV !== 'production') {
+	if (req.method === 'GET') {
 		// Check if the request is for one of the files in the images directory
 		if (req.url?.startsWith('/images/')) {
 			try {
@@ -157,7 +157,8 @@ const handleUpload = async (data: { id: string; files: formidable.File[] }) => {
 
 			const url = `${IMAGE_DIRECTORY}/${data.id}/${filename}`;
 
-			await fs.rename(file.filepath, url);
+			await fs.copyFile(file.filepath, url);
+			await fs.rm(file.filepath);
 
 			image_urls.push({
 				image_name: filename,
