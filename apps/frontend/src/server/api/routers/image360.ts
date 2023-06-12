@@ -62,7 +62,7 @@ export const image360Router = createTRPCRouter({
 			})
 		)
 		.mutation(async ({ input }) => {
-			const result = await prisma.image360.updateMany({
+			return await prisma.image360.updateMany({
 				where: {
 					index: {
 						in: input.image_indexes,
@@ -72,11 +72,5 @@ export const image360Router = createTRPCRouter({
 					before_id: input.before_image_id,
 				},
 			});
-
-			if (result.count !== input.image_indexes.length) {
-				throw new Error('Failed to set before image');
-			}
-
-			return result;
 		}),
 });
