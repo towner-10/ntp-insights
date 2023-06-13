@@ -1,3 +1,4 @@
+import { env } from '@/env.mjs';
 import { ImageResult } from 'types';
 import { z } from 'zod';
 
@@ -29,7 +30,7 @@ export const uploadImages = async (
 		body.append('images', new Blob([image.buffer]), image.name);
 	}
 
-	const response = await fetch('/backend/api/upload', {
+	const response = await fetch(`${env.NEXT_PUBLIC_BACKEND_WS_URL}/api/upload`, {
 		method: 'POST',
 		body: body,
 	});
