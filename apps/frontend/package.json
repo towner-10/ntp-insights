@@ -50,7 +50,7 @@
 		"date-fns": "^2.30.0",
 		"formidable": "^2.1.1",
 		"lodash": "^4.17.21",
-		"lucide-react": "^0.190.0",
+		"lucide-react": "^0.244.0",
 		"mapbox-gl": "^2.14.1",
 		"next": "^13.4.1",
 		"next-auth": "^4.22.1",
