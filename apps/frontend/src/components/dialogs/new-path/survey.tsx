@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import type { DialogContentProps, ImageResult } from './types';
-import type { Image360 } from '@prisma/client';
+import type { DialogContentProps } from './types';
 import { api } from '@/utils/api';
 import { useToast } from '@/components/ui/use-toast';
 import { DragAndDropZone } from '@/components/input/drag-and-drop-zone';
@@ -12,7 +11,7 @@ import { DialogContentHeader } from './header';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { Image360Data } from '@/utils/types/image360Data';
-import { uploadImages } from './helpers';
+import { batchUploadImages } from './helpers';
 
 export const SurveyPanoramasDialogContent = (props: DialogContentProps) => {
 	const [finished, setFinished] = useState(false);
@@ -57,7 +56,7 @@ export const SurveyPanoramasDialogContent = (props: DialogContentProps) => {
 		}
 
 		(async () => {
-			const result = await uploadImages(
+			const result = await batchUploadImages(
 				files,
 				props.formState.path_id,
 				({ userMessage, consoleMessage }) => {

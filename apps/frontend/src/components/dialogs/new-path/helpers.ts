@@ -1,8 +1,46 @@
-import { env } from '@/env.mjs';
 import { ImageResult } from 'types';
 import { z } from 'zod';
+import { FormStateData } from './types';
 
-export const uploadImages = async (
+export const batchUploadImages = async (
+	files: File[],
+	path_id: string,
+	onError: ({
+		userMessage,
+		consoleMessage,
+	}: {
+		userMessage: string;
+		consoleMessage: string;
+	}) => void
+): Promise<ImageResult[] | null> => {
+	// Split the files into batches of 100
+	const batches = files.reduce((acc, file, index) => {
+		const batchIndex = Math.floor(index / 100);
+		
+		if (!acc[batchIndex]) {
+			acc[batchIndex] = [];
+		}
+
+		acc[batchIndex].push(file);
+
+		return acc;
+	}, [] as File[][]);
+
+	// Upload each batch
+	const results = await Promise.all(
+		batches.map((batch) => uploadImages(batch, path_id, onError))
+	);
+
+	// If any of the batches failed
+	if (results.some((result) => result === null)) {
+		return null;
+	}
+
+	// Flatten the results
+	return results.flat();
+};
+
+const uploadImages = async (
 	files: File[],
 	path_id: string,
 	onError: ({
@@ -30,7 +68,7 @@ export const uploadImages = async (
 		body.append('images', new Blob([image.buffer]), image.name);
 	}
 
-	const response = await fetch(`${env.NEXT_PUBLIC_BACKEND_WS_URL}/api/upload`, {
+	const response = await fetch('/backend/api/upload', {
 		method: 'POST',
 		body: body,
 	});

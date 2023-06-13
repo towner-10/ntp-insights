@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { DialogContentProps, ImageResult } from './types';
+import type { DialogContentProps } from './types';
 import { api } from '@/utils/api';
 import { useToast } from '@/components/ui/use-toast';
 import parseISO from 'date-fns/parseISO';
@@ -11,7 +11,7 @@ import {
 import { DialogContentHeader } from './header';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
-import { uploadImages } from './helpers';
+import { batchUploadImages } from './helpers';
 import { Prisma } from 'database';
 
 export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
@@ -68,7 +68,7 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 		}
 
 		(async () => {
-			const result = await uploadImages(
+			const result = await batchUploadImages(
 				files,
 				props.formState.path_id,
 				({ userMessage, consoleMessage }) => {
