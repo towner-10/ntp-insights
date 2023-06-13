@@ -22,7 +22,7 @@ export const handleRequest = async (
 		'Origin, X-Requested-With, Content-Type, Accept'
 	);
 
-	if (req.method === 'GET') {
+	if (req.method === 'GET' && process.env.NODE_ENV !== 'production') {
 		// Check if the request is for one of the files in the images directory
 		if (req.url?.startsWith('/images/')) {
 			try {
@@ -51,6 +51,8 @@ export const handleRequest = async (
 		}
 	} else if (req.method === 'POST') {
 		if (req.url === '/api/upload') {
+			logger.debug('POST /api/upload');
+
 			if (!(await verifyRequest(req, res))) {
 				return;
 			}
@@ -147,6 +149,8 @@ const handleUpload = async (data: { id: string; files: formidable.File[] }) => {
 		logger.error(err);
 	}
 
+	let count = 0;
+
 	for (const file of data.files) {
 		try {
 			const filename = file.originalFilename;
@@ -165,7 +169,7 @@ const handleUpload = async (data: { id: string; files: formidable.File[] }) => {
 				image_url: url,
 			});
 
-			logger.debug(`Saved ${filename}`);
+			count++;
 		} catch (err) {
 			logger.error(`Error saving ${file.newFilename}`);
 			logger.error(err);
@@ -175,6 +179,8 @@ const handleUpload = async (data: { id: string; files: formidable.File[] }) => {
 			});
 		}
 	}
+
+	logger.debug(`Saved ${count} images`);
 
 	return image_urls;
 };
