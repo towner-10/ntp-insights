@@ -14,6 +14,7 @@ import { InitialDialogContent } from './initial';
 import { FrameposDialogContent } from './framepos';
 import { SurveyPanoramasDialogContent } from './survey';
 import { ComparisonPanoramasDialogContent } from './comparison';
+import { useWakeLock } from 'react-screen-wake-lock';
 
 export const NewPathDialog = () => {
 	const [page, setPage] = useState<
@@ -29,9 +30,14 @@ export const NewPathDialog = () => {
 	const { socket } = useWebSocketContext();
 	const toaster = useToast();
 
+	const { isSupported, released, request, release } = useWakeLock();
+
 	const handleOpen = (value: boolean) => {
-		if (socket?.connected) setOpen(value);
-		else {
+		if (socket?.connected) {
+			setOpen(value);
+			if (value && isSupported) request();
+			else release();
+		} else {
 			toaster.toast({
 				title: 'Error',
 				description:
@@ -40,10 +46,12 @@ export const NewPathDialog = () => {
 				variant: 'destructive',
 			});
 			setOpen(false);
+			if (isSupported) release();
 		}
 	};
 
 	const handleCancel = () => {
+		if (isSupported) release();
 		setOpen(false);
 		setPage('initial');
 		setFormState({
