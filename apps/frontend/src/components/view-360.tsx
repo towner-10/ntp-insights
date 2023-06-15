@@ -14,9 +14,11 @@ import {
 } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
-import { Controllers, VRButton, XR } from '@react-three/xr';
+import { Controllers, Interactive, VRButton, XR, XRControllerEvent, XRInteractionEvent, useXREvent } from '@react-three/xr';
 import { radToDeg } from 'three/src/math/MathUtils';
 import { type Image360 } from '@prisma/client';
+import { GamepadsProvider, useGamepads } from 'react-gamepads';
+import { before } from 'lodash';
 
 const StreetViewImage = (props: { image: string }) => {
 	const texture = useLoader(
@@ -110,6 +112,16 @@ export const View360 = (props: {
 		};
 	});
 
+	// Test
+	const [gamepads, setGamepads] = useState({});
+	useGamepads(gamepads => setGamepads(gamepads));
+
+	useEffect(() => {
+		if (gamepads[0]?.buttons[4]?.pressed) {
+			props.onNext?.();
+		}
+	});
+
 	useEffect(() => {
 		if (props.currentImage === 'before')
 			setStartingAngle(props.image?.before?.heading || 0);
@@ -155,7 +167,7 @@ export const View360 = (props: {
 			<div className="absolute bottom-3 left-5 z-10 text-2xl">
 				<span className="font-bold">NTP</span> 360
 			</div>
-			<div className="bg-background/60 absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg p-2 text-lg backdrop-blur">
+			<div className="bg-background/60 hover:bg-foreground/40 hover:text-background absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg p-2 text-lg backdrop-blur">
 				<RadioGroup
 					onValueChange={onValueChange}
 					value={props.currentImage}
@@ -239,6 +251,17 @@ export const View360 = (props: {
 							startAngle={startingAngle}
 						/>
 					)}
+					{/* <Gamepad */}
+						{/* onX={() => {props.setCurrentImage('before')}}
+						onY={() => {props.setCurrentImage('after')}} */}
+						{/* onLT={() => { Zoom out }}
+						onRT={() => { Zoom in }}
+						onLB={() => { Pan left }}
+						onRB={() => { Pan right }}
+						onAxisChange={() => {}} Left/right sticks move/jump forward/backward between panoramas */}
+					{/* >
+					</Gamepad> */}
+					
 					<Suspense fallback={null}>
 						<StreetViewImage
 							image={
