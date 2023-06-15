@@ -214,7 +214,6 @@ const NewSearchPage = () => {
 												'RT',
 												'investigate',
 												'false',
-												'?',
 												'winter',
 												'snow',
 											]}

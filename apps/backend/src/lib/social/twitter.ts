@@ -1,5 +1,6 @@
 import { Search } from '@prisma/client';
 import { TwitterApi } from 'twitter-api-v2';
+import { logger } from '../../utils/logger';
 
 const client = new TwitterApi(process.env.TWITTER_BEARER_TOKEN || '');
 const readOnlyClient = client.readOnly;
@@ -8,7 +9,6 @@ const buildKeywordQuery = (search: Search) => {
 	const keywords = search.keywords
 		.map((keyword) => {
 			if (keyword.includes(' ')) return `(${keyword})`;
-
 			return keyword;
 		})
 		.join(' OR ');
@@ -27,11 +27,13 @@ const buildKeywordQuery = (search: Search) => {
 		})
 		.join(' ');
 
-	return `(${keywords}) (${locationKeywords}) ${negativeKeywords} has:media`;
+	return `(${keywords}) (${locationKeywords}) (${negativeKeywords}) has:media`;
 };
 
 export const twitter = {
 	getTweets: async (search: Search) => {
+		logger.debug(buildKeywordQuery(search));
+
 		return await readOnlyClient.v2.search(buildKeywordQuery(search), {
 			max_results: search.max_results,
 			expansions: ['attachments.media_keys', 'geo.place_id', 'author_id'],

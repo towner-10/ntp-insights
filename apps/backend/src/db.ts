@@ -46,7 +46,7 @@ export const getNewSearches = async (oldSearches: Search[]) => {
 export const setRunStats = async (
 	search: Search,
 	last_run_duration: number,
-	next_run?: Date
+	next_run: Date | undefined | null
 ) => {
 	await prisma.search.update({
 		where: {
@@ -56,6 +56,7 @@ export const setRunStats = async (
 			last_run: new Date(),
 			last_run_duration: last_run_duration,
 			next_run: next_run,
+			enabled: next_run ? true : false,
 		},
 	});
 };
@@ -132,8 +133,11 @@ export const addTwitterPost = async (
 		raw: any;
 	}
 ) => {
-	return await prisma.post.create({
-		data: {
+	return await prisma.post.upsert({
+		where: {
+			source_id: post.id,
+		},
+		create: {
 			search_result: {
 				connect: {
 					id: searchResult.id,
@@ -144,6 +148,15 @@ export const addTwitterPost = async (
 			author: post.author_id,
 			url: `https://twitter.com/${post.author_id}/status/${post.id}`,
 			created_at: post.created_at,
+			comments: post.comments,
+			likes: post.likes,
+			shares: post.shares,
+			content: post.content,
+			images: post.images,
+			videos: post.videos,
+			raw: post.raw,
+		},
+		update: {
 			comments: post.comments,
 			likes: post.likes,
 			shares: post.shares,

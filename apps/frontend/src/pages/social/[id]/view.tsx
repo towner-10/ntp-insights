@@ -6,7 +6,7 @@ import { DownloadButton } from '@/components/buttons/download-button';
 import { CalendarDateRangePicker } from '@/components/ui/calendar-range';
 import ExampleGraph from '@/components/examples/example-graph';
 import ExampleStatCard from '@/components/examples/example-stat-card';
-import { MapCard } from '@/components/maps';
+import { MapCard, SearchViewBox } from '@/components/maps';
 import ServerStatusBadge from '@/components/server-status-badge';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { addDays } from 'date-fns';
@@ -69,6 +69,23 @@ const ViewSearchPage = () => {
 								lng: search.data.longitude,
 								lat: search.data.latitude,
 							}}
+							boxes={search.data.results
+								.map((result) => {
+									return result.location.map((location) => {
+										return {
+											id: location['id'],
+											geo: location['geo'],
+											country: location['country'],
+											full_name: location['full_name'],
+											country_code: location['country_code'],
+										} as SearchViewBox;
+									});
+								})
+								.flat()
+								.filter(
+									(box, index, self) =>
+										self.findIndex((b) => b.id === box.id) === index
+								)}
 						/>
 						<ExampleStatCard
 							title="Total Results"

@@ -92,7 +92,7 @@ model SearchResult {
   id         String           @id @default(cuid())
   type       SearchResultType
   response   Json
-  location   Json?
+  location   Json[]
   duration   Float
   posts      Post[]
   created_at DateTime         @default(now())
@@ -101,14 +101,15 @@ model SearchResult {
 }
 
 model Post {
-  id               String       @id @default(cuid())
+  id               String           @id @default(cuid())
   score            Float?
+  category         String?
   source_type      SearchResultType
-  source_id        String       @unique
+  source_id        String           @unique
   url              String
   content          String?
-  found_at         DateTime     @default(now())
-  updated_at       DateTime     @default(now()) @updatedAt
+  found_at         DateTime         @default(now())
+  updated_at       DateTime         @default(now()) @updatedAt
   created_at       DateTime?
   author           String
   images           String[]
@@ -117,7 +118,7 @@ model Post {
   shares           Int?
   comments         Int?
   raw              Json?
-  search_result    SearchResult @relation(fields: [search_result_id], references: [id])
+  search_result    SearchResult     @relation(fields: [search_result_id], references: [id])
   search_result_id String
 }
 

@@ -30,6 +30,19 @@ import { Label } from './ui/label';
 import { KeywordsInfo } from './dialogs/info-dialogs';
 import { cn } from '@/lib/utils';
 
+export type SearchViewBox = {
+	id: string;
+	geo: {
+		bbox: [number, number, number, number];
+		type: 'Feature';
+		properties: {};
+		geometry: {};
+	};
+	country: string;
+	full_name: string;
+	country_code: string;
+};
+
 interface DefaultProps {
 	className?: string;
 }
@@ -39,7 +52,7 @@ interface SearchViewMapProps extends DefaultProps {
 		lng: number;
 		lat: number;
 	};
-	points?: mapboxgl.LngLat[];
+	boxes?: SearchViewBox[];
 }
 
 interface MapCardProps extends SearchViewMapProps {
@@ -67,8 +80,6 @@ interface NewSearchMapProps extends MapCardProps {
 }
 
 export function MapCard(props: MapCardProps) {
-	console.log(props.start);
-
 	return (
 		<Card className={props.className}>
 			<CardHeader>
@@ -79,7 +90,7 @@ export function MapCard(props: MapCardProps) {
 				<SearchViewMap
 					className="h-[600px]"
 					start={props.start}
-					points={props.points}
+					boxes={props.boxes}
 				/>
 			</CardContent>
 		</Card>
@@ -372,7 +383,40 @@ export function SearchViewMap(props: SearchViewMapProps) {
 						: 'mapbox://styles/mapbox/dark-v10'
 				}
 				mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''}
-			/>
+			>
+				<Source
+					id="search-area"
+					type="geojson"
+					data={{
+						type: 'FeatureCollection',
+						features: props.boxes?.map((box) => {
+							return {
+								type: 'Feature',
+								properties: {},
+								geometry: {
+									type: 'LineString',
+									coordinates: [
+										[box.geo.bbox[0], box.geo.bbox[1]],
+										[box.geo.bbox[0], box.geo.bbox[3]],
+										[box.geo.bbox[2], box.geo.bbox[3]],
+										[box.geo.bbox[2], box.geo.bbox[1]],
+										[box.geo.bbox[0], box.geo.bbox[1]],
+									],
+								},
+							};
+						}),
+					}}
+				>
+					<Layer
+						id="search-area-layer"
+						type="fill"
+						paint={{
+							'fill-color': '#088',
+							'fill-opacity': 0.8,
+						}}
+					/>
+				</Source>
+			</Map>
 		</div>
 	);
 }

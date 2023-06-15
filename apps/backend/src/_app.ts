@@ -15,7 +15,7 @@ import {
 } from './db';
 import { logger } from './utils/logger';
 import { twitter } from './lib/social/twitter';
-import parse from 'date-fns/parse';
+import parseISO from 'date-fns/parseISO';
 
 const UPDATE_FREQUENCY = 10000;
 
@@ -86,7 +86,7 @@ const handleSearch = async (search: Search) => {
 				meta: tweets.meta,
 			},
 			duration: duration,
-			location: tweets.includes.places[0],
+			location: tweets.includes.places,
 		});
 
 		for (const tweet of tweets.tweets) {
@@ -119,7 +119,7 @@ const handleSearch = async (search: Search) => {
 				id: tweet.id,
 				author_id: tweet.author_id || 'unknown',
 				created_at: tweet.created_at
-					? parse(tweet.created_at || '', 'yyyy-MM-dd', new Date())
+					? parseISO(tweet.created_at)
 					: new Date(),
 				likes: tweet.public_metrics?.like_count || 0,
 				comments: tweet.public_metrics?.reply_count || 0,
@@ -135,11 +135,14 @@ const handleSearch = async (search: Search) => {
 	}
 
 	const timeTaken = new Date().getTime() - now;
+	const nextRun = scheduler.getNextRun(search.id) || undefined;
+
 	await setRunStats(
 		search,
 		timeTaken,
-		scheduler.getNextRun(search.id) || undefined
+		nextRun
 	);
+
 	logger.debug(`Finished search ${search.id} in ${timeTaken}ms`);
 };
 

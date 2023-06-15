@@ -209,6 +209,7 @@ export const searchRouter = createTRPCRouter({
 							results: true,
 						},
 					},
+					results: true,
 				},
 			});
 
@@ -238,16 +239,11 @@ export const searchRouter = createTRPCRouter({
 				lat: input.lat,
 			});
 
-			const province =
-				location?.stateCode || stateCodes[location?.state || 'None'] || null;
-
 			if (location) {
 				const response: string[] = [];
 
 				if (location.city) response.push(location.city);
 				if (location.state) response.push(location.state);
-				if (location.country) response.push(location.country);
-				if (province) response.push(province);
 
 				return response;
 			}
