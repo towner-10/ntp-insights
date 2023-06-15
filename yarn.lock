@@ -2159,6 +2159,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/gamepad@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@types/gamepad/-/gamepad-1.5.0.tgz#ccbc5816d0a1a3cba30c1bc66f25f6b5b96fde35"
+  integrity sha512-N9tlSfn+qm8DYcZsPMfeaKSoKfv76up11zVtRkd6bjjVuOU/ytr2FeS8DtCWOuT0Hzu+zJGrFOoi4BWD1MPpCg==
+
 "@types/geojson@*":
   version "7946.0.10"
   resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.10.tgz#6dfbf5ea17142f7f9a043809f1cd4c448cb68249"
@@ -6840,6 +6845,11 @@ react-email@1.9.3:
     read-pkg "5.2.0"
     shelljs "0.8.5"
     tree-node-cli "1.6.0"
+
+react-gamepads@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-gamepads/-/react-gamepads-1.0.0.tgz#72373c6bd332e0c42bb2d1584413d71fdb34f5da"
+  integrity sha512-jfmIBHI1EgjhEUOGTYnrzfhM6fV75d/rZAEuG90fwYBJ2mP2z+Z42UoodXa3OD00q9zGFeQCESlSY20UjAIGzA==
 
 react-hook-form@^7.43.9:
   version "7.44.3"
