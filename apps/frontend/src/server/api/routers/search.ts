@@ -23,15 +23,13 @@ export const searchRouter = createTRPCRouter({
 					name: input.name,
 					longitude: input.map.lng,
 					latitude: input.map.lat,
-					radius: input.radius,
-					location_keywords: location
-						? ([location.city, location.state, location.country] as string[])
-						: [],
+					location_keywords: input.map.keywords,
 					province:
 						location?.stateCode ||
 						stateCodes[location?.state || 'None'] ||
 						null,
 					keywords: input.keywords,
+					negative_keywords: input.negativeKeywords,
 					start_date: input.dateRange.from || new Date(),
 					end_date: input.dateRange.to || input.dateRange.from || new Date(),
 					frequency: input.frequency,
@@ -127,7 +125,7 @@ export const searchRouter = createTRPCRouter({
 				lng: input.search.map.lng,
 				lat: input.search.map.lat,
 			});
-			
+
 			const response = await prisma.search.update({
 				where: {
 					id: input.id,
@@ -136,10 +134,12 @@ export const searchRouter = createTRPCRouter({
 					name: input.search.name,
 					longitude: input.search.map.lng,
 					latitude: input.search.map.lat,
-					radius: input.search.radius,
-					location_keywords: location
-						? ([location.city, location.state, location.country] as string[])
-						: [],
+					location_keywords: input.search.map.keywords,
+					negative_keywords: input.search.negativeKeywords,
+					province:
+						location?.stateCode ||
+						stateCodes[location?.state || 'None'] ||
+						null,
 					keywords: input.search.keywords,
 					start_date: input.search.dateRange.from || new Date(),
 					end_date:
@@ -206,7 +206,7 @@ export const searchRouter = createTRPCRouter({
 				include: {
 					_count: {
 						select: {
-							posts: true,
+							results: true,
 						},
 					},
 				},
@@ -229,5 +229,29 @@ export const searchRouter = createTRPCRouter({
 			});
 
 			return response;
+		}),
+	geocodeKeywords: protectedProcedure
+		.input(z.object({ lng: z.number(), lat: z.number() }))
+		.query(async ({ input }) => {
+			const location = await findLocation({
+				lng: input.lng,
+				lat: input.lat,
+			});
+
+			const province =
+				location?.stateCode || stateCodes[location?.state || 'None'] || null;
+
+			if (location) {
+				const response: string[] = [];
+
+				if (location.city) response.push(location.city);
+				if (location.state) response.push(location.state);
+				if (location.country) response.push(location.country);
+				if (province) response.push(province);
+
+				return response;
+			}
+
+			return [];
 		}),
 });

@@ -50,9 +50,9 @@ export default class Scheduler {
 		if (start.getTime() < Date.now()) start = new Date();
 
 		// Convert the frequency to CRON format
-		if (frequency < 1)
-			throw new Error('❌ Frequency must be greater than or equal to 1');
-		const frequencyCron = `? */${frequency} * * * *`;
+		if (frequency < 6)
+			throw new Error('❌ Frequency must be greater than or equal to 6');
+		const frequencyCron = `? ? */${frequency} * * *`;
 
 		// Add a new job to the scheduler
 		this.jobs.set(hash, {
@@ -63,11 +63,11 @@ export default class Scheduler {
 					startAt: start,
 					stopAt: end,
 					protect: true,
-					interval: frequency * 60, // Convert from minutes to seconds
+					interval: frequency * 60 * 60,
 				},
 				callback
 			),
-			onOverrun: onOverrun
+			onOverrun: onOverrun,
 		});
 
 		// If the job should be run immediately, run it
@@ -89,6 +89,10 @@ export default class Scheduler {
 		this.jobs.delete(hash);
 
 		logger.success(`Removed job with id: ${hash}`);
+	}
+
+	public getNextRun(hash: string) {
+		return this.jobs.get(hash)?.cron.nextRun();
 	}
 
 	/**

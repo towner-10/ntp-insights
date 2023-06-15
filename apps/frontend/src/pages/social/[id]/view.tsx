@@ -68,15 +68,14 @@ const ViewSearchPage = () => {
 							start={{
 								lng: search.data.longitude,
 								lat: search.data.latitude,
-								radius: search.data.radius,
 							}}
 						/>
 						<ExampleStatCard
-							title="Total Posts"
-							description="Total number of posts"
+							title="Total Results"
+							description="Total number of results"
 							value={
 								<h2 className="text-4xl font-bold">
-									{search.data?._count.posts}
+									{search.data?._count.results}
 								</h2>
 							}
 						/>

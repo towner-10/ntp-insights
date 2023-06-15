@@ -2,13 +2,16 @@ import { type FocusEventHandler, useState } from 'react';
 import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
 import { LucideXCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type KeywordInputProps = {
 	value: string[];
 	onChange: (value: string[]) => void;
-	onBlur: FocusEventHandler<HTMLInputElement>;
-	inputRef: React.Ref<HTMLInputElement>;
+	onBlur?: FocusEventHandler<HTMLInputElement>;
+	inputRef?: React.Ref<HTMLInputElement>;
+	lockedKeywords?: string[];
 	disabled?: boolean;
+	className?: string;
 };
 
 export function KeywordInput(props: KeywordInputProps) {
@@ -22,12 +25,19 @@ export function KeywordInput(props: KeywordInputProps) {
 
 	return (
 		<div
-			className={`rounded-lg border bg-card text-card-foreground shadow-sm ${
-				props.value.length > 0 ? 'p-2' : ''
-			}`}
+			className={cn('bg-card text-card-foreground', props.className)}
 		>
-			{props.value.length > 0 && (
-				<div className="flex flex-row flex-wrap gap-2 pb-2">
+			{(props.value.length > 0 || props.lockedKeywords) && (
+				<div className="bg-card mb-2 flex flex-row flex-wrap gap-2 rounded-md border p-2">
+					{props.lockedKeywords?.map((keyword, index) => {
+						return (
+							<Badge key={index} variant="secondary">
+								<div className="flex flex-row items-center gap-1 overflow-ellipsis">
+									<p>{keyword}</p>
+								</div>
+							</Badge>
+						);
+					})}
 					{props.value.map((keyword, index) => {
 						return (
 							<Badge
@@ -46,7 +56,6 @@ export function KeywordInput(props: KeywordInputProps) {
 				</div>
 			)}
 			<Input
-				id="keywords"
 				type="text"
 				placeholder="Enter a keyword..."
 				className="w-full"

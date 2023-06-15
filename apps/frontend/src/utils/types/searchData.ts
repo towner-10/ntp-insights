@@ -11,9 +11,10 @@ export const searchDataSchema = z.object({
 	map: z.object({
 		lng: z.number(),
 		lat: z.number(),
+		keywords: z.array(z.string()),
 	}),
-	radius: z.number(),
 	keywords: z.array(z.string()),
+	negativeKeywords: z.array(z.string()),
 	frequency: z.number(),
 	maxResults: z.number(),
 	twitter: z.boolean(),

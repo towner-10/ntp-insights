@@ -60,54 +60,65 @@ model VerificationToken {
 }
 
 model Search {
-  id                String    @id @default(cuid())
+  id                String         @id @default(cuid())
   name              String
   longitude         Float
   latitude          Float
-  radius            Float
-  location_keywords String[]
-  province          String?
   start_date        DateTime
   end_date          DateTime
   keywords          String[]
-  frequency         Float     @default(30)
-  max_results       Int       @default(50)
-  facebook          Boolean   @default(false)
-  twitter           Boolean   @default(true)
-  enabled           Boolean   @default(true)
-  archived          Boolean   @default(false)
-  posts             Post[]
-  created_at        DateTime  @default(now())
-  updated_at        DateTime  @default(now()) @updatedAt
+  negative_keywords String[]
+  location_keywords String[]
+  province          String?
+  frequency         Float          @default(30)
+  max_results       Int            @default(50)
+  facebook          Boolean        @default(false)
+  twitter           Boolean        @default(true)
+  enabled           Boolean        @default(true)
+  archived          Boolean        @default(false)
+  results           SearchResult[]
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @default(now()) @updatedAt
+  next_run          DateTime?
   last_run          DateTime?
-  last_run_time     Float?
-  tweet_count       Int[]
-  created_by        User      @relation("Search Created By", fields: [created_by_id], references: [id])
+  last_run_duration Float?
+  created_by        User           @relation("Search Created By", fields: [created_by_id], references: [id])
   created_by_id     String
-  updated_by        User      @relation("Search Updated By", fields: [updated_by_id], references: [id])
+  updated_by        User           @relation("Search Updated By", fields: [updated_by_id], references: [id])
   updated_by_id     String
 }
 
+model SearchResult {
+  id         String           @id @default(cuid())
+  type       SearchResultType
+  response   Json
+  location   Json?
+  duration   Float
+  posts      Post[]
+  created_at DateTime         @default(now())
+  search     Search           @relation(fields: [search_id], references: [id])
+  search_id  String
+}
+
 model Post {
-  id          String    @id @default(cuid())
-  score       Float?
-  source_type String
-  source_id   String    @unique
-  url         String
-  content     String?
-  found_at    DateTime  @default(now())
-  updated_at  DateTime  @default(now()) @updatedAt
-  created_at  DateTime?
-  author      String
-  location    String
-  images      String[]
-  videos      String[]
-  likes       Int?
-  shares      Int?
-  comments    Int?
-  raw         Json?
-  search      Search    @relation(fields: [search_id], references: [id])
-  search_id   String
+  id               String       @id @default(cuid())
+  score            Float?
+  source_type      SearchResultType
+  source_id        String       @unique
+  url              String
+  content          String?
+  found_at         DateTime     @default(now())
+  updated_at       DateTime     @default(now()) @updatedAt
+  created_at       DateTime?
+  author           String
+  images           String[]
+  videos           String[]
+  likes            Int?
+  shares           Int?
+  comments         Int?
+  raw              Json?
+  search_result    SearchResult @relation(fields: [search_result_id], references: [id])
+  search_result_id String
 }
 
 model Path {
@@ -154,4 +165,9 @@ model Image360 {
 enum ImageSource {
   GOOGLE
   NTP
+}
+
+enum SearchResultType {
+  TWITTER
+  FACEBOOK
 }
