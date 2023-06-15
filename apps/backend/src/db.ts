@@ -1,4 +1,4 @@
-import { PrismaClient, Post, Search } from 'database';
+import { PrismaClient, Search, SearchResult } from 'database';
 
 const prisma = new PrismaClient();
 
@@ -9,10 +9,10 @@ export const getSearches = async () => {
 export const verifyAccessToken = async (token: string) => {
 	return await prisma.session.findFirst({
 		where: {
-			sessionToken: token
+			sessionToken: token,
 		},
-	})
-}
+	});
+};
 
 export const getEnabledSearches = async () => {
 	return await prisma.search.findMany({
@@ -43,25 +43,19 @@ export const getNewSearches = async (oldSearches: Search[]) => {
 	});
 };
 
-export const setTweetCount = async (search: Search, count: number[]) => {
-	await prisma.search.update({
-		where: {
-			id: search.id,
-		},
-		data: {
-			tweet_count: count,
-		},
-	});
-};
-
-export const setLastRun = async (search: Search, last_run_time: number) => {
+export const setRunStats = async (
+	search: Search,
+	last_run_duration: number,
+	next_run?: Date
+) => {
 	await prisma.search.update({
 		where: {
 			id: search.id,
 		},
 		data: {
 			last_run: new Date(),
-			last_run_time: last_run_time,
+			last_run_duration: last_run_duration,
+			next_run: next_run,
 		},
 	});
 };
@@ -75,7 +69,7 @@ export const disableSearch = async (search: Search) => {
 			enabled: false,
 		},
 	});
-}
+};
 
 export const getNewDisabledSearches = async (oldSearches: Search[]) => {
 	const oldIDs = oldSearches.map((search) => search.id);
@@ -100,39 +94,63 @@ export const getNewDisabledSearches = async (oldSearches: Search[]) => {
 	});
 };
 
-export const newPost = async (post: Post) => {
-	return await prisma.post.upsert({
-		where: {
-			source_id: post.source_id,
+export const addTwitterSearchResult = async (
+	search: Search,
+	result: {
+		response: any;
+		location: any;
+		duration: number;
+	}
+) => {
+	return await prisma.searchResult.create({
+		data: {
+			search: {
+				connect: {
+					id: search.id,
+				},
+			},
+			type: 'TWITTER',
+			response: result.response,
+			location: result.location,
+			duration: result.duration,
 		},
-		update: {
-			source_type: post.source_type,
-			source_id: post.source_id,
-			url: post.url,
-			content: post.content,
+	});
+};
+
+export const addTwitterPost = async (
+	searchResult: SearchResult,
+	post: {
+		id: string;
+		author_id: string;
+		comments: number;
+		created_at: Date | string;
+		likes: number;
+		shares: number;
+		content: string;
+		images: string[];
+		videos: string[];
+		raw: any;
+	}
+) => {
+	return await prisma.post.create({
+		data: {
+			search_result: {
+				connect: {
+					id: searchResult.id,
+				},
+			},
+			source_type: 'TWITTER',
+			source_id: post.id,
+			author: post.author_id,
+			url: `https://twitter.com/${post.author_id}/status/${post.id}`,
 			created_at: post.created_at,
-			author: post.author,
-			location: post.location,
+			comments: post.comments,
+			likes: post.likes,
+			shares: post.shares,
+			content: post.content,
 			images: post.images,
 			videos: post.videos,
-			likes: post.likes,
-			comments: post.comments,
-			shares: post.shares,
-		},
-		create: {
-			source_type: post.source_type,
-			source_id: post.source_id,
-			url: post.url,
-			content: post.content,
-			created_at: post.created_at,
-			author: post.author,
-			location: post.location,
-			images: post.images,
-			videos: post.videos,
-			likes: post.likes,
-			comments: post.comments,
-			shares: post.shares,
-			search_id: post.search_id,
+			raw: post.raw,
 		},
 	});
 };

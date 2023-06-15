@@ -1,10 +1,17 @@
 import mapboxgl from 'mapbox-gl';
-import Map, { Layer, MapRef, Marker, Source } from 'react-map-gl';
+import Map, {
+	Layer,
+	MapRef,
+	Marker,
+	Source,
+	type MarkerDragEvent,
+} from 'react-map-gl';
 import { useRef, useEffect, useState } from 'react';
 import {
 	Card,
 	CardContent,
 	CardDescription,
+	CardFooter,
 	CardHeader,
 	CardTitle,
 } from './ui/card';
@@ -17,6 +24,11 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from './ui/tooltip';
+import { api } from '@/utils/api';
+import { KeywordInput } from './input/keyword-input';
+import { Label } from './ui/label';
+import { KeywordsInfo } from './dialogs/info-dialogs';
+import { cn } from '@/lib/utils';
 
 interface DefaultProps {
 	className?: string;
@@ -26,7 +38,6 @@ interface SearchViewMapProps extends DefaultProps {
 	start?: {
 		lng: number;
 		lat: number;
-		radius: number;
 	};
 	points?: mapboxgl.LngLat[];
 }
@@ -46,11 +57,12 @@ interface View360MapProps extends DefaultProps {
 	points: mapboxgl.LngLat[];
 }
 
-interface MapCardMarkerProps extends MapCardProps {
-	onChange?: ({ lng, lat }: mapboxgl.LngLat) => void;
+interface NewSearchMapProps extends MapCardProps {
+	onChange?: ({ lng, lat, keywords }) => void;
 	value?: {
 		lng: number;
 		lat: number;
+		keywords: string[];
 	};
 }
 
@@ -74,15 +86,42 @@ export function MapCard(props: MapCardProps) {
 	);
 }
 
-export function MapWithMarkerCard(props: MapCardMarkerProps) {
+export function NewSearchMapCard(props: NewSearchMapProps) {
 	const mapRef = useRef<MapRef>();
 	const { resolvedTheme } = useTheme();
 	const [lng, setLng] = useState(props.value?.lng || -81.3);
 	const [lat, setLat] = useState(props.value?.lat || 42.97);
+	const geocodeKeywords = api.search.geocodeKeywords.useQuery({
+		lng,
+		lat,
+	});
+	const [userKeywords, setUserKeywords] = useState<string[]>([]);
 	const [rotation, setRotation] = useState(0);
 
+	const onDragEnd = (event: MarkerDragEvent) => {
+		const { lng, lat } = event.lngLat;
+		setLng(Number(lng.toFixed(5)));
+		setLat(Number(lat.toFixed(5)));
+
+		void (async () => {
+			await geocodeKeywords.refetch();
+
+			if (!geocodeKeywords.data) {
+				if (props.onChange)
+					props.onChange({ lng, lat, keywords: userKeywords });
+				return;
+			}
+			if (props.onChange)
+				props.onChange({
+					lng,
+					lat,
+					keywords: [...geocodeKeywords.data, ...userKeywords],
+				});
+		})();
+	};
+
 	return (
-		<Card className={props.className}>
+		<Card className={cn('flex flex-col', props.className)}>
 			<CardHeader>
 				<div className="flex flex-row justify-between">
 					<div className="flex flex-col">
@@ -113,13 +152,13 @@ export function MapWithMarkerCard(props: MapCardMarkerProps) {
 							<TooltipTrigger asChild>
 								<div
 									className="bg-background/60 absolute z-10 m-2 flex max-w-xs cursor-pointer select-none flex-col gap-2 rounded-lg p-2 backdrop-blur"
-									onClick={
+									onClick={() => {
 										void (async () => {
 											if (typeof window != 'undefined') {
 												await navigator.clipboard.writeText(`${lat}, ${lng}`);
 											}
-										})()
-									}
+										})();
+									}}
 								>
 									<span>Latitude: {lat}</span>
 									<span>Longitude: {lng}</span>
@@ -151,7 +190,7 @@ export function MapWithMarkerCard(props: MapCardMarkerProps) {
 							bearing: 0,
 						}}
 						style={{
-							height: '600px',
+							height: '650px',
 						}}
 						onRotate={(event) => setRotation(event.viewState.bearing)}
 						mapStyle={
@@ -165,12 +204,7 @@ export function MapWithMarkerCard(props: MapCardMarkerProps) {
 							draggable
 							longitude={lng}
 							latitude={lat}
-							onDragEnd={(event) => {
-								const { lng, lat } = event.lngLat;
-								setLng(Number(lng.toFixed(5)));
-								setLat(Number(lat.toFixed(5)));
-								if (props.onChange) props.onChange(event.lngLat);
-							}}
+							onDragEnd={onDragEnd}
 						>
 							<div className="text-foreground h-6 w-6">
 								<LucideCircleDot />
@@ -179,6 +213,19 @@ export function MapWithMarkerCard(props: MapCardMarkerProps) {
 					</Map>
 				</div>
 			</CardContent>
+			<CardFooter className="flex-grow items-end">
+				<div className="flex flex-grow flex-col gap-2">
+					<div className="flex flex-row items-center gap-2">
+						<Label>Location Keywords</Label>
+						<KeywordsInfo />
+					</div>
+					<KeywordInput
+						onChange={setUserKeywords}
+						value={userKeywords}
+						lockedKeywords={geocodeKeywords.data}
+					/>
+				</div>
+			</CardFooter>
 		</Card>
 	);
 }
@@ -286,13 +333,17 @@ export function StaticMap(props: StaticMapProps) {
 
 export function SearchViewMap(props: SearchViewMapProps) {
 	const { resolvedTheme } = useTheme();
-	const [viewState, setViewState] = useState(props.start ? {
-		longitude: props.start.lng,
-		latitude: props.start.lat,
-	} : {
-		longitude: -81.3,
-		latitude: 42.97,
-	});
+	const [viewState, setViewState] = useState(
+		props.start
+			? {
+					longitude: props.start.lng,
+					latitude: props.start.lat,
+			  }
+			: {
+					longitude: -81.3,
+					latitude: 42.97,
+			  }
+	);
 
 	return (
 		<div className={props.className}>
@@ -304,7 +355,7 @@ export function SearchViewMap(props: SearchViewMapProps) {
 				initialViewState={{
 					bounds: props.start
 						? new mapboxgl.LngLat(props.start.lng, props.start.lat).toBounds(
-								props.start.radius * 1000
+								5000
 						  )
 						: undefined,
 					fitBoundsOptions: {
