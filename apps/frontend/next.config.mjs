@@ -27,6 +27,10 @@ const config = withBundleAnalyzer({
         destination: 'https://maps.googleapis.com/:path*',
       },
       {
+        source: '/pbs.twimg.com/:path*',
+        destination: 'https://pbs.twimg.com/:path*',
+      },
+      {
         source: '/backend/:path*',
         destination: `${env.BACKEND_URL}/:path*`,
       }

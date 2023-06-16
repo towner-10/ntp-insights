@@ -17,6 +17,9 @@ import {
 	SearchGraph,
 	breakPostsIntoIntervals,
 } from '@/components/graphs/search-graph';
+import { DataTable } from '@/components/data-tables/posts/data-table';
+import { columns } from '@/components/data-tables/posts/columns';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const ViewSearchPage = () => {
 	const session = useSession();
@@ -113,7 +116,7 @@ const ViewSearchPage = () => {
 						<StatCard
 							title="Relevant Posts"
 							description="Total number of relevant posts"
-							className='md:col-span-3 lg:col-span-1'
+							className="md:col-span-3 lg:col-span-1"
 						>
 							<h2 className="text-success text-4xl font-bold">
 								{
@@ -128,7 +131,7 @@ const ViewSearchPage = () => {
 						<StatCard
 							title="Total Posts"
 							description="Number of unique posts found"
-							className='md:col-span-2 lg:col-span-1'
+							className="md:col-span-2 lg:col-span-1"
 						>
 							<h2 className="text-4xl font-bold">
 								{searchResults.data
@@ -145,7 +148,7 @@ const ViewSearchPage = () => {
 						<StatCard
 							title="Total Results"
 							description="Number of queries made"
-							className='md:col-span-2 lg:col-span-1'
+							className="md:col-span-2 lg:col-span-1"
 						>
 							<h2 className="text-4xl font-bold">
 								{search.data?._count.results}
@@ -154,7 +157,7 @@ const ViewSearchPage = () => {
 						<StatCard
 							title="Total Users"
 							description="Number of unique users found"
-							className='md:col-span-3 lg:col-span-1'
+							className="md:col-span-3 lg:col-span-1"
 						>
 							<h2 className="text-4xl font-bold">
 								{
@@ -168,6 +171,20 @@ const ViewSearchPage = () => {
 								}
 							</h2>
 						</StatCard>
+						<Card className="col-span-full row-span-2 lg:col-span-5">
+							<CardHeader>
+								<CardTitle>Posts</CardTitle>
+								<CardDescription>
+									Posts that were found by the search.
+								</CardDescription>
+							</CardHeader>
+							<CardContent>
+								<DataTable
+									columns={columns}
+									data={searchResults.data.map((result) => result.posts).flat()}
+								/>
+							</CardContent>
+						</Card>
 						<MapCard
 							title="Locations"
 							description="Places where posts were made. This data is based on the location data provided by Twitter."

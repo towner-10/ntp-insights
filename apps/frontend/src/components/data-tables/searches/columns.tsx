@@ -1,8 +1,8 @@
+import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { type Search } from '@prisma/client';
 import { type ColumnDef } from '@tanstack/react-table';
-import Link from 'next/link';
 import { UserHoverCard } from '@/components/user-hover-card';
 
 export const columns: ColumnDef<Search>[] = [
