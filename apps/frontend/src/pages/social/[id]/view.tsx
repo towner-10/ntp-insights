@@ -3,17 +3,20 @@ import { type GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Header from '@/components/header';
 import { DownloadButton } from '@/components/buttons/download-button';
-import { CalendarDateRangePicker } from '@/components/ui/calendar-range';
-import ExampleGraph from '@/components/examples/example-graph';
-import ExampleStatCard from '@/components/examples/example-stat-card';
+import StatCard from '@/components/stat-card';
 import { MapCard, SearchViewBox } from '@/components/maps';
 import ServerStatusBadge from '@/components/server-status-badge';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { addDays } from 'date-fns';
 import { Toaster } from '@/components/ui/toaster';
 import { api } from '@/utils/api';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import { useSession } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
+import {
+	ClassificationComparisonGraph,
+	SearchGraph,
+	breakPostsIntoIntervals,
+} from '@/components/graphs/search-graph';
 
 const ViewSearchPage = () => {
 	const session = useSession();
@@ -25,6 +28,9 @@ const ViewSearchPage = () => {
 	} = router.query;
 
 	const search = api.search.get.useQuery({ id: id || '' });
+	const searchResults = api.searchResults.getAllForSearch.useQuery({
+		id: id || '',
+	});
 
 	if (search.isLoading) {
 		return <div>Loading...</div>;
@@ -33,6 +39,48 @@ const ViewSearchPage = () => {
 	} else if (!search.data) {
 		return <div>Not found</div>;
 	}
+
+	const postIntervals = breakPostsIntoIntervals(
+		searchResults.data
+			?.map((result) => result.posts)
+			.flat()
+			.sort((a, b) => {
+				return (
+					new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+				);
+			}),
+		// Every 3 hours
+		1000 * 60 * 60 * 3
+	);
+
+	const postsOverTimeData = postIntervals.map((interval) => {
+		return {
+			label: new Date(interval[0].created_at).toLocaleString('en-US', {
+				month: 'short',
+				day: '2-digit',
+				hour: 'numeric',
+				minute: 'numeric',
+			}),
+			stat: interval.length,
+		};
+	});
+
+	const classificationsOverTimeData = postIntervals.map((interval) => {
+		return {
+			label: new Date(interval[0].created_at).toLocaleString('en-US', {
+				month: 'short',
+				day: '2-digit',
+				hour: 'numeric',
+				minute: 'numeric',
+			}),
+			relevant: interval.filter(
+				(post) => post.category.toLowerCase() === 'relevant'
+			).length,
+			irrelevant: interval.filter(
+				(post) => post.category.toLowerCase() === 'irrelevant'
+			).length,
+		};
+	});
 
 	return (
 		<>
@@ -48,23 +96,82 @@ const ViewSearchPage = () => {
 				/>
 				<Toaster />
 				<div className="container flex flex-col items-center justify-center p-6">
-					<div className="flex w-full flex-row items-center">
+					<div className="flex w-full flex-row items-center justify-between">
+						<ServerStatusBadge />
 						<div className="flex flex-row items-center gap-4">
+							<Button variant="secondary">Edit</Button>
 							<DownloadButton />
-							<CalendarDateRangePicker
-								value={{
-									from: search.data?.start_date || new Date(),
-									to: search.data?.end_date || addDays(new Date(), 7),
-								}}
-							/>
-							<ServerStatusBadge />
 						</div>
 					</div>
-					<div className="grid w-full grid-cols-1 gap-4 py-8 lg:grid-cols-5">
+					<div className="grid w-full grid-cols-1 gap-4 py-8 md:grid-cols-5">
+						<SearchGraph
+							title="Posts Over Time"
+							description="Number of posts over time"
+							data={postsOverTimeData}
+							className="col-span-full row-span-2 lg:col-span-4"
+						/>
+						<StatCard
+							title="Relevant Posts"
+							description="Total number of relevant posts"
+							className='md:col-span-3 lg:col-span-1'
+						>
+							<h2 className="text-success text-4xl font-bold">
+								{
+									searchResults.data
+										?.map((result) => result.posts.map((post) => post.category))
+										.flat()
+										.filter((category) => category.toLowerCase() === 'relevant')
+										.length
+								}
+							</h2>
+						</StatCard>
+						<StatCard
+							title="Total Posts"
+							description="Number of unique posts found"
+							className='md:col-span-2 lg:col-span-1'
+						>
+							<h2 className="text-4xl font-bold">
+								{searchResults.data
+									?.map((result) => result.posts.length)
+									.reduce((a, b) => a + b, 0)}
+							</h2>
+						</StatCard>
+						<ClassificationComparisonGraph
+							title="Classification Comparison"
+							description="Comparison of relevant and irrelevant posts"
+							data={classificationsOverTimeData}
+							className="col-span-full row-span-2 lg:col-span-4"
+						/>
+						<StatCard
+							title="Total Results"
+							description="Number of queries made"
+							className='md:col-span-2 lg:col-span-1'
+						>
+							<h2 className="text-4xl font-bold">
+								{search.data?._count.results}
+							</h2>
+						</StatCard>
+						<StatCard
+							title="Total Users"
+							description="Number of unique users found"
+							className='md:col-span-3 lg:col-span-1'
+						>
+							<h2 className="text-4xl font-bold">
+								{
+									searchResults.data
+										?.map((result) => result.posts.map((post) => post.author))
+										.flat()
+										.filter(
+											(user, index, self) =>
+												self.findIndex((u) => u === user) === index
+										).length
+								}
+							</h2>
+						</StatCard>
 						<MapCard
-							title="Overview"
-							description="Map of search area. View posts by clicking on the markers."
-							className="min-w-[400px] md:col-span-4 md:row-span-4"
+							title="Locations"
+							description="Places where posts were made. This data is based on the location data provided by Twitter."
+							className="min-w-[400px] md:col-span-full md:row-span-4"
 							start={{
 								lng: search.data.longitude,
 								lat: search.data.latitude,
@@ -87,32 +194,6 @@ const ViewSearchPage = () => {
 										self.findIndex((b) => b.id === box.id) === index
 								)}
 						/>
-						<ExampleStatCard
-							title="Total Results"
-							description="Total number of results"
-							value={
-								<h2 className="text-4xl font-bold">
-									{search.data?._count.results}
-								</h2>
-							}
-						/>
-						<ExampleStatCard
-							title="User Growth"
-							description="Total number of users"
-							value={<h2 className="text-success text-4xl font-bold">+50</h2>}
-						/>
-						<ExampleStatCard
-							title="Total Users"
-							description="Total number of users"
-							value={<h2 className="text-4xl font-bold">100</h2>}
-						/>
-						<ExampleStatCard
-							title="Total Users"
-							description="Total number of users"
-							value={<h2 className="text-4xl font-bold">100</h2>}
-						/>
-						<ExampleGraph className="md:col-span-5" />
-						<ExampleGraph className="md:col-span-5" />
 					</div>
 				</div>
 			</main>

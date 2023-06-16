@@ -1,7 +1,5 @@
 import { type GetServerSidePropsContext, type NextPage } from 'next';
 import Head from 'next/head';
-import ExampleGraph from '@/components/examples/example-graph';
-import ExampleStatCard from '@/components/examples/example-stat-card';
 import ServerStatusBadge from '@/components/server-status-badge';
 import Header from '@/components/header';
 import { CalendarDateRangePicker } from '@/components/ui/calendar-range';
@@ -32,34 +30,18 @@ const Dashboard: NextPage = () => {
 				/>
 				<Toaster />
 				<div className="container flex flex-col items-center justify-center p-6">
-					<div className="flex w-full flex-row items-center">
-						<div className="flex flex-row flex-wrap items-center gap-4">
-							<NewSearchButton />
-							<CalendarDateRangePicker
-								value={{
-									from: new Date(),
-									to: addDays(new Date(), 7),
-								}}
-							/>
-							<ServerStatusBadge />
-						</div>
+					<div className="flex w-full flex-row items-center gap-4">
+						<NewSearchButton />
+						<CalendarDateRangePicker
+							value={{
+								from: new Date(),
+								to: addDays(new Date(), 7),
+							}}
+						/>
+						<ServerStatusBadge />
 					</div>
 					<div className="grid w-full grid-cols-2 gap-4 py-8 lg:grid-cols-5">
-						<ExampleGraph className="col-span-2 row-span-2 md:col-span-4" />
-						<ExampleStatCard
-							title="Total Users"
-							description="Total number of users"
-							value={<h2 className="text-4xl font-bold">100</h2>}
-						/>
-						<ExampleStatCard
-							title="User Growth"
-							description="Total number of users"
-							value={<h2 className="text-4xl font-bold text-success">+50</h2>}
-						/>
-						<ExampleGraph className="col-span-2 md:col-span-5" />
-						<ExampleGraph className="col-span-2 md:col-span-5" />
-						<ExampleGraph className="col-span-2 md:col-span-5" />
-						<ExampleGraph className="col-span-2 md:col-span-5" />
+						Nothing here yet! Come back later.
 					</div>
 				</div>
 			</main>

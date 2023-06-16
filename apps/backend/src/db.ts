@@ -176,13 +176,35 @@ export const addTwitterPost = async (
 	});
 };
 
-export const setCategory = async (id: string, category: string) => {
+export const updateClassifications = async (
+	id: string,
+	classifications: {
+		[label: string]: {
+			confidence: number;
+		};
+	}
+) => {
+	const bestClassification = Object.keys(classifications).reduce(
+		(best, classification) => {
+			if (
+				classifications[classification].confidence >
+				classifications[best].confidence
+			) {
+				return classification;
+			}
+
+			return best;
+		},
+		Object.keys(classifications)[0]
+	);
+
 	return await prisma.post.update({
 		where: {
 			id: id,
 		},
 		data: {
-			category: category,
+			classifications: classifications,
+			category: bestClassification,
 		},
 	});
 };

@@ -1,6 +1,6 @@
 import cohere from 'cohere-ai';
 import { Post } from 'database';
-import { setCategory } from '../db';
+import { updateClassifications } from '../db';
 import { logger } from '../utils/logger';
 
 cohere.init(process.env.COHERE_API_KEY || '');
@@ -67,26 +67,12 @@ export const classifyPosts = async (posts: Post[]) => {
 	for (let i = 0; i < filteredPosts.length; i++) {
 		if (filteredPosts[i] === null) continue;
 
-		// Determine best classification
-		const classifications = response.body.classifications[i].labels;
-
-		const bestClassification = Object.keys(classifications).reduce(
-			(best, classification) => {
-				if (
-					classifications[classification].confidence >
-					classifications[best].confidence
-				) {
-					return classification;
-				}
-
-				return best;
-			},
-			Object.keys(classifications)[0]
-		);
-
 		// Add classification to post
 		postsToUpdate.push(
-			setCategory(filteredPosts[i]!.id, bestClassification)
+			updateClassifications(
+				filteredPosts[i]!.id,
+				response.body.classifications[i].labels
+			)
 		);
 	}
 

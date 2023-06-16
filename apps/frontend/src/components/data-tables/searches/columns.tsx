@@ -32,7 +32,7 @@ export const columns: ColumnDef<Search>[] = [
 		cell({ row }) {
 			const frequency = row.original.frequency;
 
-			return `${frequency} min`;
+			return `${frequency} hours`;
 		},
 	},
 	{
@@ -78,4 +78,17 @@ export const columns: ColumnDef<Search>[] = [
 			);
 		},
 	},
+	{
+		accessorKey: 'enabled',
+		header: 'Enabled',
+		cell({ row }) {
+			const enabled = row.original.enabled;
+
+			return (
+				<Badge variant={enabled ? 'default' : 'destructive'}>
+					{enabled ? 'Yes' : 'No'}
+				</Badge>
+			);
+		}
+	}
 ];

@@ -104,6 +104,7 @@ model Post {
   id               String           @id @default(cuid())
   score            Float?
   category         String?
+  classifications  Json?
   source_type      SearchResultType
   source_id        String           @unique
   url              String
