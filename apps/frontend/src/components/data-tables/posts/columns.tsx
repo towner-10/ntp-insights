@@ -10,7 +10,6 @@ import {
 import { ColumnDef } from '@tanstack/react-table';
 import { Post } from 'database';
 import { LucideForward, LucideHeart, LucideMessageCircle } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 export const columns: ColumnDef<Post>[] = [
@@ -71,7 +70,8 @@ export const columns: ColumnDef<Post>[] = [
 						</DialogHeader>
 						<div className="flex flex-col space-y-2">
 							{row.original.images[0] && (
-								<Image
+								// eslint-disable-next-line @next/next/no-img-element
+								<img
 									width={500}
 									height={500}
 									src={row.original.images[0].replace('https://', '/')}
