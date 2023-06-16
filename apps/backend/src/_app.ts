@@ -3,11 +3,12 @@ dotenv.config({ override: true });
 
 import Scheduler from './scheduler';
 import NTPServer from './server';
-import { Search } from 'database';
+import { Post, Search } from 'database';
 import {
 	addTwitterPost,
 	addTwitterSearchResult,
 	disableSearch,
+	getAllSearchResults,
 	getEnabledSearches,
 	getNewDisabledSearches,
 	getNewSearches,
@@ -16,6 +17,7 @@ import {
 import { logger } from './utils/logger';
 import { twitter } from './lib/social/twitter';
 import parseISO from 'date-fns/parseISO';
+import { classifyPosts } from './lib/classification';
 
 const UPDATE_FREQUENCY = 10000;
 
@@ -89,6 +91,8 @@ const handleSearch = async (search: Search) => {
 			location: tweets.includes.places,
 		});
 
+		let classify_queue: Post[] = [];
+
 		for (const tweet of tweets.tweets) {
 			const images: string[] = [];
 			const videos: string[] = [];
@@ -115,7 +119,7 @@ const handleSearch = async (search: Search) => {
 			}
 
 			// Create new Tweet
-			await addTwitterPost(searchResult, {
+			const result = await addTwitterPost(searchResult, {
 				id: tweet.id,
 				author_id: tweet.author_id || 'unknown',
 				created_at: tweet.created_at
@@ -129,6 +133,31 @@ const handleSearch = async (search: Search) => {
 				videos: videos || [],
 				raw: tweet,
 			});
+
+			classify_queue.push(result);
+
+			// Once 96 posts have been added, classify them
+			if (classify_queue.length >= 96) {
+				logger.debug(`Classifying ${classify_queue.length} posts`);
+
+				try {
+					await classifyPosts(classify_queue);
+				} catch (err) {
+					logger.error(err);
+				}
+
+				classify_queue = [];
+			}
+		}
+
+		if (classify_queue.length > 0) {
+			try {
+				await classifyPosts(classify_queue);
+			} catch (err) {
+				logger.error(err);
+			}
+
+			classify_queue = [];
 		}
 
 		logger.debug(`Finished searching Twitter for ${search.id}`);
@@ -137,11 +166,7 @@ const handleSearch = async (search: Search) => {
 	const timeTaken = new Date().getTime() - now;
 	const nextRun = scheduler.getNextRun(search.id) || undefined;
 
-	await setRunStats(
-		search,
-		timeTaken,
-		nextRun
-	);
+	await setRunStats(search, timeTaken, nextRun);
 
 	logger.debug(`Finished search ${search.id} in ${timeTaken}ms`);
 };
@@ -162,6 +187,11 @@ const addSearch = (search: Search, immediate = false) => {
 };
 
 (async () => {
+	if (!process.env.COHERE_API_KEY) {
+		logger.error('Missing COHERE_API_KEY');
+		process.exit(1);
+	}
+
 	searches = await getEnabledSearches();
 
 	searches.forEach((search) => {

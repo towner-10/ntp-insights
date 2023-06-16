@@ -14,6 +14,14 @@ export const verifyAccessToken = async (token: string) => {
 	});
 };
 
+export const getAllSearchResults = async () => {
+	return await prisma.searchResult.findMany({
+		include: {
+			posts: true,
+		},
+	});
+};
+
 export const getEnabledSearches = async () => {
 	return await prisma.search.findMany({
 		where: {
@@ -164,6 +172,17 @@ export const addTwitterPost = async (
 			images: post.images,
 			videos: post.videos,
 			raw: post.raw,
+		},
+	});
+};
+
+export const setCategory = async (id: string, category: string) => {
+	return await prisma.post.update({
+		where: {
+			id: id,
+		},
+		data: {
+			category: category,
 		},
 	});
 };
