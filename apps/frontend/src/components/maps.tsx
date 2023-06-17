@@ -1,3 +1,4 @@
+import 'mapbox-gl/dist/mapbox-gl.css';
 import mapboxgl from 'mapbox-gl';
 import Map, {
 	Layer,
@@ -5,8 +6,9 @@ import Map, {
 	Marker,
 	Source,
 	type MarkerDragEvent,
+	type ViewState,
 } from 'react-map-gl';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useMemo } from 'react';
 import {
 	Card,
 	CardContent,
@@ -55,7 +57,19 @@ interface SearchViewMapProps extends DefaultProps {
 	boxes?: SearchViewBox[];
 }
 
-interface MapCardProps extends SearchViewMapProps {
+interface SearchViewMapCardProps extends SearchViewMapProps {
+	title: string;
+	description: string;
+}
+
+interface SearchDashboardMapProps extends DefaultProps {
+	points: {
+		lng: number;
+		lat: number;
+	}[];
+}
+
+interface SearchDashboardMapCardProps extends SearchDashboardMapProps {
 	title: string;
 	description: string;
 }
@@ -70,7 +84,7 @@ interface View360MapProps extends DefaultProps {
 	points: mapboxgl.LngLat[];
 }
 
-interface NewSearchMapProps extends MapCardProps {
+interface NewSearchMapProps extends SearchViewMapCardProps {
 	onChange?: ({ lng, lat, keywords }) => void;
 	value?: {
 		lng: number;
@@ -79,7 +93,7 @@ interface NewSearchMapProps extends MapCardProps {
 	};
 }
 
-export function MapCard(props: MapCardProps) {
+export function SearchViewMapCard(props: SearchViewMapCardProps) {
 	return (
 		<Card className={props.className}>
 			<CardHeader>
@@ -92,6 +106,20 @@ export function MapCard(props: MapCardProps) {
 					start={props.start}
 					boxes={props.boxes}
 				/>
+			</CardContent>
+		</Card>
+	);
+}
+
+export function SearchDashboardMapCard(props: SearchDashboardMapCardProps) {
+	return (
+		<Card className={props.className}>
+			<CardHeader>
+				<CardTitle>{props.title}</CardTitle>
+				<CardDescription>{props.description}</CardDescription>
+			</CardHeader>
+			<CardContent>
+				<SearchDashboardMap className="h-[600px]" points={props.points} />
 			</CardContent>
 		</Card>
 	);
@@ -419,4 +447,90 @@ export function SearchViewMap(props: SearchViewMapProps) {
 			</Map>
 		</div>
 	);
+}
+
+export function SearchDashboardMap(props: SearchDashboardMapProps) {
+	const { resolvedTheme } = useTheme();
+	const mapRef = useRef<MapRef>();
+	const [viewState, setViewState] = useState<Partial<ViewState>>({
+		longitude: -81.3,
+		latitude: 42.97,
+	});
+
+	const markers = useMemo(() => {
+		if (props.points.length === 0) return [];
+
+		const boundingBox = getBoundingBox(
+			props.points.map((point) => new mapboxgl.LngLat(point.lng, point.lat))
+		);
+
+		setViewState({
+			longitude: boundingBox.getCenter().lng,
+			latitude: boundingBox.getCenter().lat,
+		});
+
+		mapRef.current?.fitBounds(boundingBox, {
+			animate: true,
+			duration: 1000,
+			padding: 20,
+			maxZoom: 20,
+		});
+
+		return props.points.map((point, index) => {
+			return (
+				<Marker
+					key={index}
+					longitude={point.lng}
+					latitude={point.lat}
+					color="black"
+					draggable={false}
+				/>
+			);
+		});
+	}, [props.points]);
+
+	return (
+		<div className={props.className}>
+			<div className="bg-background/60 absolute z-10 m-2 flex max-w-xs flex-col items-center justify-center rounded-lg p-2 backdrop-blur">
+				Longitude: {viewState.longitude.toFixed(5)} | Latitude:{' '}
+				{viewState.latitude.toFixed(5)}
+			</div>
+			<Map
+				ref={mapRef}
+				initialViewState={{
+					longitude: -81.3,
+					latitude: 42.97,
+					zoom: 9,
+					bounds: props.points.length
+						? getBoundingBox(
+								props.points.map(
+									(point) => new mapboxgl.LngLat(point.lng, point.lat)
+								)
+						  )
+						: undefined,
+					fitBoundsOptions: {
+						animate: true,
+						duration: 1000,
+						padding: 20,
+						maxZoom: 20,
+					},
+				}}
+				onMove={(event) => setViewState(event.viewState)}
+				mapStyle={
+					resolvedTheme === 'light'
+						? 'mapbox://styles/mapbox/streets-v11'
+						: 'mapbox://styles/mapbox/dark-v10'
+				}
+				mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''}
+			>
+				{markers}
+			</Map>
+		</div>
+	);
+}
+
+function getBoundingBox(points: mapboxgl.LngLat[]) {
+	const bounds = new mapboxgl.LngLatBounds();
+	points.forEach((point) => bounds.extend(point));
+	return bounds;
 }

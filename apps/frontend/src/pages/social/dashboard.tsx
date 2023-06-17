@@ -8,9 +8,24 @@ import { Toaster } from '@/components/ui/toaster';
 import { NewSearchButton } from '@/components/buttons/new-search-button';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import { useSession } from 'next-auth/react';
+import { api } from '@/utils/api';
+import { DataTable } from '@/components/data-tables/searches/data-table';
+import { columns } from '@/components/data-tables/searches/columns';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
+import { SearchDashboardMapCard } from '@/components/maps';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Dashboard: NextPage = () => {
 	const session = useSession();
+	const searches = api.search.getAll.useQuery({}, {
+		refetchOnWindowFocus: false,
+	});
 
 	return (
 		<>
@@ -41,7 +56,32 @@ const Dashboard: NextPage = () => {
 						<ServerStatusBadge />
 					</div>
 					<div className="grid w-full grid-cols-2 gap-4 py-8 lg:grid-cols-5">
-						Nothing here yet! Come back later.
+						<Card className="col-span-full">
+							<CardHeader>
+								<CardTitle>Searches</CardTitle>
+								<CardDescription>List of all searches.</CardDescription>
+							</CardHeader>
+							<CardContent>
+								<DataTable columns={columns} data={searches.data ?? []} />
+							</CardContent>
+						</Card>
+						{searches.data ? (
+							<SearchDashboardMapCard
+								title="Search Locations"
+								description="Locations of all searches"
+								className="col-span-full lg:col-span-3"
+								points={
+									searches.data?.map((search) => {
+										return {
+											lat: search.latitude,
+											lng: search.longitude,
+										};
+									}) ?? []
+								}
+							/>
+						) : (
+							<Skeleton className="col-span-full h-96 lg:col-span-3" />
+						)}
 					</div>
 				</div>
 			</main>

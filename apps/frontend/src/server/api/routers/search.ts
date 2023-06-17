@@ -215,6 +215,15 @@ export const searchRouter = createTRPCRouter({
 
 			return response;
 		}),
+	getAll: protectedProcedure
+		.input(z.object({ archived: z.boolean().optional() }))
+		.query(async ({ input }) => {
+			return await prisma.search.findMany({
+				where: {
+					archived: input.archived || false,
+				},
+			});
+		}),
 	getUpdatedBy: protectedProcedure
 		.input(z.object({ id: z.string() }))
 		.query(async ({ input }) => {
