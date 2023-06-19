@@ -19,6 +19,8 @@ import { radToDeg } from 'three/src/math/MathUtils';
 import { type Image360 } from '@prisma/client';
 import { GamepadsProvider, useGamepads } from 'react-gamepads';
 import { before } from 'lodash';
+import { useXR, useController } from '@react-three/xr';
+import { MovementController } from './movement-controller';
 
 const StreetViewImage = (props: { image: string }) => {
 	const texture = useLoader(
@@ -57,7 +59,7 @@ const CameraController = ({
 	useEffect(() => {
 		let lastAngle = 0;
 		const controls = new OrbitControls(camera, gl.domElement);
-
+		
 		// Set camera configuration
 		controls.rotateSpeed *= -0.3;
 		controls.zoomSpeed = 3;
@@ -110,16 +112,6 @@ export const View360 = (props: {
 				setFullscreen(document.fullscreenElement !== null);
 			});
 		};
-	});
-
-	// Test
-	const [gamepads, setGamepads] = useState({});
-	useGamepads(gamepads => setGamepads(gamepads));
-
-	useEffect(() => {
-		if (gamepads[0]?.buttons[4]?.pressed) {
-			props.onNext?.();
-		}
 	});
 
 	useEffect(() => {
@@ -245,23 +237,16 @@ export const View360 = (props: {
 			<Canvas>
 				<XR>
 					<Controllers />
+					<MovementController
+						onStickUp={() => {true ? props.onNext?.() : undefined}}
+						onStickDown={() => {true ? props.onPrevious?.() : undefined}}
+					/>
 					{vr ? null : (
 						<CameraController
 							onRotation={setRotation}
 							startAngle={startingAngle}
 						/>
 					)}
-					{/* <Gamepad */}
-						{/* onX={() => {props.setCurrentImage('before')}}
-						onY={() => {props.setCurrentImage('after')}} */}
-						{/* onLT={() => { Zoom out }}
-						onRT={() => { Zoom in }}
-						onLB={() => { Pan left }}
-						onRB={() => { Pan right }}
-						onAxisChange={() => {}} Left/right sticks move/jump forward/backward between panoramas */}
-					{/* >
-					</Gamepad> */}
-					
 					<Suspense fallback={null}>
 						<StreetViewImage
 							image={
