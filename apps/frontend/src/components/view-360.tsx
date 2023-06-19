@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
-import { Controllers, Interactive, VRButton, XR, XRControllerEvent, XRInteractionEvent, useXREvent } from '@react-three/xr';
+import { Interactive, VRButton, XR, XRControllerEvent, XRInteractionEvent, useXREvent } from '@react-three/xr';
 import { radToDeg } from 'three/src/math/MathUtils';
 import { type Image360 } from '@prisma/client';
 import { GamepadsProvider, useGamepads } from 'react-gamepads';
@@ -59,7 +59,7 @@ const CameraController = ({
 	useEffect(() => {
 		let lastAngle = 0;
 		const controls = new OrbitControls(camera, gl.domElement);
-		
+
 		// Set camera configuration
 		controls.rotateSpeed *= -0.3;
 		controls.zoomSpeed = 3;
@@ -236,10 +236,15 @@ export const View360 = (props: {
 			{vr ? <VRButton /> : null}
 			<Canvas>
 				<XR>
-					<Controllers />
 					<MovementController
-						onStickUp={() => {true ? props.onNext?.() : undefined}}
-						onStickDown={() => {true ? props.onPrevious?.() : undefined}}
+						hand='left'
+						on1={() => {props.setCurrentImage('before')}} // X
+						on2={() => {props.setCurrentImage('after')}} // Y
+					/>
+					<MovementController
+						hand='right'
+						on1={() => {props.onNext?.()}} // A
+						on2={() => {props.onPrevious?.()}} // B
 					/>
 					{vr ? null : (
 						<CameraController

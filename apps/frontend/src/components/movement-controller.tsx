@@ -1,4 +1,5 @@
-import { useXR, useController, useXRFrame } from '@react-three/xr';
+import { useFrame } from '@react-three/fiber';
+import { useXR, useController } from '@react-three/xr';
 
 // Mapping
 // 1: Trigger
@@ -13,38 +14,25 @@ import { useXR, useController, useXRFrame } from '@react-three/xr';
 
 export const MovementController = (props: {
     hand?: 'left' | 'right',
-    moveAxis?: number,
-    rotateAxis?: number,
-    onStickUp?: () => void;
-    onStickDown?: () => void;
+    on1: () => void,
+    on2: () => void,
 }) => {
 	const { player } = useXR();
 	const controller = useController(props.hand);
 
-	useXRFrame(() => {
+	useFrame(() => {
 		if (controller && player) {
-			const { axes } = controller.inputSource.gamepad;
+			const { buttons } = controller.inputSource.gamepad;
 
-            // Test
-            props.moveAxis = 3;
-            props.rotateAxis = 2;
-
-            props.onStickUp = () => { // Joystick moving up, indicating to move to next panorama in the sequence
-                if (axes[props.moveAxis] > 0) {
-                    return true;
-                } else {
-                    return false;
-                }
+            if (buttons[5].pressed) {
+                props.on1();
             }
-
-            props.onStickDown = () => { // Joystick moving down, indicating to move to previous panorama in the sequence
-                if (axes[props.moveAxis] < 0) {
-                    return true;
-                } else {
-                    return false;
-                }
+            
+            if (buttons[6].pressed) {
+                props.on2();
             }
 		}
 	});
+
 	return <></>;
 }
