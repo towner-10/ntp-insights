@@ -14,8 +14,8 @@ import { useXR, useController } from '@react-three/xr';
 
 export const MovementController = (props: {
     hand?: 'left' | 'right',
-    on1: () => void,
-    on2: () => void,
+    on1?: () => void,
+    on2?: () => void,
 }) => {
 	const { player } = useXR();
 	const controller = useController(props.hand);

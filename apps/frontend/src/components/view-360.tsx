@@ -237,14 +237,15 @@ export const View360 = (props: {
 			<Canvas>
 				<XR>
 					<MovementController
-						hand='left'
-						on1={() => {props.setCurrentImage('before')}} // X
-						on2={() => {props.setCurrentImage('after')}} // Y
+						hand='right'
+						on1={() => {props.currentImage == 'after' ? props.setCurrentImage('before') : props.setCurrentImage('after')}}
+						// on1={() => {props.setCurrentImage('after')}}  // A
+						// on2={() => {props.setCurrentImage('before')}}
 					/>
 					<MovementController
-						hand='right'
-						on1={() => {props.onNext?.()}} // A
-						on2={() => {props.onPrevious?.()}} // B
+						hand='left'
+						on1={() => {props.onNext?.()}} // X
+						on2={() => {props.onPrevious?.()}} // Y
 					/>
 					{vr ? null : (
 						<CameraController
