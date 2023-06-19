@@ -8,12 +8,10 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog';
-import { api } from '@/utils/api';
 import { ColumnDef } from '@tanstack/react-table';
 import { Post } from 'database';
 import {
-	LucideFlag,
-	LucideFlagOff,
+	ArrowUpDown,
 	LucideForward,
 	LucideHeart,
 	LucideMessageCircle,
@@ -42,7 +40,28 @@ export const columns: ColumnDef<Post>[] = [
 	},
 	{
 		accessorKey: 'classifications',
-		header: 'Relevance Score',
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+				>
+					Relevance
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			);
+		},
+		sortingFn: (a, b) => {
+			// Sort based on the highest classification score
+			const aRelevant = a.original.classifications?.['RELEVANT']?.confidence;
+			const bRelevant = b.original.classifications?.['RELEVANT']?.confidence;
+
+			if (!aRelevant || !bRelevant) {
+				return 0;
+			}
+
+			return bRelevant - aRelevant;
+		},
 		cell({ row }) {
 			// Determine the highest classification score
 			const relevant = row.original.classifications?.['RELEVANT']?.confidence;
