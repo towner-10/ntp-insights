@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/card';
 import { SearchDashboardMapCard } from '@/components/maps';
 import { Skeleton } from '@/components/ui/skeleton';
+import StatCard from '@/components/stat-card';
 
 const Dashboard: NextPage = () => {
 	const session = useSession();
@@ -50,12 +51,6 @@ const Dashboard: NextPage = () => {
 				<div className="container flex flex-col items-center justify-center p-6">
 					<div className="flex w-full flex-row items-center gap-4">
 						<NewSearchButton />
-						<CalendarDateRangePicker
-							value={{
-								from: new Date(),
-								to: addDays(new Date(), 7),
-							}}
-						/>
 						<ServerStatusBadge />
 					</div>
 					<div className="grid w-full grid-cols-2 gap-4 py-8 lg:grid-cols-5">
@@ -72,7 +67,7 @@ const Dashboard: NextPage = () => {
 							<SearchDashboardMapCard
 								title="Search Locations"
 								description="Locations of all searches"
-								className="col-span-full lg:col-span-3"
+								className="col-span-full"
 								points={
 									searches.data?.map((search) => {
 										return {
@@ -83,7 +78,7 @@ const Dashboard: NextPage = () => {
 								}
 							/>
 						) : (
-							<Skeleton className="col-span-full h-96 lg:col-span-3" />
+							<Skeleton className="col-span-full h-96" />
 						)}
 					</div>
 				</div>
