@@ -1,8 +1,8 @@
-import Cron from 'croner';
 import { logger } from './utils/logger';
 
 type Job = {
-	cron: Cron;
+	interval: NodeJS.Timer;
+	nextRun: Date | null;
 	onOverrun: () => void | Promise<void>;
 };
 
@@ -52,26 +52,37 @@ export default class Scheduler {
 		// Convert the frequency to CRON format
 		if (frequency < 6)
 			throw new Error('❌ Frequency must be greater than or equal to 6');
-		const frequencyCron = `? ? */${frequency} * * *`;
+
+		const frequencyMs = frequency * 60 * 60 * 1000;
+
+		if (frequencyMs > Math.pow(2, 32 - 1) - 1)
+			throw new Error('❌ Frequency too large');
+
+		// If the job should be run immediately, run it
+		if (runImmediately) {
+			void (async () => {
+				await callback();
+			})();
+		}
 
 		// Add a new job to the scheduler
 		this.jobs.set(hash, {
-			cron: new Cron(
-				frequencyCron,
-				{
-					maxRuns: Infinity,
-					startAt: start,
-					stopAt: end,
-					protect: true,
-					interval: frequency * 60 * 60,
-				},
-				callback
-			),
+			interval: setInterval(async () => {
+				await callback();
+
+				// Check if the next run should be set
+				if (Date.now() + frequencyMs < end.getTime()) {
+					this.setNextRun(hash, new Date(Date.now() + frequencyMs));
+				} else {
+					this.setNextRun(hash, null);
+				}
+			}, frequency * 60 * 60 * 1000),
+			nextRun:
+				Date.now() + frequencyMs < end.getTime()
+					? new Date(Date.now() + frequencyMs)
+					: null,
 			onOverrun: onOverrun,
 		});
-
-		// If the job should be run immediately, run it
-		if (runImmediately) this.jobs.get(hash)?.cron.trigger();
 
 		logger.success(`Added job with id: ${hash}`);
 	}
@@ -85,14 +96,22 @@ export default class Scheduler {
 		if (!this.jobs.has(hash)) throw new Error('❌ Job does not exist');
 
 		// Remove the job from the scheduler
-		this.jobs.get(hash)?.cron.stop();
+		clearInterval(this.jobs.get(hash)?.interval);
 		this.jobs.delete(hash);
 
 		logger.success(`Removed job with id: ${hash}`);
 	}
 
+	private setNextRun(hash: string, nextRun: Date | null) {
+		const job = this.jobs.get(hash);
+		if (!job) return;
+		job.nextRun = nextRun;
+	}
+
 	public getNextRun(hash: string) {
-		return this.jobs.get(hash)?.cron.nextRun();
+		const job = this.jobs.get(hash);
+		if (!job) return null;
+		return job.nextRun;
 	}
 
 	/**
@@ -100,7 +119,7 @@ export default class Scheduler {
 	 */
 	public checkOverruns() {
 		this.jobs.forEach((job, id) => {
-			if (!job.cron.msToNext()) {
+			if (!job.nextRun) {
 				logger.warn(`Job with id: ${id} has overrun`);
 				job.onOverrun();
 				this.removeJob(id);
@@ -113,7 +132,7 @@ export default class Scheduler {
 	 */
 	public stop() {
 		clearInterval(this.updateLoop);
-		this.jobs.forEach((job) => job.cron.stop());
+		for (const hash of this.jobs.keys()) this.removeJob(hash);
 	}
 
 	/**

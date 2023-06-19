@@ -23,9 +23,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const Dashboard: NextPage = () => {
 	const session = useSession();
-	const searches = api.search.getAll.useQuery({}, {
-		refetchOnWindowFocus: false,
-	});
+	const searches = api.searches.getAll.useQuery(
+		{},
+		{
+			refetchOnWindowFocus: false,
+		}
+	);
 
 	return (
 		<>

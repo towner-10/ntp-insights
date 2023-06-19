@@ -3,7 +3,8 @@ import { searchRouter } from "./routers/search";
 import { usersRouter } from "./routers/users";
 import { pathsRouter } from "./routers/path";
 import { image360Router } from "./routers/image360";
-import { searchResultsRouter } from "./routers/searchResults";
+import { searchResultRouter } from "./routers/searchResult";
+import { postRouter } from "./routers/post";
 
 /**
  * This is the primary router for your server.
@@ -11,8 +12,9 @@ import { searchResultsRouter } from "./routers/searchResults";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  search: searchRouter,
-  searchResults: searchResultsRouter,
+  searches: searchRouter,
+  searchResults: searchResultRouter,
+  posts: postRouter,
   users: usersRouter,
   paths: pathsRouter,
   image360: image360Router,

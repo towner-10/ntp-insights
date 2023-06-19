@@ -130,7 +130,7 @@ export function NewSearchMapCard(props: NewSearchMapProps) {
 	const { resolvedTheme } = useTheme();
 	const [lng, setLng] = useState(props.value?.lng || -81.3);
 	const [lat, setLat] = useState(props.value?.lat || 42.97);
-	const geocodeKeywords = api.search.geocodeKeywords.useQuery({
+	const geocodeKeywords = api.searches.geocodeKeywords.useQuery({
 		lng,
 		lat,
 	});

@@ -38,7 +38,7 @@ import { Slider } from '@/components/ui/slider';
 const NewSearchPage = () => {
 	const session = useSession();
 	const router = useRouter();
-	const search = api.search.new.useMutation();
+	const search = api.searches.new.useMutation();
 	const { register, handleSubmit, control, formState } = useForm<SearchData>();
 	const websocketInstance = useWebSocketContext();
 
@@ -65,16 +65,24 @@ const NewSearchPage = () => {
 						duration: 5000,
 					});
 				}
-	
+
 				toast({
 					title: 'Search Created',
 					description: result.message,
 					variant: 'default',
 					duration: 5000,
 				});
-	
-				websocketInstance.socket?.emit('refresh');
-	
+
+				if (!websocketInstance.socket) {
+					return;
+				}
+
+				await new Promise((resolve) => {
+					console.log('emitting refresh')
+					websocketInstance.socket.emit('refresh');
+					setTimeout(resolve, 1000);
+				});
+				
 				return router.push(`/social/${result.id}/view`);
 			} catch (error) {
 				return toast({
@@ -108,7 +116,20 @@ const NewSearchPage = () => {
 						<Controller
 							control={control}
 							name="map"
-							defaultValue={{ lng: -81.3, lat: 42.97 }}
+							defaultValue={{
+								lng: -81.3,
+								lat: 42.97,
+								keywords: [
+									'storm',
+									'tornado',
+									'twister',
+									'@weathernetwork',
+									'@NTP_Reports',
+									'funnel cloud',
+									'tornado warning',
+									'hurricane',
+								],
+							}}
 							render={({ field: { onChange, value } }) => (
 								<NewSearchMapCard
 									title="Map"

@@ -1,14 +1,12 @@
-import { searchDataSchema } from '@/utils/types/searchData';
 import {
 	createTRPCRouter,
-	ntpProtectedProcedure,
 	protectedProcedure,
 } from '@/server/api/trpc';
 import { TRPCError } from '@trpc/server';
 import { prisma } from '@/server/db';
 import { z } from 'zod';
 
-export const searchResultsRouter = createTRPCRouter({
+export const searchResultRouter = createTRPCRouter({
 	get: protectedProcedure
 		.input(z.object({ id: z.string() }))
 		.query(async ({ input }) => {

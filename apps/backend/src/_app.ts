@@ -8,7 +8,6 @@ import {
 	addTwitterPost,
 	addTwitterSearchResult,
 	disableSearch,
-	getAllSearchResults,
 	getEnabledSearches,
 	getNewDisabledSearches,
 	getNewSearches,
@@ -36,7 +35,12 @@ const eventMap: { [key: string]: () => Promise<void> } = {
 		});
 
 		disabledSearches.forEach((search) => {
-			scheduler.removeJob(search.id);
+			try {
+				scheduler.removeJob(search.id);
+			} catch (err) {
+				logger.error(err);
+			}
+
 			searches = searches.filter((s) => s.id !== search.id);
 		});
 
@@ -58,7 +62,12 @@ const eventMap: { [key: string]: () => Promise<void> } = {
 		const disabledSearches = await getNewDisabledSearches(searches);
 
 		disabledSearches.forEach((search) => {
-			scheduler.removeJob(search.id);
+			try {
+				scheduler.removeJob(search.id);
+			} catch (err) {
+				logger.error(err);
+			}
+
 			searches = searches.filter((s) => s.id !== search.id);
 		});
 
@@ -164,7 +173,12 @@ const handleSearch = async (search: Search) => {
 	}
 
 	const timeTaken = new Date().getTime() - now;
-	const nextRun = scheduler.getNextRun(search.id) || undefined;
+
+	// Calculate next run
+	const nextRun =
+		scheduler.getNextRun(search.id);
+
+	logger.debug(nextRun);
 
 	await setRunStats(search, timeTaken, nextRun);
 
@@ -196,7 +210,7 @@ const addSearch = (search: Search, immediate = false) => {
 
 	searches.forEach((search) => {
 		if (!process.env.TWITTER_BEARER_TOKEN) return;
-		if (search.next_run && search.next_run < new Date()) {
+		if (search.next_run && search.next_run > new Date()) {
 			addSearch(search);
 		} else {
 			addSearch(search, true);

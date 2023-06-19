@@ -19,7 +19,6 @@
     "@types/node": "^20.1.0",
     "chalk": "4.1.2",
     "cohere-ai": "^6.2.2",
-    "croner": "^6.0.3",
     "database": "*",
     "date-fns": "^2.30.0",
     "dotenv": "^16.0.3",

@@ -119,6 +119,7 @@ model Post {
   shares           Int?
   comments         Int?
   raw              Json?
+  flagged          Boolean          @default(false)
   search_result    SearchResult     @relation(fields: [search_result_id], references: [id])
   search_result_id String
 }

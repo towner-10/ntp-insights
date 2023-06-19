@@ -1,3 +1,4 @@
+import { PostFlagged } from '@/components/buttons/post-flagged';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
@@ -7,9 +8,16 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog';
+import { api } from '@/utils/api';
 import { ColumnDef } from '@tanstack/react-table';
 import { Post } from 'database';
-import { LucideForward, LucideHeart, LucideMessageCircle } from 'lucide-react';
+import {
+	LucideFlag,
+	LucideFlagOff,
+	LucideForward,
+	LucideHeart,
+	LucideMessageCircle,
+} from 'lucide-react';
 import Link from 'next/link';
 
 export const columns: ColumnDef<Post>[] = [
@@ -38,21 +46,33 @@ export const columns: ColumnDef<Post>[] = [
 		cell({ row }) {
 			// Determine the highest classification score
 			const relevant = row.original.classifications?.['RELEVANT']?.confidence;
-			const irrelevant = row.original.classifications?.['IRRELEVANT']?.confidence;
+			const irrelevant =
+				row.original.classifications?.['IRRELEVANT']?.confidence;
 
-            if (!relevant || !irrelevant) {
-                return 'N/A';
-            }
+			if (!relevant || !irrelevant) {
+				return 'N/A';
+			}
 
 			if (relevant > irrelevant) {
-				return <p className='text-success'>
-                    {`${(relevant * 100).toFixed(0)}% relevant`}
-                </p>;
+				return (
+					<p className="text-success">
+						{`${(relevant * 100).toFixed(0)}% relevant`}
+					</p>
+				);
 			} else {
-				return <p className='text-muted-foreground'>
-                    {`${(irrelevant * 100).toFixed(0)}% irrelevant`}
-                </p>;
+				return (
+					<p className="text-muted-foreground">
+						{`${(irrelevant * 100).toFixed(0)}% irrelevant`}
+					</p>
+				);
 			}
+		},
+	},
+	{
+		id: 'flag',
+		header: 'Flagged',
+		cell({ row }) {
+			return <PostFlagged post={row.original} />;
 		},
 	},
 	{
@@ -68,7 +88,7 @@ export const columns: ColumnDef<Post>[] = [
 							<DialogTitle>Post Details</DialogTitle>
 							<DialogDescription>Information about the post.</DialogDescription>
 						</DialogHeader>
-						<div className="flex flex-col space-y-2">
+						<div className="flex max-h-[750px] flex-col space-y-2 overflow-y-auto">
 							{row.original.images[0] && (
 								// eslint-disable-next-line @next/next/no-img-element
 								<img

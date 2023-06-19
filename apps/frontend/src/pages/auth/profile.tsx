@@ -23,7 +23,7 @@ export default function ProfilePage() {
 		return <div>Loading...</div>;
 	}
 
-	const searches = api.search.getUpdatedBy.useQuery({
+	const searches = api.searches.getUpdatedBy.useQuery({
 		id: session.data.user.id || '',
 	});
 
