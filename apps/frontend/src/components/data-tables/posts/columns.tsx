@@ -1,29 +1,21 @@
 import { PostFlagged } from '@/components/buttons/post-flagged';
+import { PostDialog } from '@/components/dialogs/post-dialog';
 import { Button } from '@/components/ui/button';
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from '@/components/ui/dialog';
 import { ColumnDef } from '@tanstack/react-table';
 import { Post } from 'database';
-import {
-	ArrowUpDown,
-	LucideForward,
-	LucideHeart,
-	LucideMessageCircle,
-} from 'lucide-react';
-import Link from 'next/link';
+import { ArrowUpDown } from 'lucide-react';
 
 export const columns: ColumnDef<Post>[] = [
 	{
-		accessorKey: 'id',
-		header: 'ID',
+		id: 'content',
+		header: 'Content',
 		cell({ row }) {
-			return row.original.id;
+			// Remove new lines and replace multiple spaces in a row with just one and cut off the string at 100 characters
+			return (
+				<p className="max-w-md truncate">
+					{row.original.content.replace('\n', ' ').replace(/\s\s+/g, ' ')}
+				</p>
+			);
 		},
 	},
 	{
@@ -97,62 +89,7 @@ export const columns: ColumnDef<Post>[] = [
 	{
 		id: 'view',
 		cell({ row }) {
-			return (
-				<Dialog>
-					<DialogTrigger asChild>
-						<Button variant="link">View</Button>
-					</DialogTrigger>
-					<DialogContent>
-						<DialogHeader>
-							<DialogTitle>Post Details</DialogTitle>
-							<DialogDescription>Information about the post.</DialogDescription>
-						</DialogHeader>
-						<div className="flex max-h-[750px] flex-col space-y-2 overflow-y-auto">
-							{row.original.images[0] && (
-								// eslint-disable-next-line @next/next/no-img-element
-								<img
-									width={500}
-									height={500}
-									src={row.original.images[0].replace('https://', '/')}
-									alt="Post Image"
-									className="max-h-[500px] w-full object-contain"
-								/>
-							)}
-							{row.original.videos[0] && (
-								<video
-									src={row.original.videos[0]}
-									controls
-									className="max-h-[500px] w-full"
-								/>
-							)}
-							<p className="py-4">{row.original.content}</p>
-							<div className="flex flex-row items-center justify-between">
-								<div className="flex flex-row items-center justify-between gap-4">
-									<div className="flex flex-row gap-2">
-										<LucideHeart />
-										<b>{row.original.likes}</b>
-									</div>
-									<div className="flex flex-row gap-2">
-										<LucideMessageCircle />
-										<b>{row.original.comments}</b>
-									</div>
-									<div className="flex flex-row gap-2">
-										<LucideForward />
-										<b>{row.original.shares}</b>
-									</div>
-								</div>
-								<Link href={row.original.url} target="_blank">
-									<Button variant="secondary">
-										View on{' '}
-										{row.original.source_type.charAt(0).toUpperCase() +
-											row.original.source_type.slice(1).toLowerCase()}
-									</Button>
-								</Link>
-							</div>
-						</div>
-					</DialogContent>
-				</Dialog>
-			);
+			return <PostDialog post={row.original} />;
 		},
 	},
 ];

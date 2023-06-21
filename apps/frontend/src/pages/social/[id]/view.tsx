@@ -28,6 +28,7 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { PostPreview } from '@/components/post-preview';
 
 const ViewSearchPage = () => {
 	const session = useSession();
@@ -50,10 +51,15 @@ const ViewSearchPage = () => {
 	} else if (!search.data) {
 		return <div>Not found</div>;
 	} else if (!search.data.results.length) {
-		return <NoResultsView session={session.data} onRefresh={() => {
-			search.refetch();
-			searchResults.refetch();
-		}} />;
+		return (
+			<NoResultsView
+				session={session.data}
+				onRefresh={() => {
+					search.refetch();
+					searchResults.refetch();
+				}}
+			/>
+		);
 	}
 
 	const postIntervals = breakPostsIntoIntervals(
@@ -98,6 +104,17 @@ const ViewSearchPage = () => {
 		};
 	});
 
+	const topPosts = searchResults.data
+		?.map((result) => result.posts)
+		.flat()
+		.sort((a, b) => {
+			return (
+				b.classifications?.['RELEVANT']?.confidence -
+					a.classifications?.['RELEVANT']?.confidence || 0
+			);
+		})
+		.slice(0, 6);
+
 	return (
 		<>
 			<Head>
@@ -136,8 +153,10 @@ const ViewSearchPage = () => {
 									searchResults.data
 										?.map((result) => result.posts.map((post) => post.category))
 										.flat()
-										.filter((category) => category?.toLowerCase() === 'relevant' || false)
-										.length
+										.filter(
+											(category) =>
+												category?.toLowerCase() === 'relevant' || false
+										).length
 								}
 							</h2>
 						</StatCard>
@@ -184,6 +203,21 @@ const ViewSearchPage = () => {
 								}
 							</h2>
 						</StatCard>
+						<Card className="col-span-full row-span-2 lg:col-span-5">
+							<CardHeader>
+								<CardTitle>Top Posts Quick View</CardTitle>
+								<CardDescription>
+									Quick view of the top posts that were found by the search.
+								</CardDescription>
+							</CardHeader>
+							<CardContent>
+								<div className="flex flex-wrap gap-4 justify-evenly">
+									{topPosts.map((post, index) => {
+										return <PostPreview index={index} post={post} key={post.id} />;
+									})}
+								</div>
+							</CardContent>
+						</Card>
 						<Card className="col-span-full row-span-2 lg:col-span-5">
 							<CardHeader>
 								<CardTitle>Posts</CardTitle>
@@ -266,7 +300,7 @@ function LoadingView(props: { session: Session }) {
 	);
 }
 
-function NoResultsView(props: { session: Session, onRefresh: () => void }) {
+function NoResultsView(props: { session: Session; onRefresh: () => void }) {
 	return (
 		<>
 			<Head>
@@ -287,7 +321,9 @@ function NoResultsView(props: { session: Session, onRefresh: () => void }) {
 					</div>
 					<div className="flex flex-col items-center justify-center gap-4">
 						<h2 className="text-xl">Search not run yet...</h2>
-						<Button variant="secondary" onClick={props.onRefresh}>Refresh</Button>
+						<Button variant="secondary" onClick={props.onRefresh}>
+							Refresh
+						</Button>
 					</div>
 				</div>
 			</main>
