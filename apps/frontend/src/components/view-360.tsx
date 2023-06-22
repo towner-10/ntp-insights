@@ -110,7 +110,6 @@ export const View360 = (props: {
 }) => {
 	const [fullscreen, setFullscreen] = useState(false);
 	const [vr, setVR] = useState(false);
-	const [input, setInput] = useState(false);
 	const [startingAngle, setStartingAngle] = useState(props.image?.heading || 0);
 	const [rotation, setRotation] = useState(props.image?.heading || 0);
 	const fullscreenRef = useRef<HTMLDivElement>(null);
@@ -247,29 +246,19 @@ export const View360 = (props: {
 				</button>
 			</div>
 			{vr ? <VRButton /> : null}
-			<Canvas frameloop="demand">
+			<Canvas>
 				<XR>
 					<MovementController
-						hand="left"
-						on1={() => {
-							props.setCurrentImage('before');
-						}} // LT (Before)
-						on5={() => {
-							setInput(!input);
-							input ? props.onPrevious?.() : undefined;
-						}} // Y (Backward)
+						hand='right'
+						on1={() => {props.currentImage == 'after' ? props.setCurrentImage('before') : props.setCurrentImage('after')}}
+						// on1={() => {props.setCurrentImage('after')}}  // A
+						// on2={() => {props.setCurrentImage('before')}}
 					/>
 					<MovementController
-						hand="right"
-						on1={() => {
-							props.setCurrentImage('after');
-						}} // RT (After)
-						on5={() => {
-							setInput(!input);
-							input ? props.onNext?.() : undefined;
-						}} // B (Forward)
+						hand='left'
+						on1={() => {props.onNext?.()}} // X
+						on2={() => {props.onPrevious?.()}} // Y
 					/>
-
 					{vr ? null : (
 						<CameraController
 							onRotation={setRotation}
