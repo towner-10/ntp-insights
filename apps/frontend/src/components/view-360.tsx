@@ -14,38 +14,50 @@ import {
 } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
-import { Interactive, VRButton, XR, XRControllerEvent, XRInteractionEvent, useXREvent } from '@react-three/xr';
+import { VRButton, XR } from '@react-three/xr';
 import { radToDeg } from 'three/src/math/MathUtils';
 import { type Image360 } from '@prisma/client';
-import { GamepadsProvider, useGamepads } from 'react-gamepads';
 import { before } from 'lodash';
-import { useXR, useController } from '@react-three/xr';
 import { MovementController } from './movement-controller';
 
 const StreetViewImage = (props: { image: string }) => {
-	const texture = useLoader(
-		THREE.TextureLoader,
-		`${props.image.replace('.', '/backend')}`
-	);
-	texture.mapping = THREE.EquirectangularReflectionMapping;
-	texture.minFilter = texture.magFilter = THREE.LinearFilter;
-	texture.wrapS = THREE.RepeatWrapping;
-	texture.repeat.x = -1;
+	try {
+		const texture = useLoader(
+			THREE.TextureLoader,
+			`${props.image.replace('.', '/backend')}`
+		);
+		texture.mapping = THREE.EquirectangularReflectionMapping;
+		texture.minFilter = texture.magFilter = THREE.LinearFilter;
+		texture.wrapS = THREE.RepeatWrapping;
+		texture.repeat.x = -1;
 
-	useEffect(() => {
-		texture.needsUpdate = true;
-	}, [texture]);
+		// eslint-disable-next-line react-hooks/rules-of-hooks
+		useEffect(() => {
+			texture.needsUpdate = true;
+		}, [texture]);
 
-	return (
-		<mesh>
-			<sphereGeometry attach="geometry" args={[500, 60, 40, 90]} />
-			<meshBasicMaterial
-				attach="material"
-				map={texture}
-				side={THREE.BackSide}
-			/>
-		</mesh>
-	);
+		return (
+			<mesh>
+				<sphereGeometry attach="geometry" args={[500, 60, 40, 90]} />
+				<meshBasicMaterial
+					attach="material"
+					map={texture}
+					side={THREE.BackSide}
+				/>
+			</mesh>
+		);
+	} catch (err) {
+		return (
+			<mesh>
+				<sphereGeometry attach="geometry" args={[500, 60, 40, 90]} />
+				<meshBasicMaterial
+					attach="material"
+					color={0x000000}
+					side={THREE.BackSide}
+				/>
+			</mesh>
+		);
+	}
 };
 
 const CameraController = ({
@@ -238,16 +250,26 @@ export const View360 = (props: {
 			<Canvas frameloop="demand">
 				<XR>
 					<MovementController
-						hand='left'
-						on1={() => { props.setCurrentImage('before') }} // LT (Before)
-						on5={() => { setInput(!input); input ? props.onPrevious?.() : undefined }} // Y (Backward)
+						hand="left"
+						on1={() => {
+							props.setCurrentImage('before');
+						}} // LT (Before)
+						on5={() => {
+							setInput(!input);
+							input ? props.onPrevious?.() : undefined;
+						}} // Y (Backward)
 					/>
 					<MovementController
-						hand='right'
-						on1={() => { props.setCurrentImage('after') }} // RT (After)
-						on5={() => { setInput(!input); input ? props.onNext?.() : undefined }} // B (Forward)
+						hand="right"
+						on1={() => {
+							props.setCurrentImage('after');
+						}} // RT (After)
+						on5={() => {
+							setInput(!input);
+							input ? props.onNext?.() : undefined;
+						}} // B (Forward)
 					/>
-					
+
 					{vr ? null : (
 						<CameraController
 							onRotation={setRotation}

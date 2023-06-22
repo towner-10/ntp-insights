@@ -24,9 +24,9 @@ export const MovementController = (props: {
 	useFrame(() => {
 		if (controller && player) {
 			const { buttons } = controller.inputSource.gamepad;
-            if (buttons[1].pressed) props.on1();
-            if (buttons[5].pressed) props.on5();
-            if (buttons[6].pressed) props.on6();
+            if (buttons[1].pressed) props.on1?.();
+            if (buttons[5].pressed) props.on5?.();
+            if (buttons[6].pressed) props.on6?.();
 		}
 	});
 
