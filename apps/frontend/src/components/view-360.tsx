@@ -21,43 +21,29 @@ import { before } from 'lodash';
 import { MovementController } from './movement-controller';
 
 const StreetViewImage = (props: { image: string }) => {
-	try {
-		const texture = useLoader(
-			THREE.TextureLoader,
-			`${props.image.replace('.', '/backend')}`
-		);
-		texture.mapping = THREE.EquirectangularReflectionMapping;
-		texture.minFilter = texture.magFilter = THREE.LinearFilter;
-		texture.wrapS = THREE.RepeatWrapping;
-		texture.repeat.x = -1;
+	const texture = useLoader(
+		THREE.TextureLoader,
+		`${props.image.replace('.', '/backend')}`
+	);
+	texture.mapping = THREE.EquirectangularReflectionMapping;
+	texture.minFilter = texture.magFilter = THREE.LinearFilter;
+	texture.wrapS = THREE.RepeatWrapping;
+	texture.repeat.x = -1;
 
-		// eslint-disable-next-line react-hooks/rules-of-hooks
-		useEffect(() => {
-			texture.needsUpdate = true;
-		}, [texture]);
+	useEffect(() => {
+		texture.needsUpdate = true;
+	}, [texture]);
 
-		return (
-			<mesh>
-				<sphereGeometry attach="geometry" args={[500, 60, 40, 90]} />
-				<meshBasicMaterial
-					attach="material"
-					map={texture}
-					side={THREE.BackSide}
-				/>
-			</mesh>
-		);
-	} catch (err) {
-		return (
-			<mesh>
-				<sphereGeometry attach="geometry" args={[500, 60, 40, 90]} />
-				<meshBasicMaterial
-					attach="material"
-					color={0x000000}
-					side={THREE.BackSide}
-				/>
-			</mesh>
-		);
-	}
+	return (
+		<mesh>
+			<sphereGeometry attach="geometry" args={[500, 60, 40, 90]} />
+			<meshBasicMaterial
+				attach="material"
+				map={texture}
+				side={THREE.BackSide}
+			/>
+		</mesh>
+	);
 };
 
 const CameraController = ({
@@ -249,15 +235,23 @@ export const View360 = (props: {
 			<Canvas>
 				<XR>
 					<MovementController
-						hand='right'
-						on1={() => {props.currentImage == 'after' ? props.setCurrentImage('before') : props.setCurrentImage('after')}}
+						hand="right"
+						on1={() => {
+							props.currentImage == 'after'
+								? props.setCurrentImage('before')
+								: props.setCurrentImage('after');
+						}}
 						// on1={() => {props.setCurrentImage('after')}}  // A
 						// on2={() => {props.setCurrentImage('before')}}
 					/>
 					<MovementController
-						hand='left'
-						on1={() => {props.onNext?.()}} // X
-						on2={() => {props.onPrevious?.()}} // Y
+						hand="left"
+						on1={() => {
+							props.onNext?.();
+						}} // X
+						on2={() => {
+							props.onPrevious?.();
+						}} // Y
 					/>
 					{vr ? null : (
 						<CameraController
