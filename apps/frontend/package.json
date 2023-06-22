@@ -63,6 +63,7 @@
 		"react-day-picker": "^8.7.1",
 		"react-dom": "18.2.0",
 		"react-email": "1.9.3",
+		"react-error-boundary": "^4.0.10",
 		"react-gamepads": "^1.0.0",
 		"react-hook-form": "^7.43.9",
 		"react-map-gl": "^7.0.25",

@@ -19,6 +19,8 @@ import { radToDeg } from 'three/src/math/MathUtils';
 import { type Image360 } from '@prisma/client';
 import { before } from 'lodash';
 import { MovementController } from './movement-controller';
+import { ErrorBoundary } from 'react-error-boundary';
+import { Button } from './ui/button';
 
 const StreetViewImage = (props: { image: string }) => {
 	const texture = useLoader(
@@ -232,44 +234,56 @@ export const View360 = (props: {
 				</button>
 			</div>
 			{vr ? <VRButton /> : null}
-			<Canvas>
-				<XR>
-					<MovementController
-						hand="right"
-						on1={() => {
-							props.currentImage == 'after'
-								? props.setCurrentImage('before')
-								: props.setCurrentImage('after');
-						}}
-						// on1={() => {props.setCurrentImage('after')}}  // A
-						// on2={() => {props.setCurrentImage('before')}}
-					/>
-					<MovementController
-						hand="left"
-						on1={() => {
-							props.onNext?.();
-						}} // X
-						on2={() => {
-							props.onPrevious?.();
-						}} // Y
-					/>
-					{vr ? null : (
-						<CameraController
-							onRotation={setRotation}
-							startAngle={startingAngle}
+			<ErrorBoundary
+				fallbackRender={({ resetErrorBoundary }) => {
+					return (
+						<div className="flex h-full flex-col items-center justify-center">
+							<div className="text-2xl font-bold">Error</div>
+							<div className="text-lg">Could not load image!</div>
+							<Button className="mt-4" onClick={resetErrorBoundary}>
+								Retry
+							</Button>
+						</div>
+					);
+				}}
+			>
+				<Canvas>
+					<XR>
+						<MovementController
+							hand="right"
+							on1={() => {
+								props.currentImage == 'after'
+									? props.setCurrentImage('before')
+									: props.setCurrentImage('after');
+							}}
 						/>
-					)}
-					<Suspense fallback={null}>
-						<StreetViewImage
-							image={
-								props.currentImage === 'after'
-									? props.image.image_url
-									: props.image.before.image_url
-							}
+						<MovementController
+							hand="left"
+							on1={() => {
+								props.onNext?.();
+							}}
+							on2={() => {
+								props.onPrevious?.();
+							}}
 						/>
-					</Suspense>
-				</XR>
-			</Canvas>
+						{vr ? null : (
+							<CameraController
+								onRotation={setRotation}
+								startAngle={startingAngle}
+							/>
+						)}
+						<Suspense fallback={null}>
+							<StreetViewImage
+								image={
+									props.currentImage === 'after'
+										? props.image.image_url
+										: props.image.before.image_url
+								}
+							/>
+						</Suspense>
+					</XR>
+				</Canvas>
+			</ErrorBoundary>
 		</div>
 	);
 };
