@@ -15,14 +15,14 @@ import {
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { VRButton, XR } from '@react-three/xr';
-import { radToDeg } from 'three/src/math/MathUtils';
+import { degToRad, radToDeg } from 'three/src/math/MathUtils';
 import { type Image360 } from '@prisma/client';
 import { before } from 'lodash';
 import { MovementController } from './movement-controller';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Button } from './ui/button';
 
-const StreetViewImage = (props: { image: string }) => {
+const StreetViewImage = (props: { image: string, rotation: number }) => {
 	const texture = useLoader(
 		THREE.TextureLoader,
 		`${props.image.replace('.', '/backend')}`
@@ -279,6 +279,7 @@ export const View360 = (props: {
 										? props.image.image_url
 										: props.image.before.image_url
 								}
+								rotation={degToRad(startingAngle)}
 							/>
 						</Suspense>
 					</XR>
