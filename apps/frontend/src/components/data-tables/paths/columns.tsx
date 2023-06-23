@@ -1,6 +1,6 @@
 import { type ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
-import { ArrowUpDown, Link2Icon } from 'lucide-react';
+import { ArrowUpDown, Frame, Link2Icon } from 'lucide-react';
 import { format } from 'date-fns';
 import ClipboardButton from '@/components/buttons/clipboard-button';
 import { type Path } from '@prisma/client';
@@ -59,15 +59,33 @@ export const columns = (onRefresh: () => void) => {
 					if (typeof window !== 'undefined') {
 						const hostname = window.location.hostname;
 
-						// TODO: Change this to the actual hostname
-						return `${hostname}:3000/360/${path.id}/view`;
+						return `${hostname}/360/${path.id}/view`;
 					}
 
 					return 'Not available';
 				};
 
+				const copyFrame = () => {
+					if (typeof window !== 'undefined') {
+						const hostname = window.location.hostname;
+
+						return `<iframe src="${hostname}/360/${path.id}/frame" width="800" height="600" />`;
+					}
+
+					return 'Not available';
+				}
+
 				return (
 					<div className="flex gap-2">
+						<ClipboardButton
+							text={copyFrame()}
+							notify
+							tooltip="Copy to clipboard"
+						>
+							<Button variant="ghost" className="h-8 w-8 p-0">
+								<Frame className="h-4 w-4" />
+							</Button>
+						</ClipboardButton>
 						<ClipboardButton
 							text={copyLink()}
 							notify
