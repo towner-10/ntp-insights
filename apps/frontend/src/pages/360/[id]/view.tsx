@@ -13,6 +13,7 @@ import { api } from '@/utils/api';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEffect, useState } from 'react';
 import { View360Details } from '@/components/view-360-details';
+import { VRControls } from '@/components/dialogs/info-dialogs';
 
 const View: NextPage = () => {
 	const session = useSession();
@@ -124,9 +125,10 @@ const View: NextPage = () => {
 				/>
 				<Toaster />
 				<div className="container flex flex-col items-center justify-center p-6">
-					<h2 className="mb-4 flex w-full flex-row items-center gap-4 text-left text-2xl font-medium">
-						{path.data?.name || 'Loading...'}
-					</h2>
+					<div className="mb-4 flex w-full flex-row items-center gap-4 text-left text-2xl font-medium">
+						<h2>{path.data?.name || 'Loading...'}</h2>
+						<VRControls />
+					</div>
 					<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-6 lg:grid-rows-2">
 						<View360
 							image={imagesSorted?.[currentIndex]}

@@ -45,10 +45,47 @@ export function RadiusInfo() {
 					<DialogDescription>What does the radius field do?</DialogDescription>
 				</DialogHeader>
 				<p>
-					The radius field is used to filter the results of a search by distance.
-					For example, if you wanted to find all the restaurants within 5 km
-					of your location, you could use the radius <code>5</code>.
+					The radius field is used to filter the results of a search by
+					distance. For example, if you wanted to find all the restaurants
+					within 5 km of your location, you could use the radius <code>5</code>.
 				</p>
+			</DialogContent>
+			<DialogTrigger>
+				<LucideInfo size={16} />
+			</DialogTrigger>
+		</Dialog>
+	);
+}
+
+export function VRControls() {
+	return (
+		<Dialog>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>VR Controls</DialogTitle>
+					<DialogDescription>How to use the 360 VR controls.</DialogDescription>
+				</DialogHeader>
+				<div className="flex flex-row space-x-6">
+					<div className="flex flex-col space-y-2">
+						<h2 className='underline'>Left Hand</h2>
+						<ul>
+							<li>
+								<code>Trigger</code> - Next image
+							</li>
+							<li>
+								<code>Grip</code> - Previous image
+							</li>
+						</ul>
+					</div>
+					<div className="flex flex-col space-y-2">
+						<h2 className='underline'>Right Hand</h2>
+						<ul>
+							<li>
+								<code>Trigger</code> - Before/After image
+							</li>
+						</ul>
+					</div>
+				</div>
 			</DialogContent>
 			<DialogTrigger>
 				<LucideInfo size={16} />

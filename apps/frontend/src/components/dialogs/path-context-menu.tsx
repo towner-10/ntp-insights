@@ -127,19 +127,24 @@ export function PathContextMenu(props: {
 					</AlertDialogHeader>
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction
-							onClick={() => {
-								void archivePath.mutateAsync({ id: props.path.id }).then(() => {
-									toaster.toast({
-										title: 'Path archived.',
-										description: 'Request to restore it later.',
-										duration: 5000,
-									});
-									props.onRefresh();
-								});
-							}}
-						>
-							Continue
+						<AlertDialogAction>
+							<Button
+								variant="destructive"
+								onClick={() => {
+									void archivePath
+										.mutateAsync({ id: props.path.id })
+										.then(() => {
+											toaster.toast({
+												title: 'Path archived.',
+												description: 'Request to restore it later.',
+												duration: 5000,
+											});
+											props.onRefresh();
+										});
+								}}
+							>
+								Continue
+							</Button>
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

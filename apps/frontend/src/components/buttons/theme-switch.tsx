@@ -30,7 +30,7 @@ const ThemeSwitch = () => {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button variant="outline">
+				<Button variant="outline" size="icon">
 					{resolvedTheme === 'dark' ? <LucideMoon /> : <LucideSun />}
 				</Button>
 			</DropdownMenuTrigger>

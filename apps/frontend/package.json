@@ -71,8 +71,8 @@
 		"recharts": "^2.5.0",
 		"socket.io-client": "^4.6.1",
 		"superjson": "1.12.2",
-		"tailwind-merge": "^1.12.0",
-		"tailwindcss-animate": "^1.0.5",
+		"tailwind-merge": "^1.13.2",
+		"tailwindcss-animate": "^1.0.6",
 		"three": "^0.152.2",
 		"types": "*",
 		"zod": "^3.21.4"
