@@ -235,7 +235,7 @@ export const View360 = (props: {
 				</button>
 			</div>
 			{vr ? <VRButton /> : null}
-			<ErrorBoundary
+			{/* <ErrorBoundary
 				fallbackRender={({ resetErrorBoundary }) => {
 					return (
 						<div className="flex h-full flex-col items-center justify-center">
@@ -247,7 +247,7 @@ export const View360 = (props: {
 						</div>
 					);
 				}}
-			>
+			> */}
 				<Canvas>
 					<XR>
 						<MovementController
@@ -286,7 +286,7 @@ export const View360 = (props: {
 						</Suspense>
 					</XR>
 				</Canvas>
-			</ErrorBoundary>
+			{/* </ErrorBoundary> */}
 		</div>
 	);
 };
