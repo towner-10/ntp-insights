@@ -235,7 +235,7 @@ export const View360 = (props: {
 				</button>
 			</div>
 			{vr ? <VRButton /> : null}
-			{/* <ErrorBoundary
+			<ErrorBoundary
 				fallbackRender={({ resetErrorBoundary }) => {
 					return (
 						<div className="flex h-full flex-col items-center justify-center">
@@ -247,17 +247,9 @@ export const View360 = (props: {
 						</div>
 					);
 				}}
-			> */}
+			>
 				<Canvas>
 					<XR>
-						<MovementController
-							hand="right"
-							on1={() => {
-								props.currentImage == 'after'
-									? props.setCurrentImage('before')
-									: props.setCurrentImage('after');
-							}}
-						/>
 						<MovementController
 							hand='left'
 							on1={() => { props.setCurrentImage('before') }} // LT (Before)
@@ -286,7 +278,7 @@ export const View360 = (props: {
 						</Suspense>
 					</XR>
 				</Canvas>
-			{/* </ErrorBoundary> */}
+			</ErrorBoundary>
 		</div>
 	);
 };
