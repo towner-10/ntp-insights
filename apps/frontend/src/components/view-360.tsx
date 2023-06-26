@@ -98,6 +98,7 @@ export const View360 = (props: {
 }) => {
 	const [fullscreen, setFullscreen] = useState(false);
 	const [vr, setVR] = useState(false);
+	const [input, setInput] = useState(false);
 	const [startingAngle, setStartingAngle] = useState(props.image?.heading || 0);
 	const [rotation, setRotation] = useState(props.image?.heading || 0);
 	const fullscreenRef = useRef<HTMLDivElement>(null);
@@ -258,13 +259,14 @@ export const View360 = (props: {
 							}}
 						/>
 						<MovementController
-							hand="left"
-							on1={() => {
-								props.onNext?.();
-							}}
-							on2={() => {
-								props.onPrevious?.();
-							}}
+							hand='left'
+							on1={() => { props.setCurrentImage('before') }} // LT (Before)
+							on6={() => { setInput(!input); input ? props.onPrevious?.() : undefined }} // Y (Backward)
+						/>
+						<MovementController
+							hand='right'
+							on1={() => { props.setCurrentImage('after') }} // RT (After)
+							on6={() => { setInput(!input); input ? props.onNext?.() : undefined }} // B (Forward)
 						/>
 						{vr ? null : (
 							<CameraController
