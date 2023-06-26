@@ -5,8 +5,8 @@ import { useXR, useController } from '@react-three/xr';
 // 1: Trigger
 // 2: Grip
 // 4: Stick Buttons
-// 5: A/X
-// 6: B/Y
+// 5: B/Y
+// 6: A/X
 
 // Axes
 // 2: XStick
@@ -15,7 +15,7 @@ import { useXR, useController } from '@react-three/xr';
 export const MovementController = (props: {
     hand?: 'left' | 'right',
     on1?: () => void,
-    on6?: () => void,
+    on5?: () => void,
 }) => {
 	const { player } = useXR();
 	const controller = useController(props.hand);
@@ -24,7 +24,7 @@ export const MovementController = (props: {
 		if (controller && player) {
 			const { buttons } = controller.inputSource.gamepad;
             if (buttons[1].pressed) props.on1();
-            if (buttons[6].pressed) props.on6();
+            if (buttons[5].pressed) props.on5();
 		}
 	});
 
