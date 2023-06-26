@@ -1,4 +1,14 @@
-import { LucideInfo } from 'lucide-react';
+import {
+	LucideInfo,
+	LucideNavigation2,
+	LucideExpand,
+	LucideGlasses,
+	LucideChevronUp,
+	LucideChevronDown,
+	LucideChevronsUp,
+	LucideChevronsDown,
+	LucideShrink,
+} from 'lucide-react';
 import {
 	Dialog,
 	DialogContent,
@@ -62,26 +72,62 @@ export function VRControls() {
 		<Dialog>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>VR Controls</DialogTitle>
-					<DialogDescription>How to use the 360 VR controls.</DialogDescription>
+					<DialogTitle>Using NTP 360</DialogTitle>
+					<DialogDescription>How to navigate the 360 view</DialogDescription>
 				</DialogHeader>
-				<div className="flex flex-row space-x-6">
+				<h2 className="font-medium">Screen Controls</h2>
+					<div className="flex flex-row align-middle text-sm">
+						<div className='pr-2'><LucideChevronUp/><LucideChevronDown/></div><div className='pt-3.5 pr-10'>Next/Previous Image</div>
+						<div className='pr-2'><LucideChevronsUp/><LucideChevronsDown/></div><div className='pt-3.5'>Next/Previous 5 Images</div>
+					</div>
+					<div className="flex flex-row space-x-10 align-middle text-sm">
+						<div className='pr-2'><LucideNavigation2/></div>Recenter North
+						<div className='pr-2'><LucideExpand/></div>Enter Fullscreen
+						<div className='pr-2'><LucideGlasses/></div>Enter VR
+					</div>
+				<h2 className="font-medium">Keyboard Controls</h2>
+				<div className="flex flex-row space-x-10">
 					<div className="flex flex-col space-y-2">
-						<h2 className='underline'>Left Hand</h2>
+						<h2 className='font-medium text-sm'>Arrow Keys</h2>
 						<ul>
-							<li>
-								<code>Trigger</code> - Next image
+							<li className='text-sm'>
+								<code>Up</code> — Next Image
 							</li>
-							<li>
-								<code>Grip</code> - Previous image
+							<li className='text-sm'>
+								<code>Down</code> — Previous Image
 							</li>
 						</ul>
 					</div>
 					<div className="flex flex-col space-y-2">
-						<h2 className='underline'>Right Hand</h2>
+						<h2 className='font-medium text-sm'>Other Keys</h2>
 						<ul>
-							<li>
-								<code>Trigger</code> - Before/After image
+							<li className='text-sm'>
+								<code>Esc</code> — Exit Fullscreen
+							</li>
+						</ul>
+					</div>
+				</div>
+				<h2 className="font-medium">VR Controls</h2>
+				<div className="flex flex-row space-x-10">
+					<div className="flex flex-col space-y-2">
+						<h2 className='font-medium text-sm'>Left Hand</h2>
+						<ul>
+							<li className='text-sm'>
+								<code>Grip</code> — Before Image
+							</li>
+							<li className='text-sm'>
+								<code>Y</code> — Previous Image
+							</li>
+						</ul>
+					</div>
+					<div className="flex flex-col space-y-2">
+						<h2 className='font-medium text-sm'>Right Hand</h2>
+						<ul>
+							<li className='text-sm'>
+								<code>Grip</code> — After Image
+							</li>
+							<li className='text-sm'>
+								<code>B</code> — Next Image
 							</li>
 						</ul>
 					</div>
