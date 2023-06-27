@@ -58,6 +58,7 @@ export const SurveyPanoramasDialogContent = (props: DialogContentProps) => {
 		(async () => {
 			const result = await batchUploadImages(
 				files,
+				props.formState.folder_name,
 				props.formState.path_id,
 				({ userMessage, consoleMessage }) => {
 					console.error(consoleMessage);

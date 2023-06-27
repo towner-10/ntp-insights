@@ -23,6 +23,7 @@ export const NewPathDialog = () => {
 	const [open, setOpen] = useState(false);
 	const [formState, setFormState] = useState<FormStateData>({
 		name: '',
+		folder_name: '',
 		date: new Date(),
 		framepos: [],
 	});
@@ -56,6 +57,7 @@ export const NewPathDialog = () => {
 		setPage('initial');
 		setFormState({
 			name: '',
+			folder_name: '',
 			date: new Date(),
 			framepos: [],
 		});
@@ -76,10 +78,12 @@ export const NewPathDialog = () => {
 		void (async () => {
 			const path = await newPath.mutateAsync({
 				name: data.name,
+				folder_name: data.folder_name,
 				date: data.date,
 			});
 
-			if (path) {
+			if (path && path.data) {
+				// Check type of path
 				toaster.toast({
 					title: 'Success',
 					description: 'Path created in database.',
@@ -88,10 +92,11 @@ export const NewPathDialog = () => {
 
 				setFormState({
 					...data,
-					path_id: path.id,
+					path_id: path.data.id,
 				});
-			} else
-				handleError('Path could not be created in database. Try again later.');
+			} else {
+				handleError(path.message);
+			}
 		})();
 	};
 
@@ -110,7 +115,7 @@ export const NewPathDialog = () => {
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent className="md:max-w-2xl lg:max-w-4xl">
-				<div className="absolute right-0 top-0 mr-2 mt-2 text-muted-foreground">
+				<div className="text-muted-foreground absolute right-0 top-0 mr-2 mt-2">
 					{isSupported && !released && <MonitorCheck size={16} />}
 				</div>
 				{page === 'initial' && (

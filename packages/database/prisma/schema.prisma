@@ -126,9 +126,11 @@ model Post {
 
 model Path {
   id            String     @id @unique @default(cuid())
+  folder_name   String     @unique
   images        Image360[] @relation("Path Images")
   name          String
   date          DateTime
+  editable      Boolean    @default(true)
   archived      Boolean    @default(false)
   created_at    DateTime   @default(now())
   updated_at    DateTime   @default(now()) @updatedAt

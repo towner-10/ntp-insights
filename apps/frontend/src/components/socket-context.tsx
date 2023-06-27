@@ -22,7 +22,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 	const [state, setState] = useState<number>(WebSocket.CONNECTING);
 
 	const socket = useMemo(() => {
-		const manager = new Manager(env.NEXT_PUBLIC_BACKEND_WS_URL, {
+		const manager = new Manager(env.NEXT_PUBLIC_BACKEND_URL, {
 			reconnectionDelay: RECONNECT_TIMEOUT,
 		});
 

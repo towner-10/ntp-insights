@@ -2,16 +2,29 @@ import { PrismaClient, Search, SearchResult } from 'database';
 
 const prisma = new PrismaClient();
 
-export const getSearches = async () => {
-	return await prisma.search.findMany();
+export const getPathUploadData = async (id: string) => {
+	try {
+		const path = await prisma.path.findUnique({
+			where: {
+				id: id,
+			},
+		});
+
+		if (!path) {
+			return null;
+		}
+
+		return {
+			editable: path.editable,
+			folder_name: path.folder_name,
+		};
+	} catch (err) {
+		return null;
+	}
 };
 
-export const verifyAccessToken = async (token: string) => {
-	return await prisma.session.findFirst({
-		where: {
-			sessionToken: token,
-		},
-	});
+export const getSearches = async () => {
+	return await prisma.search.findMany();
 };
 
 export const getAllSearchResults = async () => {

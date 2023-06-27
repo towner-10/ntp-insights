@@ -4,7 +4,7 @@ import parseCookies from '../utils/parseCookies';
 import { promises as fs } from 'fs';
 import { logger } from '../utils/logger';
 import { ImageResult } from 'types';
-import { verifyAccessToken } from '../db';
+import { getPathUploadData } from '../db';
 
 const IMAGE_DIRECTORY = './images';
 
@@ -50,12 +50,8 @@ export const handleRequest = async (
 			res.end();
 		}
 	} else if (req.method === 'POST') {
-		if (req.url === '/api/upload') {
+		if (req.url?.startsWith('/api/upload')) {
 			logger.debug('POST /api/upload');
-
-			if (!(await verifyRequest(req, res))) {
-				return;
-			}
 
 			const form = formidable({
 				multiples: true,
@@ -140,12 +136,25 @@ export const handleRequest = async (
 const handleUpload = async (data: { id: string; files: formidable.File[] }) => {
 	const image_urls: ImageResult[] = [];
 
+	// Fetch folder name from database
+	const path_data = await getPathUploadData(data.id);
+
+	if (!path_data) {
+		throw new Error('Invalid path_id');
+	}
+
+	if (!path_data.editable) {
+		throw new Error('Path is not editable');
+	}
+
+	const folder_name = path_data.folder_name;
+
 	try {
-		await fs.mkdir(`${IMAGE_DIRECTORY}/${data.id}`, {
+		await fs.mkdir(`${IMAGE_DIRECTORY}/${folder_name}`, {
 			recursive: true,
 		});
 	} catch (err) {
-		logger.error(`Error creating directory ${data.id}`);
+		logger.error(`Error creating directory ${folder_name}`);
 		logger.error(err);
 	}
 
@@ -159,7 +168,7 @@ const handleUpload = async (data: { id: string; files: formidable.File[] }) => {
 				throw new Error('Invalid filename');
 			}
 
-			const url = `${IMAGE_DIRECTORY}/${data.id}/${filename}`;
+			const url = `${IMAGE_DIRECTORY}/${folder_name}/${filename}`;
 
 			await fs.copyFile(file.filepath, url);
 			await fs.rm(file.filepath);
@@ -185,57 +194,10 @@ const handleUpload = async (data: { id: string; files: formidable.File[] }) => {
 	return image_urls;
 };
 
-const verifyRequest = async (
-	req: http.IncomingMessage,
-	res: http.ServerResponse<http.IncomingMessage> & {
-		req: http.IncomingMessage;
-	}
-) => {
-	const cookies = parseCookies(req);
-
-	if (!cookies['next-auth.session-token']) {
-		if (!cookies['__Secure-next-auth.session-token']) {
-			logger.error('Missing token');
-			res.writeHead(400, {
-				'Content-Type': 'text/plain',
-			});
-			res.end('Missing token');
-			return false;
-		}
-	}
-
-	// Verify auth token
-	const session = await verifyAccessToken(
-		cookies['next-auth.session-token'] ||
-			cookies['__Secure-next-auth.session-token']
-	);
-
-	if (!session) {
-		logger.error('Invalid token');
-		res.writeHead(401, {
-			'Content-Type': 'text/plain',
-		});
-		res.end('Invalid token');
-		return false;
-	}
-
-	if (session.expires < new Date()) {
-		logger.error('Token expired');
-		res.writeHead(401, {
-			'Content-Type': 'text/plain',
-		});
-		res.end('Token expired');
-		return false;
-	}
-
-	logger.debug('Token verified');
-	return true;
-};
-
 export const testImageRequest = (path: string) => {
 	// Check REGEX to make sure the path is valid
 	if (
-		!/^\/images\/[a-zA-Z0-9]+\/[a-zA-Z0-9]+\.(jpg|jpeg|png|gif)$/g.test(
+		!/^\/images\/[a-zA-Z][a-zA-Z0-9-_]+\/[a-zA-Z0-9]+\.(jpg|jpeg|png|gif)$/g.test(
 			path
 		)
 	) {

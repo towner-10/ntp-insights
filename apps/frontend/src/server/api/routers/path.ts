@@ -7,6 +7,15 @@ import {
 import { TRPCError } from '@trpc/server';
 import { prisma } from '@/server/db';
 import { z } from 'zod';
+import { folderNameRegex } from '@/components/dialogs/new-path/types';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { Path } from 'database';
+
+interface NewPathResponse {
+	code: 'SUCCESS' | 'DUPLICATE_FOLDER_NAME' | 'UNKNOWN';
+	message: string;
+	data?: Path;
+}
 
 export const pathsRouter = createTRPCRouter({
 	get: protectedProcedure
@@ -61,36 +70,81 @@ export const pathsRouter = createTRPCRouter({
 		const paths = await prisma.path.findMany({
 			where: {
 				archived: false,
-			}
+			},
 		});
 		return paths;
 	}),
+	duplicateFolderName: publicProcedure
+		.input(
+			z.object({
+				folder_name: z.string().min(3).max(50).regex(folderNameRegex),
+			})
+		)
+		.mutation(async ({ input }) => {
+			try {
+				const path = await prisma.path.findUnique({
+					where: {
+						folder_name: input.folder_name,
+					},
+				});
+
+				if (path) {
+					return true;
+				}
+
+				return false;
+			} catch {
+				return false;
+			}
+		}),
 	new: ntpProtectedProcedure
 		.input(
 			z.object({
 				name: z.string(),
+				folder_name: z.string().min(3).max(50).regex(folderNameRegex),
 				date: z.date(),
 			})
 		)
 		.mutation(async ({ input, ctx }) => {
-			const path = await prisma.path.create({
-				data: {
-					name: input.name,
-					date: input.date,
-					created_by: {
-						connect: {
-							id: ctx.session.user.id,
+			try {
+				const path = await prisma.path.create({
+					data: {
+						name: input.name,
+						folder_name: input.folder_name,
+						date: input.date,
+						created_by: {
+							connect: {
+								id: ctx.session.user.id,
+							},
+						},
+						updated_by: {
+							connect: {
+								id: ctx.session.user.id,
+							},
 						},
 					},
-					updated_by: {
-						connect: {
-							id: ctx.session.user.id,
-						},
-					},
-				},
-			});
+				});
 
-			return path;
+				return {
+					code: 'SUCCESS',
+					message: 'Path created successfully',
+					data: path,
+				} as NewPathResponse;
+			} catch (err) {
+				if (err instanceof PrismaClientKnownRequestError) {
+					if (err.code === 'P2002') {
+						return {
+							code: 'DUPLICATE_FOLDER_NAME',
+							message: 'Path with this folder name already exists',
+						} as NewPathResponse;
+					}
+				}
+
+				return {
+					code: 'UNKNOWN',
+					message: 'Unknown error',
+				} as NewPathResponse;
+			}
 		}),
 	rename: ntpProtectedProcedure
 		.input(
@@ -113,7 +167,7 @@ export const pathsRouter = createTRPCRouter({
 					},
 				},
 			});
-			
+
 			return path;
 		}),
 	archive: ntpProtectedProcedure

@@ -21,11 +21,12 @@ import { before } from 'lodash';
 import { MovementController } from './movement-controller';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Button } from './ui/button';
+import { env } from '@/env.mjs';
 
 const StreetViewImage = (props: { image: string, rotation: number }) => {
 	const texture = useLoader(
 		THREE.TextureLoader,
-		`${props.image.replace('.', '/backend')}`
+		`${props.image.replace('.', env.NEXT_PUBLIC_BACKEND_URL)}`
 	);
 	texture.mapping = THREE.EquirectangularReflectionMapping;
 	texture.minFilter = texture.magFilter = THREE.LinearFilter;
@@ -160,7 +161,7 @@ export const View360 = (props: {
 			<div className="absolute bottom-3 left-5 z-10 text-2xl">
 				<span className="font-bold">NTP</span> 360
 			</div>
-			<div className="bg-background/60 hover:bg-foreground/40 hover:text-background absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg p-2 text-lg backdrop-blur">
+			<div className="bg-background/60 absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg p-2 text-lg backdrop-blur">
 				<RadioGroup
 					onValueChange={onValueChange}
 					value={props.currentImage}
