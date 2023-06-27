@@ -1,6 +1,5 @@
 import http from 'http';
 import formidable from 'formidable';
-import parseCookies from '../utils/parseCookies';
 import { promises as fs } from 'fs';
 import { logger } from '../utils/logger';
 import { ImageResult } from 'types';
