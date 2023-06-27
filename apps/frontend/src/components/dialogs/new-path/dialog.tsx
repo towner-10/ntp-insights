@@ -28,6 +28,7 @@ export const NewPathDialog = () => {
 		framepos: [],
 	});
 	const newPath = api.paths.new.useMutation();
+	const setEditable = api.paths.setEditable.useMutation();
 	const { socket } = useWebSocketContext();
 	const toaster = useToast();
 
@@ -146,8 +147,19 @@ export const NewPathDialog = () => {
 					<ComparisonPanoramasDialogContent
 						formState={formState}
 						setFormState={(data) => {
-							setFormState(data);
-							console.log(data);
+							void (async () => {
+								try {
+									await setEditable.mutateAsync({
+										id: formState.path_id,
+										editable: false,
+									});
+								} catch (err) {
+									console.error(err);
+								}
+
+								setFormState(data);
+								console.log(data);
+							})();
 						}}
 						onNext={() => {
 							setPage('initial');

@@ -145,6 +145,30 @@ export const pathsRouter = createTRPCRouter({
 				} as NewPathResponse;
 			}
 		}),
+	setEditable: ntpProtectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+				editable: z.boolean(),
+			})
+		)
+		.mutation(async ({ input, ctx }) => {
+			const path = await prisma.path.update({
+				where: {
+					id: input.id,
+				},
+				data: {
+					editable: input.editable,
+					updated_by: {
+						connect: {
+							id: ctx.session.user.id,
+						},
+					},
+				},
+			});
+
+			return path;
+		}),
 	rename: ntpProtectedProcedure
 		.input(
 			z.object({
