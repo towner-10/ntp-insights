@@ -7,15 +7,14 @@ import {
 import { TRPCError } from '@trpc/server';
 import { prisma } from '@/server/db';
 import { z } from 'zod';
-import { folderNameRegex } from '@/components/dialogs/new-path/types';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { Path } from 'database';
 
-interface NewPathResponse {
+type NewPathResponse = {
 	code: 'SUCCESS' | 'DUPLICATE_FOLDER_NAME' | 'UNKNOWN';
 	message: string;
 	data?: Path;
-}
+};
 
 export const pathsRouter = createTRPCRouter({
 	get: protectedProcedure
@@ -77,7 +76,7 @@ export const pathsRouter = createTRPCRouter({
 	duplicateFolderName: publicProcedure
 		.input(
 			z.object({
-				folder_name: z.string().min(3).max(50).regex(folderNameRegex),
+				folder_name: z.string().min(3).max(50).regex(/^[a-zA-Z][a-zA-Z0-9-_]+$/),
 			})
 		)
 		.mutation(async ({ input }) => {
@@ -101,7 +100,7 @@ export const pathsRouter = createTRPCRouter({
 		.input(
 			z.object({
 				name: z.string(),
-				folder_name: z.string().min(3).max(50).regex(folderNameRegex),
+				folder_name: z.string().min(3).max(50).regex(/^[a-zA-Z][a-zA-Z0-9-_]+$/),
 				date: z.date(),
 			})
 		)
