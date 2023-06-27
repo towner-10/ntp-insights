@@ -83,9 +83,11 @@ export const FrameposDialogContent = (props: DialogContentProps) => {
 				baseDescription
 			) : (
 				<span>
-					This stores the necessary geospatial data for each panorama.{' '}
+					{baseDescription}{' '}
 					{missingPanos && (
-						<span className='font-bold'>{missingPanos.length} Google panoramas could not be found!</span>
+						<span className="font-bold">
+							{missingPanos.length} Google panoramas could not be found!
+						</span>
 					)}
 				</span>
 			)

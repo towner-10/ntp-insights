@@ -49,7 +49,7 @@ export const handleRequest = async (
 			res.end();
 		}
 	} else if (req.method === 'POST') {
-		if (req.url?.startsWith('/api/upload')) {
+		if (req.url === '/api/upload') {
 			logger.debug('POST /api/upload');
 
 			const form = formidable({

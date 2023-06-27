@@ -17,6 +17,7 @@ export const SurveyPanoramasDialogContent = (props: DialogContentProps) => {
 	const [finished, setFinished] = useState(false);
 	const [files, setFiles] = useState<File[]>([]);
 	const [processing, setProcessing] = useState(false);
+	const [progress, setProgress] = useState(0);
 	const newNTPImage = api.image360.newNTP.useMutation();
 	const toaster = useToast();
 
@@ -70,6 +71,9 @@ export const SurveyPanoramasDialogContent = (props: DialogContentProps) => {
 					});
 					setProcessing(false);
 					props.onCancel?.();
+				},
+				(sent, total) => {
+					setProgress((sent / total) * 100);
 				}
 			);
 
@@ -172,6 +176,12 @@ export const SurveyPanoramasDialogContent = (props: DialogContentProps) => {
 								<code>{`${files.length}/${props.formState.framepos.length}`}</code>
 							</span>
 							<span> panoramas uploaded.</span>
+							{progress > 0 && (
+								<span>
+									{' '}
+									<code>{`${progress.toFixed(2)}%`}</code> complete.
+								</span>
+							)}
 						</>
 					}
 				/>

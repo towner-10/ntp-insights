@@ -19,6 +19,7 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 	const [uniquePanoramas, setUniquePanoramas] = useState<string[]>([]);
 	const [files, setFiles] = useState<File[]>([]);
 	const [processing, setProcessing] = useState(false);
+	const [progress, setProgress] = useState(0);
 	const newGoogleImage = api.image360.newGoogleImage.useMutation();
 	const setBeforeImage = api.image360.setBeforeImage.useMutation();
 	const toaster = useToast();
@@ -82,6 +83,9 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 					});
 					setProcessing(false);
 					props.onCancel?.();
+				},
+				(sent, total) => {
+					setProgress((sent / total) * 100);
 				}
 			);
 
@@ -217,6 +221,12 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 								<code>{` ${files.length}/${uniquePanoramas.length} `}</code>
 							</span>
 							<span>panoramas uploaded.</span>
+							{progress > 0 && (
+								<span>
+									{' '}
+									<code>{`${progress.toFixed(2)}%`}</code> complete.
+								</span>
+							)}
 						</>
 					}
 				/>
