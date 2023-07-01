@@ -75,7 +75,7 @@ export function VRControls() {
 					<DialogTitle>Using NTP 360</DialogTitle>
 					<DialogDescription>How to navigate the 360 view</DialogDescription>
 				</DialogHeader>
-				<h2 className="font-medium">Screen Controls</h2>
+				<h2 className="font-medium underline">Screen Controls</h2>
 					<div className="flex flex-row align-middle text-sm">
 						<div className='pr-2'><LucideChevronUp/><LucideChevronDown/></div><div className='pt-3.5 pr-10'>Next/Previous Image</div>
 						<div className='pr-2'><LucideChevronsUp/><LucideChevronsDown/></div><div className='pt-3.5'>Next/Previous 5 Images</div>
@@ -85,7 +85,7 @@ export function VRControls() {
 						<div className='pr-2'><LucideExpand/></div>Enter Fullscreen
 						<div className='pr-2'><LucideGlasses/></div>Enter VR
 					</div>
-				<h2 className="font-medium">Keyboard Controls</h2>
+				<h2 className="font-medium underline">Keyboard Controls</h2>
 				<div className="flex flex-row space-x-10">
 					<div className="flex flex-col space-y-2">
 						<h2 className='font-medium text-sm'>Arrow Keys</h2>
@@ -107,7 +107,7 @@ export function VRControls() {
 						</ul>
 					</div>
 				</div>
-				<h2 className="font-medium">VR Controls</h2>
+				<h2 className="font-medium underline">VR Controls</h2>
 				<div className="flex flex-row space-x-10">
 					<div className="flex flex-col space-y-2">
 						<h2 className='font-medium text-sm'>Left Hand</h2>

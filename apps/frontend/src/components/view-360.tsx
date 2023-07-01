@@ -1,5 +1,4 @@
-import { Canvas, useLoader, useThree } from '@react-three/fiber';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import {
@@ -22,10 +21,28 @@ import { MovementController } from './movement-controller';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Button } from './ui/button';
 import { env } from '@/env.mjs';
+import {
+	CameraControls,
+	Html,
+	OrthographicCamera,
+	useProgress,
+	useTexture,
+} from '@react-three/drei';
 
-const StreetViewImage = (props: { image: string, rotation: number }) => {
-	const texture = useLoader(
-		THREE.TextureLoader,
+const Loader = () => {
+	const { progress } = useProgress();
+	return (
+		<Html center>
+			<div className="flex h-full flex-col items-center justify-center">
+				<div className="text-2xl font-bold">Loading</div>
+				<div className="text-lg">{progress.toFixed(2)}%</div>
+			</div>
+		</Html>
+	);
+};
+
+const StreetViewImage = (props: { image: string }) => {
+	const texture = useTexture(
 		`${props.image.replace('.', env.NEXT_PUBLIC_BACKEND_URL)}`
 	);
 	texture.mapping = THREE.EquirectangularReflectionMapping;
@@ -49,42 +66,6 @@ const StreetViewImage = (props: { image: string, rotation: number }) => {
 	);
 };
 
-const CameraController = ({
-	startAngle = 0,
-	onRotation,
-}: {
-	startAngle?: number;
-	onRotation?: (angle: number) => void;
-}) => {
-	const { camera, gl } = useThree();
-	useEffect(() => {
-		let lastAngle = 0;
-		const controls = new OrbitControls(camera, gl.domElement);
-
-		// Set camera configuration
-		controls.rotateSpeed *= -0.3;
-		controls.zoomSpeed = 3;
-		controls.maxDistance = 480;
-
-		// Set initial camera angle
-		onRotation?.(radToDeg(controls.getAzimuthalAngle()) - startAngle);
-
-		controls.addEventListener('change', () => {
-			const angle = radToDeg(controls.getAzimuthalAngle()) - startAngle;
-			if (angle !== lastAngle) {
-				onRotation?.(angle);
-				lastAngle = angle;
-			}
-		});
-
-		// Clean up
-		return () => {
-			controls.dispose();
-		};
-	}, [camera, gl, onRotation, startAngle]);
-	return null;
-};
-
 export const View360 = (props: {
 	image?: Image360 & {
 		before: Image360 | null;
@@ -97,11 +78,12 @@ export const View360 = (props: {
 	onJumpPrevious?: () => void;
 	className?: string;
 }) => {
+	const cameraControlsRef = useRef<CameraControls>(null);
 	const [fullscreen, setFullscreen] = useState(false);
 	const [vr, setVR] = useState(false);
 	const [input, setInput] = useState(false);
 	const [startingAngle, setStartingAngle] = useState(props.image?.heading || 0);
-	const [rotation, setRotation] = useState(props.image?.heading || 0);
+	const [rotation, setRotation] = useState(0);
 	const fullscreenRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -137,10 +119,14 @@ export const View360 = (props: {
 
 	const onValueChange = (value: 'before' | 'after') => {
 		if (value === 'before') {
+			setRotation(
+				rotation + startingAngle - (props.image?.before?.heading || 0)
+			);
 			setStartingAngle(props.image?.before?.heading || 0);
 			return props.setCurrentImage('before');
 		}
 
+		setRotation(rotation + startingAngle - (props.image?.heading || 0));
 		setStartingAngle(props.image?.heading || 0);
 		return props.setCurrentImage('after');
 	};
@@ -180,7 +166,13 @@ export const View360 = (props: {
 			</div>
 			<div
 				className="bg-background/60 hover:bg-foreground/40 hover:text-background absolute right-0 z-10 m-2 rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
-				onClick={() => setRotation(0)}
+				onClick={() => {
+					if (!cameraControlsRef.current) return;
+					cameraControlsRef.current.rotateAzimuthTo(
+						degToRad(startingAngle),
+						true
+					);
+				}}
 			>
 				<LucideNavigation2
 					className="transform-gpu"
@@ -249,32 +241,45 @@ export const View360 = (props: {
 					);
 				}}
 			>
-				<Canvas>
+				<Canvas className="touch-none">
+					<CameraControls
+						ref={cameraControlsRef}
+						makeDefault
+						onChange={() => {
+							if (!cameraControlsRef.current) return;
+							const angle = radToDeg(cameraControlsRef.current.azimuthAngle);
+							console.log(startingAngle, angle);
+							setRotation(angle - startingAngle);
+						}}
+					/>
 					<XR>
 						<MovementController
-							hand='left'
-							on1={() => { props.setCurrentImage('before') }} // LT (Before)
-							on5={() => { setInput(!input); input ? props.onPrevious?.() : undefined }} // Y (Backward)
+							hand="left"
+							on1={() => {
+								props.setCurrentImage('before');
+							}} // LT (Before)
+							on5={() => {
+								setInput(!input);
+								input ? props.onPrevious?.() : undefined;
+							}} // Y (Backward)
 						/>
 						<MovementController
-							hand='right'
-							on1={() => { props.setCurrentImage('after') }} // RT (After)
-							on5={() => { setInput(!input); input ? props.onNext?.() : undefined }} // B (Forward)
+							hand="right"
+							on1={() => {
+								props.setCurrentImage('after');
+							}} // RT (After)
+							on5={() => {
+								setInput(!input);
+								input ? props.onNext?.() : undefined;
+							}} // B (Forward)
 						/>
-						{vr ? null : (
-							<CameraController
-								onRotation={setRotation}
-								startAngle={startingAngle}
-							/>
-						)}
-						<Suspense fallback={null}>
+						<Suspense fallback={<Loader />}>
 							<StreetViewImage
 								image={
 									props.currentImage === 'after'
 										? props.image.image_url
 										: props.image.before.image_url
 								}
-								rotation={degToRad(startingAngle)}
 							/>
 						</Suspense>
 					</XR>
