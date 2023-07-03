@@ -253,6 +253,7 @@ export const searchRouter = createTRPCRouter({
 
 				if (location.city) response.push(location.city);
 				if (location.state) response.push(location.state);
+				if (location.stateCode) response.push(`#${location.stateCode}Storm`);
 
 				return response;
 			}
