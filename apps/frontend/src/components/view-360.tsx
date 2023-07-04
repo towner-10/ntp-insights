@@ -24,7 +24,6 @@ import { env } from '@/env.mjs';
 import {
 	CameraControls,
 	Html,
-	OrthographicCamera,
 	useProgress,
 	useTexture,
 } from '@react-three/drei';
@@ -137,6 +136,7 @@ export const View360 = (props: {
 			ref={fullscreenRef}
 			tabIndex={0}
 			onKeyDown={(e) => {
+				e.preventDefault();
 				if (e.key == 'ArrowUp') {
 					props.onNext?.();
 				} else if (e.key == 'ArrowDown') {
@@ -245,6 +245,18 @@ export const View360 = (props: {
 					<CameraControls
 						ref={cameraControlsRef}
 						makeDefault
+						// https://github.com/yomotsu/camera-controls/blob/cee042753169f3bbeb593833ce92d70d52b6862f/src/types.ts#L29C1-L47
+						mouseButtons={{
+							left: 1,
+							middle: 0,
+							right: 0,
+							wheel: 16,
+						}}
+						touches={{
+							one: 32,
+							two: 512,
+							three: 0,
+						}}
 						onChange={() => {
 							if (!cameraControlsRef.current) return;
 							const angle = radToDeg(cameraControlsRef.current.azimuthAngle);
