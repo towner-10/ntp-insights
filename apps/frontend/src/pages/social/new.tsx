@@ -78,8 +78,8 @@ const NewSearchPage = () => {
 				}
 
 				await new Promise((resolve) => {
-					console.log('emitting refresh')
-					websocketInstance.socket.emit('refresh');
+					console.log('sending refresh')
+					websocketInstance.socket.send('refresh');
 					setTimeout(resolve, 1000);
 				});
 				
