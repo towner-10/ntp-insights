@@ -112,7 +112,7 @@ export const NewPathDialog = () => {
 			<AlertDialogTrigger asChild>
 				<Button>
 					<LucideFootprints className="pr-2" />
-					New Path
+					New Event Path
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent className="md:max-w-2xl lg:max-w-4xl">

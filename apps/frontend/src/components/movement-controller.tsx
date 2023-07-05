@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useXR, useController } from '@react-three/xr';
 
-// Button Mapping (Trigger/Grip and B/Y + A/X are seemingly reversed)
+// Button Mapping
 // 1: Trigger
 // 2: Grip
 // 4: Stick Buttons

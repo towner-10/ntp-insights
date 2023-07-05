@@ -10,6 +10,7 @@ import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import ServerStatusBadge from '@/components/server-status-badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/utils/api';
+import { UploadInfo } from '@/components/dialogs/info-dialogs';
 
 const Dashboard: NextPage = () => {
 	const session = useSession();
@@ -34,11 +35,12 @@ const Dashboard: NextPage = () => {
 				<Toaster />
 				<div className="container flex flex-col p-6">
 					<div className="flex flex-row items-center space-x-4 pb-6">
-						<h3 className=" text-2xl font-semibold">Paths</h3>
-						<div>
+						<h3 className=" text-2xl font-semibold">Event Paths</h3>
+						<div className="pr-24">
 							<ServerStatusBadge />
 						</div>
-						<div className="w-11/12 text-end">
+						<div className="w-9/12 space-x-4 text-end">
+							<UploadInfo/>
 							<NewPathDialog />
 						</div>
 					</div>

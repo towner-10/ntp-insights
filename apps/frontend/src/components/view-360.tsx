@@ -127,6 +127,7 @@ export const View360 = (props: {
 
 		setRotation(rotation + startingAngle - (props.image?.heading || 0));
 		setStartingAngle(props.image?.heading || 0);
+		
 		return props.setCurrentImage('after');
 	};
 
@@ -245,6 +246,7 @@ export const View360 = (props: {
 					<CameraControls
 						ref={cameraControlsRef}
 						makeDefault
+						dollyDragInverted
 						// https://github.com/yomotsu/camera-controls/blob/cee042753169f3bbeb593833ce92d70d52b6862f/src/types.ts#L29C1-L47
 						mouseButtons={{
 							left: 1,
@@ -260,6 +262,7 @@ export const View360 = (props: {
 						onChange={() => {
 							if (!cameraControlsRef.current) return;
 							const angle = radToDeg(cameraControlsRef.current.azimuthAngle);
+							cameraControlsRef.current.normalizeRotations();
 							console.log(startingAngle, angle);
 							setRotation(angle - startingAngle);
 						}}
@@ -271,7 +274,7 @@ export const View360 = (props: {
 								setInput(!input);
 								input ? props.onJumpPrevious?.() : undefined;
 							}} // Left Grip (Jump Backward)
-							on2={() => {
+							on3={() => {
 								setInput(!input);
 								input ? props.onPrevious?.() : undefined;
 							}} // Left Trigger (Backward)
@@ -285,7 +288,7 @@ export const View360 = (props: {
 								setInput(!input);
 								input ? props.onJumpNext?.() : undefined;
 							}} // Right Grip (Jump Forward)
-							on2={() => {
+							on3={() => {
 								setInput(!input);
 								input ? props.onNext?.() : undefined;
 							}} // Right Trigger (Forward)

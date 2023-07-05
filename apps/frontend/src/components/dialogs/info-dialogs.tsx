@@ -67,6 +67,28 @@ export function RadiusInfo() {
 	);
 }
 
+export function UploadInfo() {
+	return (
+		<Dialog>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Creating New Event Paths</DialogTitle>
+					<DialogDescription>Additional information on uploading 360-degree panorama sequences</DialogDescription>
+				</DialogHeader>
+				<h2 className="font-medium">Uploading the <code>framepos</code> Text File</h2>
+				<div className="text-sm">After data formation through <code>NCTech Immersive Studio</code> is complete, a <code>framepos</code> text file is created, storing all of the necessary geospatial data for each photo. NTP 360 parses this data and uses it to plot map points, populate a <code>Details</code> pane alongside the 360 view, and more.</div>
+				<h2 className="font-medium">Uploading the Panoramas Taken on the <code>iSTAR Pulsar</code> Camera</h2>
+				<div className="text-sm">After counting the number of data entries in the <code>framepos</code> text tile, NTP 360 determines the number of panoramas that it expects to be uploaded. Note that only numerically chronological file names, i.e., <code>0000000000, 0000000001, 0000000002, </code>etc. are accepted.</div>
+				<h2 className="font-medium">Uploading the Comparison Panoramas</h2>
+				<div className="text-sm">NTP 360 references each panorama's latitude and longitude values and uses Google Street View to fetch the closest available panorama for each of the uploaded <code>iSTAR Pulsar</code> panoramas. A copyable list of panorama IDs is then given to be entered into <code>Street View Download 360</code> for exporting. Note that each comparison panorama file must be named after its panorama ID.</div>
+			</DialogContent>
+			<DialogTrigger>
+				<LucideInfo size={16} />
+			</DialogTrigger>
+		</Dialog>
+	)
+}
+
 export function VRControls() {
 	return (
 		<Dialog>
@@ -75,7 +97,7 @@ export function VRControls() {
 					<DialogTitle>Using NTP 360</DialogTitle>
 					<DialogDescription>How to navigate the 360 view</DialogDescription>
 				</DialogHeader>
-				<h2 className="font-medium underline">Screen Controls</h2>
+				<h2 className="font-medium">Screen Controls</h2>
 					<div className="flex flex-row align-middle text-sm">
 						<div className='pr-2'><LucideChevronUp/><LucideChevronDown/></div><div className='pt-3.5 pr-10'>Next/Previous Image</div>
 						<div className='pr-2'><LucideChevronsUp/><LucideChevronsDown/></div><div className='pt-3.5'>Next/Previous 5 Images</div>
@@ -85,7 +107,7 @@ export function VRControls() {
 						<div className='pr-2'><LucideExpand/></div>Enter Fullscreen
 						<div className='pr-2'><LucideGlasses/></div>Enter VR
 					</div>
-				<h2 className="font-medium underline">Keyboard Controls</h2>
+				<h2 className="font-medium">Keyboard Controls</h2>
 				<div className="flex flex-row space-x-10">
 					<div className="flex flex-col space-y-2">
 						<h2 className='font-medium text-sm'>Arrow Keys</h2>

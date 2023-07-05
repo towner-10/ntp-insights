@@ -175,7 +175,7 @@ export const SurveyPanoramasDialogContent = (props: DialogContentProps) => {
 							<span>
 								<code>{`${files.length}/${props.formState.framepos.length}`}</code>
 							</span>
-							<span> panoramas uploaded.</span>
+							<span> panoramas selected.</span>
 							{progress > 0 && (
 								<span>
 									{' '}

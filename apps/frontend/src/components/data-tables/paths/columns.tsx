@@ -78,21 +78,21 @@ export const columns = (onRefresh: () => void) => {
 				return (
 					<div className="flex gap-2">
 						<ClipboardButton
-							text={copyFrame()}
-							notify
-							tooltip="Copy to clipboard"
-						>
-							<Button variant="ghost" className="h-8 w-8 p-0">
-								<Frame className="h-4 w-4" />
-							</Button>
-						</ClipboardButton>
-						<ClipboardButton
 							text={copyLink()}
 							notify
-							tooltip="Copy to clipboard"
+							tooltip="Copy shareable link to clipboard"
 						>
 							<Button variant="ghost" className="h-8 w-8 p-0">
 								<Link2Icon className="h-4 w-4" />
+							</Button>
+						</ClipboardButton>
+						<ClipboardButton
+							text={copyFrame()}
+							notify
+							tooltip="Copy inline frame to clipboard"
+						>
+							<Button variant="ghost" className="h-8 w-8 p-0">
+								<Frame className="h-4 w-4" />
 							</Button>
 						</ClipboardButton>
 						<PathContextMenu

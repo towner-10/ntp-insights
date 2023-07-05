@@ -220,7 +220,7 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 							<span>
 								<code>{` ${files.length}/${uniquePanoramas.length} `}</code>
 							</span>
-							<span>panoramas uploaded.</span>
+							<span>panoramas selected.</span>
 							{progress > 0 && (
 								<span>
 									{' '}

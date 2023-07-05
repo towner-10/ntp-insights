@@ -116,7 +116,7 @@ export const InitialDialogContent = (props: DialogContentProps) => {
 					)}
 					{!errors.folder_name && (
 						<p className="text-muted-foreground pt-1 text-xs">
-							Enter a for the folder images are stored in.
+							Enter a name for the folder that the images are stored in.
 						</p>
 					)}
 				</div>
