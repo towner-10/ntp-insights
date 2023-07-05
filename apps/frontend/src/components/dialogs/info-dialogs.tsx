@@ -80,7 +80,7 @@ export function UploadInfo() {
 				<h2 className="font-medium">Uploading the Panoramas Taken on the <code>iSTAR Pulsar</code> Camera</h2>
 				<div className="text-sm">After counting the number of data entries in the <code>framepos</code> text tile, NTP 360 determines the number of panoramas that it expects to be uploaded. Note that only numerically chronological file names, i.e., <code>0000000000, 0000000001, 0000000002, </code>etc. are accepted.</div>
 				<h2 className="font-medium">Uploading the Comparison Panoramas</h2>
-				<div className="text-sm">NTP 360 references each panorama's latitude and longitude values and uses Google Street View to fetch the closest available panorama for each of the uploaded <code>iSTAR Pulsar</code> panoramas. A copyable list of panorama IDs is then given to be entered into <code>Street View Download 360</code> for exporting. Note that each comparison panorama file must be named after its panorama ID.</div>
+				<div className="text-sm">NTP 360 references the latitude and longitude values for each panorama and uses Google Street View to fetch the closest available panorama for each of the uploaded <code>iSTAR Pulsar</code> panoramas. A copyable list of panorama IDs is then given to be entered into <code>Street View Download 360</code> for exporting. Note that each comparison panorama file must be named after its panorama ID.</div>
 			</DialogContent>
 			<DialogTrigger>
 				<LucideInfo size={16} />
