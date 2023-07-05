@@ -268,22 +268,30 @@ export const View360 = (props: {
 						<MovementController
 							hand="left"
 							on1={() => {
-								props.setCurrentImage('before');
-							}} // LT (Before)
-							on5={() => {
+								setInput(!input);
+								input ? props.onJumpPrevious?.() : undefined;
+							}} // Left Grip (Jump Backward)
+							on2={() => {
 								setInput(!input);
 								input ? props.onPrevious?.() : undefined;
-							}} // Y (Backward)
+							}} // Left Trigger (Backward)
+							on5={() => {
+								props.setCurrentImage('before');
+							}} // Y (Before)
 						/>
 						<MovementController
 							hand="right"
 							on1={() => {
-								props.setCurrentImage('after');
-							}} // RT (After)
-							on5={() => {
+								setInput(!input);
+								input ? props.onJumpNext?.() : undefined;
+							}} // Right Grip (Jump Forward)
+							on2={() => {
 								setInput(!input);
 								input ? props.onNext?.() : undefined;
-							}} // B (Forward)
+							}} // Right Trigger (Forward)
+							on5={() => {
+								props.setCurrentImage('after');
+							}} // B (After)
 						/>
 						<Suspense fallback={<Loader />}>
 							<StreetViewImage

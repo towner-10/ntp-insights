@@ -104,6 +104,9 @@ export function VRControls() {
 							<li className='text-sm'>
 								<code>Esc</code> — Exit Fullscreen
 							</li>
+							<li className='text-sm'>
+								<code>Enter</code> — Confirm Panorama Input
+							</li>
 						</ul>
 					</div>
 				</div>
@@ -112,11 +115,14 @@ export function VRControls() {
 					<div className="flex flex-col space-y-2">
 						<h2 className='font-medium text-sm'>Left Hand</h2>
 						<ul>
-							<li className='text-sm'>
-								<code>Grip</code> — Before Image
+						<li className='text-sm'>
+								<code>Trigger</code> — Previous Image
 							</li>
 							<li className='text-sm'>
-								<code>Y</code> — Previous Image
+								<code>Grip</code> — Previous 5 Images
+							</li>
+							<li className='text-sm'>
+								<code>Y</code> — Before Image
 							</li>
 						</ul>
 					</div>
@@ -124,10 +130,13 @@ export function VRControls() {
 						<h2 className='font-medium text-sm'>Right Hand</h2>
 						<ul>
 							<li className='text-sm'>
-								<code>Grip</code> — After Image
+								<code>Trigger</code> — Next Image
 							</li>
 							<li className='text-sm'>
-								<code>B</code> — Next Image
+								<code>Grip</code> — Next 5 Images
+							</li>
+							<li className='text-sm'>
+								<code>B</code> — After Image
 							</li>
 						</ul>
 					</div>
