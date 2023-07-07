@@ -82,6 +82,7 @@ export const View360 = (props: {
 	const [vr, setVR] = useState(false);
 	const [input, setInput] = useState(false);
 	const [startingAngle, setStartingAngle] = useState(props.image?.heading || 0);
+	const [offset, setOffset] = useState(0);
 	const [rotation, setRotation] = useState(0);
 	const fullscreenRef = useRef<HTMLDivElement>(null);
 
@@ -122,6 +123,7 @@ export const View360 = (props: {
 				rotation + startingAngle - (props.image?.before?.heading || 0)
 			);
 			setStartingAngle(props.image?.before?.heading || 0);
+
 			return props.setCurrentImage('before');
 		}
 
@@ -245,8 +247,12 @@ export const View360 = (props: {
 				<Canvas className="touch-none">
 					<CameraControls
 						ref={cameraControlsRef}
+						dollySpeed={2}
+						minZoom={0.5}
+						azimuthRotateSpeed={-0.5}
+						polarRotateSpeed={-0.5}
+						draggingSmoothTime={0}
 						makeDefault
-						dollyDragInverted
 						// https://github.com/yomotsu/camera-controls/blob/cee042753169f3bbeb593833ce92d70d52b6862f/src/types.ts#L29C1-L47
 						mouseButtons={{
 							left: 1,
@@ -262,8 +268,9 @@ export const View360 = (props: {
 						onChange={() => {
 							if (!cameraControlsRef.current) return;
 							const angle = radToDeg(cameraControlsRef.current.azimuthAngle);
+							setOffset(Math.abs((props.image?.heading || 0) - (props.image?.before?.heading || 0)));
 							cameraControlsRef.current.normalizeRotations();
-							console.log(startingAngle, angle);
+							console.log("SA: " + startingAngle + " A: " + angle + " Off: " + offset);
 							setRotation(angle - startingAngle);
 						}}
 					/>
@@ -274,7 +281,7 @@ export const View360 = (props: {
 								setInput(!input);
 								input ? props.onJumpPrevious?.() : undefined;
 							}} // Left Grip (Jump Backward)
-							on3={() => {
+							on0={() => {
 								setInput(!input);
 								input ? props.onPrevious?.() : undefined;
 							}} // Left Trigger (Backward)
@@ -288,7 +295,7 @@ export const View360 = (props: {
 								setInput(!input);
 								input ? props.onJumpNext?.() : undefined;
 							}} // Right Grip (Jump Forward)
-							on3={() => {
+							on0={() => {
 								setInput(!input);
 								input ? props.onNext?.() : undefined;
 							}} // Right Trigger (Forward)
