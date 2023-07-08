@@ -40,7 +40,7 @@ const Dashboard: NextPage = () => {
 							<ServerStatusBadge />
 						</div>
 						<div className="w-9/12 space-x-4 text-end">
-							<UploadInfo/>
+							<UploadInfo />
 							<NewPathDialog />
 						</div>
 					</div>

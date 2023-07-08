@@ -40,21 +40,27 @@ const Loader = () => {
 	);
 };
 
-const StreetViewImage = (props: { image: string }) => {
+const StreetViewImage = (props: { image: string; startingAngle: number }) => {
+	const meshRef = useRef<THREE.Mesh>(null);
 	const texture = useTexture(
 		`${props.image.replace('.', env.NEXT_PUBLIC_BACKEND_URL)}`
 	);
-	texture.mapping = THREE.EquirectangularReflectionMapping;
-	texture.minFilter = texture.magFilter = THREE.LinearFilter;
-	texture.wrapS = THREE.RepeatWrapping;
-	texture.repeat.x = -1;
 
 	useEffect(() => {
+		texture.mapping = THREE.EquirectangularReflectionMapping;
+		texture.minFilter = texture.magFilter = THREE.LinearFilter;
+		texture.wrapS = THREE.RepeatWrapping;
+		texture.repeat.x = -1;
 		texture.needsUpdate = true;
-	}, [texture]);
+
+		meshRef.current?.setRotationFromAxisAngle(
+			new THREE.Vector3(0, 1, 0),
+			-props.startingAngle
+		);
+	}, [texture, props.startingAngle]);
 
 	return (
-		<mesh>
+		<mesh ref={meshRef}>
 			<sphereGeometry attach="geometry" args={[500, 60, 40, 90]} />
 			<meshBasicMaterial
 				attach="material"
@@ -82,7 +88,6 @@ export const View360 = (props: {
 	const [vr, setVR] = useState(false);
 	const [input, setInput] = useState(false);
 	const [startingAngle, setStartingAngle] = useState(props.image?.heading || 0);
-	const [offset, setOffset] = useState(0);
 	const [rotation, setRotation] = useState(0);
 	const fullscreenRef = useRef<HTMLDivElement>(null);
 
@@ -119,17 +124,11 @@ export const View360 = (props: {
 
 	const onValueChange = (value: 'before' | 'after') => {
 		if (value === 'before') {
-			setRotation(
-				rotation + startingAngle - (props.image?.before?.heading || 0)
-			);
 			setStartingAngle(props.image?.before?.heading || 0);
-
 			return props.setCurrentImage('before');
 		}
 
-		setRotation(rotation + startingAngle - (props.image?.heading || 0));
 		setStartingAngle(props.image?.heading || 0);
-		
 		return props.setCurrentImage('after');
 	};
 
@@ -171,10 +170,7 @@ export const View360 = (props: {
 				className="bg-background/60 hover:bg-foreground/40 hover:text-background absolute right-0 z-10 m-2 rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
 				onClick={() => {
 					if (!cameraControlsRef.current) return;
-					cameraControlsRef.current.rotateAzimuthTo(
-						degToRad(startingAngle),
-						true
-					);
+					cameraControlsRef.current.rotateAzimuthTo(0, true);
 				}}
 			>
 				<LucideNavigation2
@@ -267,11 +263,8 @@ export const View360 = (props: {
 						}}
 						onChange={() => {
 							if (!cameraControlsRef.current) return;
-							const angle = radToDeg(cameraControlsRef.current.azimuthAngle);
-							setOffset(Math.abs((props.image?.heading || 0) - (props.image?.before?.heading || 0)));
 							cameraControlsRef.current.normalizeRotations();
-							console.log("SA: " + startingAngle + " A: " + angle + " Off: " + offset);
-							setRotation(angle - startingAngle);
+							setRotation(radToDeg(cameraControlsRef.current.azimuthAngle));
 						}}
 					/>
 					<XR>
@@ -305,6 +298,7 @@ export const View360 = (props: {
 						/>
 						<Suspense fallback={<Loader />}>
 							<StreetViewImage
+								startingAngle={degToRad(startingAngle)}
 								image={
 									props.currentImage === 'after'
 										? props.image.image_url
