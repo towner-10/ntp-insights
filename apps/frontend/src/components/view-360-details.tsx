@@ -66,7 +66,7 @@ export function View360Details(props: View360DetailsProps) {
 		<Card className={cn('lg:col-span-2 lg:row-span-2', props.className)}>
 			<CardHeader>
 				<CardTitle>Details</CardTitle>
-				<CardDescription>About the current 360 view.</CardDescription>
+				<CardDescription>About the current 360 view</CardDescription>
 			</CardHeader>
 			<CardContent className="flex flex-col justify-around">
 				<div className="grid grid-cols-2">

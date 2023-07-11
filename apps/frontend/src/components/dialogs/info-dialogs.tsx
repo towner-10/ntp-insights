@@ -132,7 +132,7 @@ export function VRControls() {
 						</ul>
 					</div>
 				</div>
-				<h2 className="font-medium underline">VR Controls</h2>
+				<h2 className="font-medium">VR Controls</h2>
 				<div className="flex flex-row space-x-10">
 					<div className="flex flex-col space-y-2">
 						<h2 className='font-medium text-sm'>Left Hand</h2>
