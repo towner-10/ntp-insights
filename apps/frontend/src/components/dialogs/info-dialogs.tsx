@@ -89,6 +89,24 @@ export function UploadInfo() {
 	)
 }
 
+export function ScanInfo() {
+	return (
+		<Dialog>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Creating New LiDAR Scans</DialogTitle>
+					<DialogDescription>Additional information on uploading LiDAR scans</DialogDescription>
+				</DialogHeader>
+				<h2 className="font-medium">TODO</h2>
+				<div className="text-sm">Body text</div>
+			</DialogContent>
+			<DialogTrigger>
+				<LucideInfo size={16} />
+			</DialogTrigger>
+		</Dialog>
+	)
+}
+
 export function VRControls() {
 	return (
 		<Dialog>

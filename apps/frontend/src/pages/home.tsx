@@ -7,7 +7,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import { LucideRotate3d, LucideShare2, LucideTrendingUp } from 'lucide-react';
+import { LucideRotate3d, LucideShare2, LucideAxis3d } from 'lucide-react';
 import Image from 'next/image';
 
 const Home: NextPage = () => {
@@ -53,10 +53,12 @@ const Home: NextPage = () => {
 										<p>360</p>
 									</Button>
 								</Link>
-								<Button disabled className="flex flex-row space-x-2">
-									<LucideTrendingUp />
-									<p>Trends</p>
-								</Button>
+								<Link href="/lidar/dashboard">
+									<Button className="flex flex-row space-x-2">
+										<LucideAxis3d />
+										<p>LiDAR</p>
+									</Button>
+								</Link>
 							</div>
 						</div>
 					</main>

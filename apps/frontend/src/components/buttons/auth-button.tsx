@@ -22,7 +22,7 @@ import {
 import { useRouter } from 'next/router';
 import { type Session } from 'next-auth';
 import { Badge } from '../ui/badge';
-import { LucideTrendingUp } from 'lucide-react';
+import { LucideAxis3d } from 'lucide-react';
 
 type Props = {
 	session: Session;
@@ -84,10 +84,12 @@ export default function AuthButton(props: Props) {
 								<span className="pl-2">360</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem
-								disabled={true}
+								onClick={() => {
+									void router.push('/lidar/dashboard');
+								}}
 							>
-								<LucideTrendingUp size={18} />
-								<span className="pl-2">Trends</span>
+								<LucideAxis3d size={18} />
+								<span className="pl-2">LiDAR</span>
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 					) : (
