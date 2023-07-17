@@ -298,6 +298,14 @@ export function View360Map(props: View360MapProps) {
 		});
 	});
 
+	const pointsMap = props.points.map(point => ({
+		type: 'Feature',
+		geometry: {
+			type: 'Point',
+			coordinates: [point.lng, point.lat],
+		},
+	}));
+
 	return (
 		<div className={props.className}>
 			<Map
@@ -316,30 +324,24 @@ export function View360Map(props: View360MapProps) {
 				mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''}
 			>
 				<Source
-					id="route"
+					id="path"
 					type="geojson"
 					data={{
 						type: 'Feature',
 						properties: {},
 						geometry: {
 							type: 'LineString',
-							coordinates: props.points.map((point) => [point.lng, point.lat]),
+							coordinates: props.points.filter((_, index) => (index + 1) % 5 == 0)
+													 .map((point) => [point.lng, point.lat]),
 						},
 					}}
 				>
 					<Layer
-						id="route"
-						type="line"
-						layout={{
-							'line-join': 'round',
-							'line-cap': 'round',
-						}}
-						paint={{
-							'line-color': '#888',
-							'line-width': 3,
-						}}
+						id="path"
+						type="circle"
 					/>
 				</Source>
+
 				<Marker
 					longitude={currentPosition.lng}
 					latitude={currentPosition.lat}
