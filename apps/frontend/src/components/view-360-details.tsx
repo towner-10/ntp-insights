@@ -79,7 +79,7 @@ export function View360Details(props: View360DetailsProps) {
 								try {
 									return format(
 										props.imageType === 'after'
-											? props.path.date
+											? props.sortedImages?.[props.index].date_taken
 											: props.sortedImages?.[props.index].before.date_taken,
 										'MMMM d, yyyy'
 									);
