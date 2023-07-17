@@ -337,8 +337,25 @@ export function View360Map(props: View360MapProps) {
 					}}
 				>
 					<Layer
+						id="route"
+						type="line"
+						layout={{
+							'line-join': 'round',
+							'line-cap': 'round',
+						}}
+						paint={{
+							'line-color': '#ddd',
+							'line-width': 2,
+						}}
+					/>
+					<Layer
 						id="path"
 						type="circle"
+						paint={{
+							'circle-color': '#fff',
+							'circle-stroke-width': 2,
+							'circle-stroke-color': '#000',
+						}}
 					/>
 				</Source>
 
