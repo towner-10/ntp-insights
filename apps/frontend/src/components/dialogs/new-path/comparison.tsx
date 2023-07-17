@@ -71,7 +71,6 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 		(async () => {
 			const result = await batchUploadImages(
 				files,
-				props.formState.folder_name,
 				props.formState.path_id,
 				({ userMessage, consoleMessage }) => {
 					console.error(consoleMessage);
@@ -224,7 +223,7 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 							{progress > 0 && (
 								<span>
 									{' '}
-									<code>{`${progress.toFixed(2)}%`}</code> complete.
+									<code>{`(${progress.toFixed(2)}%)`}</code>
 								</span>
 							)}
 						</>

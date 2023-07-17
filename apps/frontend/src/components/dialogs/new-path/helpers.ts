@@ -4,7 +4,6 @@ import { env } from '@/env.mjs';
 
 export const batchUploadImages = async (
 	files: File[],
-	folder_name: string,
 	path_id: string,
 	onError: ({
 		userMessage,
@@ -28,26 +27,20 @@ export const batchUploadImages = async (
 		return acc;
 	}, [] as File[][]);
 
-	const progressArray = new Array(batches.length).fill({
-		sent: 0,
-		total: 0,
-	});
+	const results = [];
 
-	// Upload each batch
-	const results = await Promise.all(
-		batches.map((batch, index) =>
-			uploadImages(batch, folder_name, path_id, onError, (sent, total) => {
-				progressArray[index] = {
-					sent,
-					total,
-				};
-				onProgress?.(
-					progressArray.reduce((acc, curr) => acc + curr.sent, 0),
-					progressArray.reduce((acc, curr) => acc + curr.total, 0)
-				);
-			})
-		)
-	);
+	let uploaded = 0;
+
+	for (const batch of batches) {
+		const result = await uploadImages(batch, path_id, onError);
+
+		if (result) {
+			uploaded += batch.length;
+			onProgress?.(uploaded, files.length);
+		}
+
+		results.push(await uploadImages(batch, path_id, onError));
+	}
 
 	// If any of the batches failed
 	if (results.some((result) => result === null)) {
@@ -60,7 +53,6 @@ export const batchUploadImages = async (
 
 const uploadImages = async (
 	files: File[],
-	folder_name: string,
 	path_id: string,
 	onError: ({
 		userMessage,
@@ -69,7 +61,6 @@ const uploadImages = async (
 		userMessage: string;
 		consoleMessage: string;
 	}) => void,
-	onProgress?: (sent: number, total: number) => void
 ): Promise<ImageResult[] | null> => {
 	const body = new FormData();
 
@@ -103,14 +94,6 @@ const uploadImages = async (
 
 			xhr.addEventListener('loadstart', () => {
 				console.log('Started uploading images');
-			});
-
-			xhr.addEventListener('progress', (event) => {
-				if (event.lengthComputable) {
-					onProgress?.(event.loaded, event.total);
-				} else {
-					onProgress?.(event.loaded, totalSize);
-				}
 			});
 
 			xhr.addEventListener('load', () => {
