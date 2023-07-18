@@ -52,11 +52,10 @@ export default function AuthButton(props: Props) {
 					</Avatar>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent className="w-56">
-					
 					<DropdownMenuLabel>
 						<div className="flex flex-col space-y-1">
 							<p className="font-medium">{sessionData.user.name}</p>
-							<p className="text-xs text-muted-foreground">
+							<p className="text-muted-foreground text-xs">
 								{sessionData.user.email}
 							</p>
 						</div>
@@ -95,7 +94,7 @@ export default function AuthButton(props: Props) {
 					) : (
 						<DropdownMenuLabel>
 							<div className="flex flex-row items-center justify-between">
-								<p className="text-xs text-muted-foreground">
+								<p className="text-muted-foreground text-xs">
 									Not NTP authenticated
 								</p>
 								<Badge variant="destructive">
@@ -106,22 +105,14 @@ export default function AuthButton(props: Props) {
 					)}
 					<DropdownMenuSeparator />
 					<DropdownMenuGroup>
-						<DropdownMenuItem
-							onClick={() => {
-								void router.push('/');
-							}}
-						>
-							<LucideHome size={18} />
-							<span className="pl-2">Home</span>
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onClick={() => {
-								void router.push('/auth/profile');
-							}}
-						>
-							<LucideUser size={18} />
-							<span className="pl-2">Profile</span>
-						</DropdownMenuItem>
+					<DropdownMenuItem
+						onClick={() => {
+							void router.push('/');
+						}}
+					>
+						<LucideHome size={18} />
+						<span className="pl-2">Home</span>
+					</DropdownMenuItem>
 						<DropdownMenuItem
 							onClick={() => {
 								void router.push('/auth/profile/settings');
@@ -130,12 +121,11 @@ export default function AuthButton(props: Props) {
 							<LucideSettings size={18} />
 							<span className="pl-2">Settings</span>
 						</DropdownMenuItem>
+						<DropdownMenuItem onClick={() => void handleSignOut()}>
+							<LucideLogOut size={18} />
+							<span className="pl-2">Sign Out</span>
+						</DropdownMenuItem>
 					</DropdownMenuGroup>
-					<DropdownMenuSeparator />
-					<DropdownMenuItem onClick={() => void handleSignOut()}>
-						<LucideLogOut size={18} />
-						<span className="pl-2">Sign Out</span>
-					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>
 		);

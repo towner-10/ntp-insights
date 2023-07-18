@@ -172,6 +172,7 @@ const View: NextPage = () => {
 								points={points || []}
 								currentIndex={currentIndex}
 								className="h-[400px] w-full overflow-hidden rounded-md lg:h-96"
+								onIndexChange={(value) => setCurrentIndex(value)}
 							/>
 						</div>
 					</div>

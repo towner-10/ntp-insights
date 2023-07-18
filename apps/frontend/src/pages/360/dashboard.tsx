@@ -36,10 +36,8 @@ const Dashboard: NextPage = () => {
 				<div className="container flex flex-col p-6">
 					<div className="flex flex-row items-center space-x-4 pb-6">
 						<h3 className=" text-2xl font-semibold">Event Paths</h3>
-						<div className="pr-24">
-							<ServerStatusBadge />
-						</div>
-						<div className="w-9/12 space-x-4 text-end">
+						<ServerStatusBadge />
+						<div className="flex w-9/12 flex-grow flex-row items-center justify-end space-x-4 text-end">
 							<UploadInfo />
 							<NewPathDialog />
 						</div>

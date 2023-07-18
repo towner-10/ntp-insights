@@ -188,7 +188,7 @@ const handleUpload = async (data: { id: string; files: formidable.File[] }) => {
 		}
 	}
 
-	logger.debug(`Saved ${count} images`);
+	logger.debug(`Saved ${count} images in ${folder_name}`);
 
 	return image_urls;
 };

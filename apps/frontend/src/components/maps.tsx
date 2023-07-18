@@ -18,7 +18,7 @@ import {
 	CardTitle,
 } from './ui/card';
 import { useTheme } from 'next-themes';
-import { LucideCircleDot, LucideNavigation2 } from 'lucide-react';
+import { LucideCircleDot, LucideDot, LucideNavigation2 } from 'lucide-react';
 import { Button } from './ui/button';
 import {
 	Tooltip,
@@ -82,6 +82,7 @@ interface StaticMapProps extends DefaultProps {
 interface View360MapProps extends DefaultProps {
 	currentIndex: number;
 	points: mapboxgl.LngLat[];
+	onIndexChange?: (index: number) => void;
 }
 
 interface NewSearchMapProps extends SearchViewMapCardProps {
@@ -298,13 +299,27 @@ export function View360Map(props: View360MapProps) {
 		});
 	});
 
-	const pointsMap = props.points.map(point => ({
-		type: 'Feature',
-		geometry: {
-			type: 'Point',
-			coordinates: [point.lng, point.lat],
-		},
-	}));
+	const markers = useMemo(
+		() =>
+			props.points.filter((_, index) => {
+				if (index === 0) return true;
+				return index % 5 === 0;
+			}).map((point, index) => (
+				<Marker
+					key={index}
+					longitude={point.lng}
+					latitude={point.lat}
+					onClick={() => {
+						props.onIndexChange(index * 5);
+					}}
+				>
+					<div className="text-foreground">
+						<LucideDot size={64} />
+					</div>
+				</Marker>
+			)),
+		[props]
+	);
 
 	return (
 		<div className={props.className}>
@@ -331,8 +346,7 @@ export function View360Map(props: View360MapProps) {
 						properties: {},
 						geometry: {
 							type: 'LineString',
-							coordinates: props.points.filter((_, index) => (index + 1) % 5 == 0)
-													 .map((point) => [point.lng, point.lat]),
+							coordinates: props.points.map((point) => [point.lng, point.lat]),
 						},
 					}}
 				>
@@ -348,17 +362,8 @@ export function View360Map(props: View360MapProps) {
 							'line-width': 2,
 						}}
 					/>
-					<Layer
-						id="path"
-						type="circle"
-						paint={{
-							'circle-color': '#fff',
-							'circle-stroke-width': 2,
-							'circle-stroke-color': '#000',
-						}}
-					/>
 				</Source>
-
+				{markers}
 				<Marker
 					longitude={currentPosition.lng}
 					latitude={currentPosition.lat}
