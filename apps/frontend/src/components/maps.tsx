@@ -532,6 +532,7 @@ export function SearchDashboardMap(props: SearchDashboardMapProps) {
 								)
 						  )
 						: undefined,
+					
 					fitBoundsOptions: {
 						animate: true,
 						duration: 1000,

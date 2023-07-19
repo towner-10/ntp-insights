@@ -183,7 +183,7 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 				onFiles={(data) => {
 					setFiles(data);
 
-					if (data.length === uniquePanoramas.length) setFinished(true);
+					if (uniquePanoramas.length >= 1) setFinished(true);
 					else setFinished(false);
 				}}
 			/>
