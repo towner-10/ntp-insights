@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { DialogContentProps } from './types';
 import { api } from '@/utils/api';
 import { useToast } from '@/components/ui/use-toast';
@@ -15,6 +15,7 @@ import { batchUploadImages } from './helpers';
 import { Prisma } from 'database';
 
 export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
+	const downloadRef = useRef<HTMLAnchorElement>(null);
 	const [finished, setFinished] = useState(false);
 	const [uniquePanoramas, setUniquePanoramas] = useState<string[]>([]);
 	const [files, setFiles] = useState<File[]>([]);
@@ -194,7 +195,7 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 					description={
 						<>
 							<span>
-								Click{' '}
+								Click to{' '}
 								<a
 									onClick={() => {
 										void (async () => {
@@ -212,12 +213,31 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 									}}
 									className="cursor-pointer underline underline-offset-2"
 								>
-									here
+									copy
 								</a>{' '}
-								to copy the panorama IDs to your clipboard.
+								/{' '}
+								<a
+									ref={downloadRef}
+									onClick={() => {
+										const fileData = uniquePanoramas.join('\n');
+										const file = new Blob([fileData], { type: "text/plain" });
+										downloadRef.current!.href = URL.createObjectURL(file);
+										downloadRef.current!.download = 'panorama_ids.txt';
+
+										toaster.toast({
+											title: 'Downloaded',
+											description: 'Panorama IDs have been downloaded.',
+											duration: 3000,
+										});
+									}}
+									className="cursor-pointer underline underline-offset-2"
+								>
+									download
+								</a>{' '}
+								the panorama IDs.
 							</span>
 							<span>
-								<code>{` ${files.length}/${uniquePanoramas.length} `}</code>
+								<code>{` ${files.length} `}</code>
 							</span>
 							<span>panoramas selected.</span>
 							{progress > 0 && (

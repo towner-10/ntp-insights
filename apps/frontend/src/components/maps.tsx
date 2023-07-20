@@ -297,7 +297,8 @@ export function View360Map(props: View360MapProps) {
 			padding: 20,
 			maxZoom: 20,
 		});
-	});
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const markers = useMemo(
 		() =>

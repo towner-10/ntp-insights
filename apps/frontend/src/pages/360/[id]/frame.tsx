@@ -54,25 +54,43 @@ const Frame: NextPage = () => {
 			setCurrentImage={setCurrentImage}
 			onNext={() => {
 				if (imagesSorted && currentIndex + 1 < imagesSorted?.length) {
+					if (currentImage === 'before' && !imagesSorted[currentIndex + 1].before) {
+						setCurrentImage('after');
+					}
 					setCurrentIndex(currentIndex + 1);
 				}
 			}}
 			onPrevious={() => {
 				if (imagesSorted && currentIndex - 1 >= 0) {
+					if (currentImage === 'before' && !imagesSorted[currentIndex - 1].before) {
+						setCurrentImage('after');
+					}
 					setCurrentIndex(currentIndex - 1);
 				}
 			}}
 			onJumpNext={() => {
 				if (imagesSorted && currentIndex + 5 < imagesSorted?.length) {
+					if (currentImage === 'before' && !imagesSorted[currentIndex + 5].before) {
+						setCurrentImage('after');
+					}
 					setCurrentIndex(currentIndex + 5);
 				} else {
+					if (currentImage === 'before' && !imagesSorted[imagesSorted?.length - 1].before) {
+						setCurrentImage('after');
+					}
 					setCurrentIndex(imagesSorted?.length - 1);
 				}
 			}}
 			onJumpPrevious={() => {
 				if (imagesSorted && currentIndex - 5 >= 0) {
+					if (currentImage === 'before' && !imagesSorted[currentIndex - 5].before) {
+						setCurrentImage('after');
+					}
 					setCurrentIndex(currentIndex - 5);
 				} else {
+					if (currentImage === 'before' && !imagesSorted[0].before) {
+						setCurrentImage('after');
+					}
 					setCurrentIndex(0);
 				}
 			}}

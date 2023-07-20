@@ -29,7 +29,24 @@ import {
 } from '@react-three/drei';
 
 const Loader = () => {
-	const { progress } = useProgress();
+	const { progress, errors } = useProgress();
+
+	if (errors.length > 0) {
+		return (
+			<Html center>
+				<div className="flex h-full flex-col items-center justify-center">
+					<div className="text-2xl font-bold">Error</div>
+					<div className="text-lg">Could not load image!</div>
+					<div className="text-sm">
+						{errors.map((error) => (
+							<p key={error}>{error}</p>
+						))}
+					</div>
+				</div>
+			</Html>
+		);
+	}
+
 	return (
 		<Html center>
 			<div className="flex h-full flex-col items-center justify-center">
@@ -72,7 +89,7 @@ const StreetViewImage = (props: { image: string; startingAngle: number }) => {
 };
 
 export const View360 = (props: {
-	image?: Image360 & {
+	image: Image360 & {
 		before: Image360 | null;
 	};
 	currentImage: 'before' | 'after';
@@ -109,8 +126,14 @@ export const View360 = (props: {
 		else setStartingAngle(props.image?.heading || 0);
 	}, [props.image, props.currentImage]);
 
-	if (!props.image) return null;
-	if (!props.image.before) return null;
+	if (!props.image) {
+		return (
+			<div className="flex h-full flex-col items-center justify-center">
+				<div className="text-2xl font-bold">Error</div>
+				<div className="text-lg">Could not load image!</div>
+			</div>
+		);
+	}
 
 	const toggleFullscreen = async () => {
 		if (fullscreen) {
@@ -124,6 +147,7 @@ export const View360 = (props: {
 
 	const onValueChange = (value: 'before' | 'after') => {
 		if (value === 'before') {
+			if (!props.image.before) return;
 			setStartingAngle(props.image?.before?.heading || 0);
 			return props.setCurrentImage('before');
 		}
@@ -156,10 +180,12 @@ export const View360 = (props: {
 					defaultChecked
 					defaultValue="after"
 				>
-					<div className="flex items-center space-x-2">
-						<RadioGroupItem value="before" id="before" />
-						<Label htmlFor="before">Before</Label>
-					</div>
+					{props.image.before && (
+						<div className="flex items-center space-x-2">
+							<RadioGroupItem value="before" id="before" />
+							<Label htmlFor="before">Before</Label>
+						</div>
+					)}
 					<div className="flex items-center space-x-2">
 						<RadioGroupItem value="after" id="after" />
 						<Label htmlFor="after">After</Label>
