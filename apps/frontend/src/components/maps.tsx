@@ -297,28 +297,29 @@ export function View360Map(props: View360MapProps) {
 			padding: 20,
 			maxZoom: 20,
 		});
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [props.points]);
 
 	const markers = useMemo(
 		() =>
-			props.points.filter((_, index) => {
-				if (index === 0) return true;
-				return index % 5 === 0;
-			}).map((point, index) => (
-				<Marker
-					key={index}
-					longitude={point.lng}
-					latitude={point.lat}
-					onClick={() => {
-						props.onIndexChange(index * 5);
-					}}
-				>
-					<div className="text-foreground">
-						<LucideDot size={64} />
-					</div>
-				</Marker>
-			)),
+			props.points
+				.filter((_, index) => {
+					if (index === 0) return true;
+					return index % 5 === 0;
+				})
+				.map((point, index) => (
+					<Marker
+						key={index}
+						longitude={point.lng}
+						latitude={point.lat}
+						onClick={() => {
+							props.onIndexChange(index * 5);
+						}}
+					>
+						<div className="bg-foreground rounded-full">
+							<div className="h-3 w-3" />
+						</div>
+					</Marker>
+				)),
 		[props]
 	);
 
@@ -533,7 +534,7 @@ export function SearchDashboardMap(props: SearchDashboardMapProps) {
 								)
 						  )
 						: undefined,
-					
+
 					fitBoundsOptions: {
 						animate: true,
 						duration: 1000,

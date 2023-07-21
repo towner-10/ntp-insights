@@ -98,7 +98,10 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 
 				// Fetch image data from the form state
 				const framepos = props.formState.framepos.find(
-					(framepos) => framepos.google_image.pano_id.trim() === pano_id.trim()
+					(framepos) => {
+						if (!framepos.google_image) return false;
+						return framepos.google_image.pano_id.trim() === pano_id.trim();
+					}
 				);
 				const file = files.find(
 					(file) => file.name.trim() === image.image_name.trim()
@@ -141,6 +144,7 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 					// Find image indexes that match the current image pano_id
 					const image_indexes = props.formState.framepos
 						.filter((framepos) => {
+							if (!framepos.google_image) return false;
 							return framepos.google_image.pano_id === pano_id;
 						})
 						.map((framepos) => framepos.frame_index);

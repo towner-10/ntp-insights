@@ -62,6 +62,8 @@ function extractPanoramas(text: string): Panorama[] {
 		});
 
 		return raw_panos.map((pano: never, index: number) => {
+			if (pano[0][1] === undefined) throw new Error('Invalid panorama');
+
 			return {
 				pano_id: pano[0][1],
 				lat: pano[2][0][2],
