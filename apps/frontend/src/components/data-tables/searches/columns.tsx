@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { type Search } from '@prisma/client';
 import { type ColumnDef } from '@tanstack/react-table';
 import { UserHoverCard } from '@/components/user-hover-card';
+import { ArrowUpDown } from 'lucide-react';
+import format from 'date-fns/format';
 
 export const columns: ColumnDef<Search>[] = [
 	{
@@ -18,12 +20,29 @@ export const columns: ColumnDef<Search>[] = [
 		},
 	},
 	{
+		accessorKey: 'created_at',
+		header: ({ column }) => {
+			return (
+				<a
+					className="hover:text-primary flex cursor-pointer flex-row items-center text-left hover:underline"
+					onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+				>
+					{'Created at'}
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</a>
+			);
+		},
+		cell: ({ row }) => {
+			const path = row.original;
+
+			return <span>{format(path.created_at, 'MMMM d, yyyy')}</span>;
+		},
+	},
+	{
 		accessorKey: 'created_by_id',
 		header: 'Created By',
 		cell({ row }) {
-			return (
-				<UserHoverCard id={row.original.created_by_id} />
-			);
+			return <UserHoverCard id={row.original.created_by_id} />;
 		},
 	},
 	{
@@ -53,32 +72,6 @@ export const columns: ColumnDef<Search>[] = [
 		},
 	},
 	{
-		accessorKey: 'twitter',
-		header: 'Twitter',
-		cell({ row }) {
-			const twitter = row.original.twitter;
-
-			return (
-				<Badge variant={twitter ? 'default' : 'secondary'}>
-					{twitter ? 'Yes' : 'No'}
-				</Badge>
-			);
-		},
-	},
-	{
-		accessorKey: 'facebook',
-		header: 'Facebook',
-		cell({ row }) {
-			const facebook = row.original.facebook;
-
-			return (
-				<Badge variant={facebook ? 'default' : 'secondary'}>
-					{facebook ? 'Yes' : 'No'}
-				</Badge>
-			);
-		},
-	},
-	{
 		accessorKey: 'enabled',
 		header: 'Enabled',
 		cell({ row }) {
@@ -89,6 +82,6 @@ export const columns: ColumnDef<Search>[] = [
 					{enabled ? 'Yes' : 'No'}
 				</Badge>
 			);
-		}
-	}
+		},
+	},
 ];

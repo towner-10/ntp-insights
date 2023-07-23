@@ -1,5 +1,5 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
-import mapboxgl from 'mapbox-gl';
+import mapboxgl, { LngLatBounds } from 'mapbox-gl';
 import Map, {
 	Layer,
 	MapRef,
@@ -326,7 +326,7 @@ export function View360Map(props: View360MapProps) {
 			padding: 20,
 			maxZoom: 20,
 		});
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [loaded, props.points, mapRef.current]);
 
 	return (
@@ -404,39 +404,23 @@ export function StaticMap(props: StaticMapProps) {
 
 export function SearchViewMap(props: SearchViewMapProps) {
 	const { resolvedTheme } = useTheme();
-	const [viewState, setViewState] = useState(
-		props.start
-			? {
-					longitude: props.start.lng,
-					latitude: props.start.lat,
-			  }
-			: {
-					longitude: -81.3,
-					latitude: 42.97,
-			  }
-	);
 
 	return (
 		<div className={props.className}>
-			<div className="bg-background/60 absolute z-10 m-2 flex max-w-xs flex-col items-center justify-center rounded-lg p-2 backdrop-blur">
-				Longitude: {viewState.longitude.toFixed(5)} | Latitude:{' '}
-				{viewState.latitude.toFixed(5)}
-			</div>
 			<Map
 				initialViewState={{
-					bounds: props.start
-						? new mapboxgl.LngLat(props.start.lng, props.start.lat).toBounds(
-								5000
-						  )
-						: undefined,
+					bounds: props.boxes?.reduce((bounds, box) => {
+						bounds.extend(new mapboxgl.LngLat(box.geo.bbox[0], box.geo.bbox[1]));
+						bounds.extend(new mapboxgl.LngLat(box.geo.bbox[2], box.geo.bbox[3]));
+						return bounds;
+					}, new LngLatBounds()) || undefined,
 					fitBoundsOptions: {
-						animate: true,
-						duration: 1000,
+						animate: false,
+						duration: 0,
 						padding: 20,
 						maxZoom: 20,
 					},
 				}}
-				onMove={(event) => setViewState(event.viewState)}
 				mapStyle={
 					resolvedTheme === 'light'
 						? 'mapbox://styles/mapbox/streets-v11'

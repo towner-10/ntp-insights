@@ -4,6 +4,8 @@ import {
 	getCoreRowModel,
 	getPaginationRowModel,
 	useReactTable,
+	SortingState,
+	getSortedRowModel,
 } from '@tanstack/react-table';
 
 import {
@@ -15,6 +17,7 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -25,11 +28,23 @@ export function DataTable<TData, TValue>({
 	columns,
 	data,
 }: DataTableProps<TData, TValue>) {
+	const [sorting, setSorting] = useState<SortingState>([
+		{
+			id: 'created_at',
+			desc: true,
+		},
+	]);
+
 	const table = useReactTable({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
+		onSortingChange: setSorting,
+		getSortedRowModel: getSortedRowModel(),
+		state: {
+			sorting,
+		},
 	});
 
 	return (
