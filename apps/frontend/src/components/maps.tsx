@@ -271,33 +271,15 @@ export function NewSearchMapCard(props: NewSearchMapProps) {
 }
 
 export function View360Map(props: View360MapProps) {
-	const { resolvedTheme } = useTheme();
 	const mapRef = useRef<MapRef>();
+	const { resolvedTheme } = useTheme();
+	const [loaded, setLoaded] = useState(false);
 	const [currentPosition, setCurrentPosition] = useState<mapboxgl.LngLat>(
 		mapboxgl.LngLat.convert({
 			lng: -81.3,
 			lat: 42.97,
 		})
 	);
-
-	useEffect(() => {
-		setCurrentPosition(props.points[props.currentIndex]);
-	}, [props.currentIndex, props.points]);
-
-	useEffect(() => {
-		const getBounds = (points: mapboxgl.LngLat[]) => {
-			const bounds = new mapboxgl.LngLatBounds();
-			points.forEach((point) => bounds.extend(point));
-			return bounds;
-		};
-
-		if (!mapRef.current || props.points.length === 0) return;
-
-		mapRef.current.fitBounds(getBounds(props.points), {
-			padding: 20,
-			maxZoom: 20,
-		});
-	}, [props.points]);
 
 	const markers = useMemo(
 		() =>
@@ -323,15 +305,39 @@ export function View360Map(props: View360MapProps) {
 		[props]
 	);
 
+	useEffect(() => {
+		setCurrentPosition(props.points[props.currentIndex]);
+	}, [props.currentIndex, props.points]);
+
+	// Fit bounds to the path on first render
+	useEffect(() => {
+		if (!props.points.length || !mapRef.current) return;
+
+		if (loaded) return;
+		else setLoaded(true);
+
+		const boundingBox = getBoundingBox(
+			props.points.map((point) => new mapboxgl.LngLat(point.lng, point.lat))
+		);
+
+		mapRef.current.fitBounds(boundingBox, {
+			animate: false,
+			duration: 0,
+			padding: 20,
+			maxZoom: 20,
+		});
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [loaded, props.points, mapRef.current]);
+
 	return (
 		<div className={props.className}>
 			<Map
 				ref={mapRef}
-				reuseMaps
 				initialViewState={{
 					longitude: -81.3,
 					latitude: 42.97,
 					zoom: 9,
+					bearing: 0,
 				}}
 				mapStyle={
 					resolvedTheme === 'light'
