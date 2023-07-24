@@ -12,7 +12,15 @@ export const columns = (onRefresh: () => void) => {
 	return [
 		{
 			accessorKey: 'name',
-			header: 'Name',
+			header: () => {
+				return (
+					<a
+					className="flex flex-row pl-4"
+					>
+						{'Name'}
+					</a>
+				)
+			},
 			cell: ({ row }) => {
 				const path = row.original;
 
@@ -35,7 +43,7 @@ export const columns = (onRefresh: () => void) => {
 			header: ({ column }) => {
 				return (
 					<a
-						className="flex cursor-pointer flex-row items-center text-left hover:text-primary hover:underline"
+						className="flex cursor-pointer flex-row items-center hover:text-primary hover:underline"
 						onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
 					>
 						{'Date created'}
@@ -51,7 +59,15 @@ export const columns = (onRefresh: () => void) => {
 		},
 		{
 			id: 'actions',
-			header: 'Actions',
+			header: () => {
+				return (
+					<a
+					className="flex flex-row pl-8"
+					>
+						{'Actions'}
+					</a>
+				)
+			},
 			cell: ({ row }) => {
 				const path = row.original;
 
