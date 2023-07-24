@@ -145,7 +145,7 @@ export function VRControls() {
 								<code>Esc</code> — Exit Fullscreen
 							</li>
 							<li className='text-sm'>
-								<code>Enter</code> — Confirm Panorama Input
+								<code>H</code> — Toggle UI Button Visibility
 							</li>
 						</ul>
 					</div>

@@ -2,6 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import {
+	LucideEyeOff,
 	LucideNavigation2,
 	LucideExpand,
 	LucideGlasses,
@@ -101,6 +102,7 @@ export const View360 = (props: {
 	className?: string;
 }) => {
 	const cameraControlsRef = useRef<CameraControls>(null);
+	const [hidden, setHidden] = useState(false);
 	const [fullscreen, setFullscreen] = useState(false);
 	const [vr, setVR] = useState(false);
 	const [input, setInput] = useState(false);
@@ -119,6 +121,14 @@ export const View360 = (props: {
 			});
 		};
 	});
+
+	useEffect(() => {
+		document.addEventListener('keydown', function(event) {
+			if(event.key.toLowerCase() === 'h') {
+				setHidden(!hidden);
+			}
+		})
+	})
 
 	useEffect(() => {
 		if (props.currentImage === 'before')
@@ -156,24 +166,11 @@ export const View360 = (props: {
 		return props.setCurrentImage('after');
 	};
 
-	return (
-		<div
-			className={props.className}
-			ref={fullscreenRef}
-			tabIndex={0}
-			onKeyDown={(e) => {
-				e.preventDefault();
-				if (e.key == 'ArrowUp') {
-					props.onNext?.();
-				} else if (e.key == 'ArrowDown') {
-					props.onPrevious?.();
-				}
-			}}
-		>
-			<div className="absolute bottom-3 left-5 z-10 text-2xl">
-				<span className="font-bold">NTP</span> 360
-			</div>
-			<div className="bg-background/60 absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg p-2 text-lg backdrop-blur">
+	const renderUI = () => {
+		if (!hidden) {
+			return (
+			<div>
+				<div className="bg-background/60 absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg p-2 text-lg backdrop-blur">
 				<RadioGroup
 					onValueChange={onValueChange}
 					value={props.currentImage}
@@ -252,6 +249,35 @@ export const View360 = (props: {
 					{fullscreen ? <LucideShrink /> : <LucideExpand />}
 				</button>
 			</div>
+			</div>
+			);
+		} else {
+			return (
+				<div className="absolute bottom-2 right-3 z-10 m-2 w-5 h-5 flex flex-row gap-4">
+					<LucideEyeOff />
+				</div>
+			);
+		}
+	}
+
+	return (
+		<div
+			className={props.className}
+			ref={fullscreenRef}
+			tabIndex={0}
+			onKeyDown={(e) => {
+				e.preventDefault();
+				if (e.key == 'ArrowUp') {
+					props.onNext?.();
+				} else if (e.key == 'ArrowDown') {
+					props.onPrevious?.();
+				}
+			}}
+		>
+			<div className="absolute bottom-3 left-5 z-10 text-2xl">
+				<span className="font-bold">NTP</span> 360
+			</div>
+			{renderUI()}
 			{vr ? <VRButton /> : null}
 			<ErrorBoundary
 				fallbackRender={({ resetErrorBoundary }) => {
