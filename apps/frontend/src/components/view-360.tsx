@@ -115,20 +115,16 @@ export const View360 = (props: {
 			setFullscreen(document.fullscreenElement !== null);
 		});
 
+		document.addEventListener('keydown', toggleUI);
+
 		return () => {
 			document.removeEventListener('fullscreenchange', () => {
 				setFullscreen(document.fullscreenElement !== null);
 			});
+
+			document.removeEventListener('keydown', toggleUI);
 		};
 	});
-
-	useEffect(() => {
-		document.addEventListener('keydown', function(event) {
-			if(event.key.toLowerCase() === 'h') {
-				setHidden(!hidden);
-			}
-		})
-	})
 
 	useEffect(() => {
 		if (props.currentImage === 'before')
@@ -155,6 +151,12 @@ export const View360 = (props: {
 		}
 	};
 
+	const toggleUI = (event: KeyboardEvent) => {
+		if (event.key.toLowerCase() === 'h') {
+			setHidden(!hidden);
+		}
+	};
+
 	const onValueChange = (value: 'before' | 'after') => {
 		if (value === 'before') {
 			if (!props.image.before) return;
@@ -169,96 +171,96 @@ export const View360 = (props: {
 	const renderUI = () => {
 		if (!hidden) {
 			return (
-			<div>
-				<div className="bg-background/60 absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg p-2 text-lg backdrop-blur">
-				<RadioGroup
-					onValueChange={onValueChange}
-					value={props.currentImage}
-					defaultChecked
-					defaultValue="after"
-				>
-					{props.image.before && (
-						<div className="flex items-center space-x-2">
-							<RadioGroupItem value="before" id="before" />
-							<Label htmlFor="before">Before</Label>
-						</div>
-					)}
-					<div className="flex items-center space-x-2">
-						<RadioGroupItem value="after" id="after" />
-						<Label htmlFor="after">After</Label>
+				<div>
+					<div className="bg-background/60 absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg p-2 text-lg backdrop-blur">
+						<RadioGroup
+							onValueChange={onValueChange}
+							value={props.currentImage}
+							defaultChecked
+							defaultValue="after"
+						>
+							{props.image.before && (
+								<div className="flex items-center space-x-2">
+									<RadioGroupItem value="before" id="before" />
+									<Label htmlFor="before">Before</Label>
+								</div>
+							)}
+							<div className="flex items-center space-x-2">
+								<RadioGroupItem value="after" id="after" />
+								<Label htmlFor="after">After</Label>
+							</div>
+						</RadioGroup>
 					</div>
-				</RadioGroup>
-			</div>
-			<div
-				className="bg-background/60 hover:bg-foreground/40 hover:text-background absolute right-0 z-10 m-2 rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
-				onClick={() => {
-					if (!cameraControlsRef.current) return;
-					cameraControlsRef.current.rotateAzimuthTo(0, true);
-				}}
-			>
-				<LucideNavigation2
-					className="transform-gpu"
-					style={{
-						transform: `rotate(${rotation}deg)`,
-					}}
-				/>
-			</div>
-			<div className="absolute bottom-1/2 right-0 top-1/2 z-10 m-2 flex flex-col items-center justify-center gap-4">
-				<div
-					className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
-					onClick={() => props.onJumpNext?.()}
-				>
-					<LucideChevronsUp />
+					<div
+						className="bg-background/60 hover:bg-foreground/40 hover:text-background absolute right-0 z-10 m-2 rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+						onClick={() => {
+							if (!cameraControlsRef.current) return;
+							cameraControlsRef.current.rotateAzimuthTo(0, true);
+						}}
+					>
+						<LucideNavigation2
+							className="transform-gpu"
+							style={{
+								transform: `rotate(${rotation}deg)`,
+							}}
+						/>
+					</div>
+					<div className="absolute bottom-1/2 right-0 top-1/2 z-10 m-2 flex flex-col items-center justify-center gap-4">
+						<div
+							className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+							onClick={() => props.onJumpNext?.()}
+						>
+							<LucideChevronsUp />
+						</div>
+						<div
+							className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+							onClick={() => props.onNext?.()}
+						>
+							<LucideChevronUp />
+						</div>
+						<div
+							className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+							onClick={() => props.onPrevious?.()}
+						>
+							<LucideChevronDown />
+						</div>
+						<div
+							className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+							onClick={() => props.onJumpPrevious?.()}
+						>
+							<LucideChevronsDown />
+						</div>
+					</div>
+					<div className="absolute bottom-0 right-0 z-10 m-2 flex flex-row gap-4">
+						<button
+							onClick={() => {
+								setVR(!vr);
+							}}
+							className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+						>
+							<LucideGlasses />
+						</button>
+						<button
+							onClick={() => {
+								void (async () => {
+									await toggleFullscreen();
+								})();
+							}}
+							className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+						>
+							{fullscreen ? <LucideShrink /> : <LucideExpand />}
+						</button>
+					</div>
 				</div>
-				<div
-					className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
-					onClick={() => props.onNext?.()}
-				>
-					<LucideChevronUp />
-				</div>
-				<div
-					className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
-					onClick={() => props.onPrevious?.()}
-				>
-					<LucideChevronDown />
-				</div>
-				<div
-					className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
-					onClick={() => props.onJumpPrevious?.()}
-				>
-					<LucideChevronsDown />
-				</div>
-			</div>
-			<div className="absolute bottom-0 right-0 z-10 m-2 flex flex-row gap-4">
-				<button
-					onClick={() => {
-						setVR(!vr);
-					}}
-					className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
-				>
-					<LucideGlasses />
-				</button>
-				<button
-					onClick={() => {
-						void (async () => {
-							await toggleFullscreen();
-						})();
-					}}
-					className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
-				>
-					{fullscreen ? <LucideShrink /> : <LucideExpand />}
-				</button>
-			</div>
-			</div>
 			);
 		} else {
 			return (
-				<div className="absolute bottom-2 right-3 z-10 m-2 w-5 h-5 flex flex-row gap-4">
+				<div className="absolute bottom-2 right-3 z-10 m-2 flex h-5 w-5 flex-row gap-4">
 					<LucideEyeOff />
 				</div>
 			);
 		}
-	}
+	};
 
 	return (
 		<div
