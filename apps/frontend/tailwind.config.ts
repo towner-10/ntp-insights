@@ -70,12 +70,12 @@ export default {
 					to: { height: '0' },
 				},
 				'ping': {
-					'25%': { transform: 'scale(8)', opacity: '1' },
-					'75%, 100%': { transform: 'scale(16)', opacity: '0' },
+					'25%': { transform: 'scale(22)', opacity: '1' },
+					'75%, 100%': { transform: 'scale(22)', opacity: '0' },
 				},
 			},
 			animation: {
-				'ping': 'ping 1s cubic-bezier(1, 1, 1, 1)',
+				'ping': 'ping 1s cubic-bezier(0.2, 0.4, 0.6, 0.8)',
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 			},
