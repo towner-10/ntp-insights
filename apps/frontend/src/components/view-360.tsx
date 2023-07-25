@@ -168,6 +168,13 @@ export const View360 = (props: {
 		return props.setCurrentImage('after');
 	};
 
+	
+	const [showIcon, setShowIcon] = useState(true);
+	
+	const handleAnimationEnd = () => {
+		setShowIcon(!showIcon);
+	};
+
 	const renderUI = () => {
 		if (!hidden) {
 			return (
@@ -255,7 +262,7 @@ export const View360 = (props: {
 			);
 		} else {
 			return (
-				<div className="absolute bottom-2 right-3 z-10 m-2 flex h-5 w-5 flex-row gap-4">
+				<div className="absolute top-1/2 right-5 z-10 m-2 flex h-0.5 w-0.5 flex-row gap-4 animate-ping drop-shadow-lg">
 					<LucideEyeOff />
 				</div>
 			);
