@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import {
 	LucideEyeOff,
+	LucideEye,
 	LucideNavigation2,
 	LucideExpand,
 	LucideGlasses,
@@ -172,6 +173,9 @@ export const View360 = (props: {
 		if (!hidden) {
 			return (
 				<div>
+					<div className="absolute top-0 left-1/2 z-10 m-2 flex h-0.5 w-0.5 flex-row gap-4 animate-ping">
+						<LucideEye />
+					</div>
 					<div className="bg-background/60 absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg p-2 text-lg backdrop-blur">
 						<RadioGroup
 							onValueChange={onValueChange}
