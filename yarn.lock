@@ -6768,6 +6768,11 @@ potpack@^2.0.0:
   resolved "https://registry.npmjs.org/potpack/-/potpack-2.0.0.tgz"
   integrity sha512-Q+/tYsFU9r7xoOJ+y/ZTtdVQwTWfzjbiXBDMM/JKUux3+QPP02iUuIoeBQ+Ot6oEDlC+/PGjB/5A3K7KKb7hcw==
 
+potree-core@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/potree-core/-/potree-core-2.0.5.tgz#130a66864030c5a77562b3fb94cc1f2173b0447e"
+  integrity sha512-gzk0/sThxctmnB1bYRLPivBFJw219y3kBPXqJ+DHP1vgFCuDoSH0kRLbjJfBj5FezO/cFsB7r57yii4PPEgz2Q==
+
 preact-render-to-string@^5.1.19:
   version "5.2.6"
   resolved "https://registry.npmjs.org/preact-render-to-string/-/preact-render-to-string-5.2.6.tgz"
