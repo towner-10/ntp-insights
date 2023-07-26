@@ -67,7 +67,7 @@
 		--destructive: 0 63% 31%;
 		--destructive-foreground: 210 40% 98%;
 
-		--success: 266.6, 55%, 43%;
+		--success: 266.6 55% 43%;
 		--success-foreground: 210 40% 98%;
 
 		--ring: 216 34% 17%;
@@ -97,6 +97,5 @@
 	}
 	body {
 		@apply bg-background text-foreground;
-		font-feature-settings: 'rlig' 1, 'calt' 1;
 	}
 }
