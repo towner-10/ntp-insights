@@ -47,6 +47,7 @@ export function DataTable<TData, TValue>({
 		state: {
 			sorting,
 		},
+		debugAll: true
 	});
 
 	return (
@@ -112,7 +113,9 @@ export function DataTable<TData, TValue>({
 				<Button
 					variant="outline"
 					size="sm"
-					onClick={() => table.previousPage()}
+					onClick={() => {
+						table.previousPage();
+					}}
 					disabled={!table.getCanPreviousPage()}
 				>
 					Previous

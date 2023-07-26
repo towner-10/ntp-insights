@@ -173,8 +173,8 @@ export const View360 = (props: {
 	const renderUI = () => {
 		if (!hidden) {
 			return (
-				<div>
-					<div className="absolute top-0 left-1/2 z-10 m-2 flex h-0.5 w-0.5 flex-row gap-4 animate-ping">
+				<>
+					<div className="absolute top-0 left-1/2 z-10 m-2 flex h-0.5 w-0.5 flex-row gap-4 animate-eye-ping">
 						<LucideEye />
 					</div>
 					<div className="bg-background/60 absolute z-10 m-2 flex flex-row items-center gap-4 rounded-lg p-2 text-lg backdrop-blur">
@@ -256,11 +256,11 @@ export const View360 = (props: {
 							{fullscreen ? <LucideShrink /> : <LucideExpand />}
 						</button>
 					</div>
-				</div>
+				</>
 			);
 		} else {
 			return (
-				<div className="absolute top-0 left-1/2 z-10 m-2 flex h-0.5 w-0.5 flex-row gap-4 animate-ping">
+				<div className="absolute top-0 left-1/2 z-10 m-2 flex h-0.5 w-0.5 flex-row gap-4 animate-eye-ping">
 					<LucideEyeOff />
 				</div>
 			);

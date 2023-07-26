@@ -69,13 +69,13 @@ export default {
 					from: { height: 'var(--radix-accordion-content-height)' },
 					to: { height: '0' },
 				},
-				'ping': {
+				'eye-ping': {
 					'25%': { transform: 'scale(22)', opacity: '1' },
 					'75%, 100%': { transform: 'scale(22)', opacity: '0' },
 				},
 			},
 			animation: {
-				'ping': 'ping 1s cubic-bezier(0.2, 0.4, 0.6, 0.8)',
+				'eye-ping': 'eye-ping 1s cubic-bezier(0.2, 0.4, 0.6, 0.8)',
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 			},

@@ -20,7 +20,7 @@ export const columns: ColumnDef<Post>[] = [
 	},
 	{
 		accessorKey: 'created_at',
-		header: 'Created At',
+		header: 'Created on',
 		cell({ row }) {
 			return new Date(row.original.created_at).toLocaleString('en-US', {
 				month: 'short',
@@ -66,7 +66,7 @@ export const columns: ColumnDef<Post>[] = [
 
 			if (relevant > irrelevant) {
 				return (
-					<p className="text-success">
+					<p className="text-success pl-4">
 						{`${(relevant * 100).toFixed(0)}% relevant`}
 					</p>
 				);
