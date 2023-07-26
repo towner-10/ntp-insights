@@ -25,7 +25,6 @@ type View360DetailsProps = {
 	sortedImages: (Image360 & {
 		before: Image360;
 	})[];
-	rotationFromNorth: number;
 };
 
 function DetailsRow(
@@ -141,11 +140,6 @@ export function View360Details(props: View360DetailsProps) {
 						</p>
 					</DetailsRow>
 				</div>
-				<DetailsRow label="Current rotation from North">
-					<p>
-						{Math.round(radToDeg(props.rotationFromNorth))}°
-					</p>
-				</DetailsRow>
 				<form onSubmit={onSubmit}>
 					<CardDescription>Panorama capture</CardDescription>
 					<div className='flex flex-row items-center py-1'>
