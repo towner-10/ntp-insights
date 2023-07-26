@@ -1,5 +1,6 @@
 # Ignore images
 images
+potree
 
 # Ignore SSl
 ssl
