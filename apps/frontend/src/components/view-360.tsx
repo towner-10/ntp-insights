@@ -100,6 +100,7 @@ export const View360 = (props: {
 	onJumpNext?: () => void;
 	onPrevious?: () => void;
 	onJumpPrevious?: () => void;
+	onRotation?: (rotation: number) => void;
 	className?: string;
 }) => {
 	const cameraControlsRef = useRef<CameraControls>(null);
@@ -322,6 +323,7 @@ export const View360 = (props: {
 						onChange={() => {
 							if (!cameraControlsRef.current) return;
 							cameraControlsRef.current.normalizeRotations();
+							props.onRotation?.(cameraControlsRef.current.azimuthAngle);
 							setRotation(radToDeg(cameraControlsRef.current.azimuthAngle));
 						}}
 					/>

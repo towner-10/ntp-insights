@@ -73,7 +73,7 @@ export function UploadInfo() {
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Creating New Event Paths</DialogTitle>
-					<DialogDescription>Additional information on uploading 360-degree panorama sequences</DialogDescription>
+					<DialogDescription>Additional information on uploading 360° panorama sequences</DialogDescription>
 				</DialogHeader>
 				<h2 className="font-medium">Uploading the <code>framepos</code> Text File</h2>
 				<div className="text-sm">After data formation through <code>NCTech Immersive Studio</code> is complete, a <code>framepos</code> text file is created, storing all of the necessary geospatial data for each photo. NTP 360 parses this data and uses it to plot map points, populate a <code>Details</code> pane alongside the 360 view, and more.</div>
@@ -145,7 +145,7 @@ export function VRControls() {
 								<code>Esc</code> — Exit Fullscreen
 							</li>
 							<li className='text-sm'>
-								<code>H</code> — Toggle UI Button Visibility
+								<code>H</code> — Toggle HUD
 							</li>
 						</ul>
 					</div>
