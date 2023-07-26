@@ -38,8 +38,6 @@ const View: NextPage = () => {
 	);
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [currentImage, setCurrentImage] = useState<'before' | 'after'>('after');
-	const [currentRotation, setCurrentRotation] = useState(0);
-
 
 	const imagesSorted = path.data?.images
 		.filter((image) => {
@@ -136,7 +134,6 @@ const View: NextPage = () => {
 							image={imagesSorted?.[currentIndex]}
 							currentImage={currentImage}
 							setCurrentImage={setCurrentImage}
-							onRotation={setCurrentRotation}
 							onNext={() => {
 								if (imagesSorted && currentIndex + 1 < imagesSorted?.length) {
 									if (currentImage === 'before' && !imagesSorted[currentIndex + 1].before) {
@@ -187,7 +184,6 @@ const View: NextPage = () => {
 							onIndexChange={(value) => setCurrentIndex(value)}
 							imageType={currentImage}
 							sortedImages={imagesSorted || []}
-							rotationFromNorth={currentRotation}
 						/>
 						<div className="lg:col-span-full">
 							<View360Map
