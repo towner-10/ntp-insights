@@ -23,6 +23,7 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 	const [progress, setProgress] = useState(0);
 	const newGoogleImage = api.image360.newGoogleImage.useMutation();
 	const setBeforeImage = api.image360.setBeforeImage.useMutation();
+	const setEditable = api.paths.setEditable.useMutation();
 	const toaster = useToast();
 
 	useEffect(() => {
@@ -97,12 +98,10 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 				const pano_id = image.image_name.split('.').shift()!;
 
 				// Fetch image data from the form state
-				const framepos = props.formState.framepos.find(
-					(framepos) => {
-						if (!framepos.google_image) return false;
-						return framepos.google_image.pano_id.trim() === pano_id.trim();
-					}
-				);
+				const framepos = props.formState.framepos.find((framepos) => {
+					if (!framepos.google_image) return false;
+					return framepos.google_image.pano_id.trim() === pano_id.trim();
+				});
 				const file = files.find(
 					(file) => file.name.trim() === image.image_name.trim()
 				);
@@ -169,6 +168,11 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 
 			await Promise.all(promises);
 
+			await setEditable.mutateAsync({
+				id: props.formState.path_id,
+				editable: false,
+			});
+
 			toaster.toast({
 				title: 'Success',
 				description:
@@ -224,7 +228,7 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 									ref={downloadRef}
 									onClick={() => {
 										const fileData = uniquePanoramas.join('\n');
-										const file = new Blob([fileData], { type: "text/plain" });
+										const file = new Blob([fileData], { type: 'text/plain' });
 										downloadRef.current!.href = URL.createObjectURL(file);
 										downloadRef.current!.download = 'panorama_ids.txt';
 

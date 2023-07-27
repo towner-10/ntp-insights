@@ -17,7 +17,7 @@ export const potreeConverter = async (input: string, output: string) => {
 
 		potreeConverterProcess.stderr.on('data', (data) => {
             logger.error(`PotreeConverter error: ${data}`);
-			reject(data);
+			return reject(data);
 		});
 
         potreeConverterProcess.on('exit', (code) => {
