@@ -3,7 +3,7 @@ import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import { Canvas } from '@react-three/fiber';
 
-const PotreeExample = dynamic(() => import('@/components/potree-example'), {
+const PotreeExample = dynamic(() => import('@/components/potree-renderer'), {
 	ssr: false,
 });
 
