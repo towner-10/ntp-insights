@@ -1,6 +1,6 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useState } from 'react';
-import { CameraControls } from '@react-three/drei';
+import { FlyControls, PointerLockControls } from '@react-three/drei';
 import { type PointCloudOctree, Potree } from 'potree-core';
 
 const potree = new Potree();
@@ -30,7 +30,13 @@ const PotreeRenderer = () => {
 		potree.updatePointClouds(pointClouds, camera, gl);
 	});
 
-	return null;
+	return (
+		<>
+			<PointerLockControls makeDefault>
+				<FlyControls movementSpeed={5} rollSpeed={0} />
+			</PointerLockControls>
+		</>
+	);
 };
 
 export default PotreeRenderer;
