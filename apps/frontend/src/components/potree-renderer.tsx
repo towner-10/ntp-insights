@@ -2,7 +2,6 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useState } from 'react';
 import { FlyControls, PointerLockControls } from '@react-three/drei';
 import { type PointCloudOctree, Potree } from 'potree-core';
-import { Color } from 'three';
 
 const potree = new Potree();
 potree.pointBudget = 2_000_000;
@@ -20,7 +19,8 @@ const PotreeRenderer = () => {
 
 			// Ensure the axes are aligned with the world axes
 			result.rotation.x = -Math.PI / 2;
-
+			
+			// Set material properties of the point cloud (point size, colour, shape, etc.)
 			result.material.size = 1.0;
 			result.material.shape = 2;
 			result.material.inputColorEncoding = 1;
