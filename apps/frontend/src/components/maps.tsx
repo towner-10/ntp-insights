@@ -415,8 +415,6 @@ export function SearchViewMap(props: SearchViewMapProps) {
 						return bounds;
 					}, new LngLatBounds()) || undefined,
 					fitBoundsOptions: {
-						animate: false,
-						duration: 0,
 						padding: 20,
 						maxZoom: 20,
 					},
@@ -524,10 +522,7 @@ export function SearchDashboardMap(props: SearchDashboardMapProps) {
 								)
 						  )
 						: undefined,
-
 					fitBoundsOptions: {
-						animate: true,
-						duration: 1000,
 						padding: 20,
 						maxZoom: 20,
 					},

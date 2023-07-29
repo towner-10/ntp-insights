@@ -7,8 +7,7 @@ import {
 import { TRPCError } from '@trpc/server';
 import { prisma } from '@/server/db';
 import { z } from 'zod';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { Path } from 'database';
+import { Path, Prisma } from 'database';
 
 type NewPathResponse = {
 	code: 'SUCCESS' | 'DUPLICATE_FOLDER_NAME' | 'UNKNOWN';
@@ -130,7 +129,7 @@ export const pathsRouter = createTRPCRouter({
 					data: path,
 				} as NewPathResponse;
 			} catch (err) {
-				if (err instanceof PrismaClientKnownRequestError) {
+				if (err instanceof Prisma.PrismaClientKnownRequestError) {
 					if (err.code === 'P2002') {
 						return {
 							code: 'DUPLICATE_FOLDER_NAME',

@@ -1,6 +1,6 @@
-import { Search } from '@prisma/client';
 import { TwitterApi } from 'twitter-api-v2';
 import { logger } from '../../utils/logger';
+import { Search } from 'database';
 
 const client = new TwitterApi(process.env.TWITTER_BEARER_TOKEN || '');
 const readOnlyClient = client.readOnly;

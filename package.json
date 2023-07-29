@@ -8,19 +8,17 @@
     "schema": "packages/database/prisma/schema.prisma"
   },
   "scripts": {
-    "build": "turbo run build --no-daemon",
+    "build": "turbo run build",
     "migrate": "prisma migrate dev --skip-generate",
-    "generate": "turbo run build --filter=database --no-daemon",
-    "start:backend": "turbo run start --filter=backend --no-daemon",
-    "dev": "turbo run dev --continue --no-daemon",
-    "dev:frontend": "turbo run dev --filter=frontend --continue --no-daemon",
-    "dev:backend": "turbo run dev --filter=backend --continue --no-daemon",
+    "generate": "turbo run build --filter=database",
+    "start:backend": "turbo run start --filter=backend",
+    "dev": "turbo run dev --continue",
+    "dev:frontend": "turbo run dev --filter=frontend --continue",
+    "dev:backend": "turbo run dev --filter=backend --continue",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch -- "
   },
   "devDependencies": {
-    "@types/gamepad": "^1.5.0",
-    "@types/webxr": "^0.5.2",
     "eslint": "^8.42.0",
     "prettier": "^2.5.1",
     "tsx": "^3.7.1",

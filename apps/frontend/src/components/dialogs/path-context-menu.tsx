@@ -20,7 +20,6 @@ import { Button } from '../ui/button';
 import { MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import ClipboardButton from '../buttons/clipboard-button';
-import { type Path } from '@prisma/client';
 import { useToast } from '../ui/use-toast';
 import { type FormEvent, useState } from 'react';
 import {
@@ -32,6 +31,7 @@ import {
 	DialogTitle,
 } from '../ui/dialog';
 import { api } from '@/utils/api';
+import { Path } from 'database';
 import { Input } from '../ui/input';
 import { type SubmitHandler, useForm } from 'react-hook-form';
 

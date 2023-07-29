@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { type Search } from '@prisma/client';
+import { Search } from 'database';
 import { type ColumnDef } from '@tanstack/react-table';
 import { UserHoverCard } from '@/components/user-hover-card';
 import { ArrowUpDown } from 'lucide-react';

@@ -1,9 +1,9 @@
 import { type ColumnDef } from '@tanstack/react-table';
+import { Path } from 'database';
 import { Button } from '@/components/ui/button';
 import { ArrowUpDown, Frame, Link2Icon } from 'lucide-react';
 import { format } from 'date-fns';
 import ClipboardButton from '@/components/buttons/clipboard-button';
-import { type Path } from '@prisma/client';
 import { UserHoverCard } from '@/components/user-hover-card';
 import Link from 'next/link';
 import { PathContextMenu } from '@/components/dialogs/path-context-menu';

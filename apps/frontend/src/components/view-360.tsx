@@ -17,7 +17,6 @@ import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { VRButton, XR } from '@react-three/xr';
 import { degToRad, radToDeg } from 'three/src/math/MathUtils';
-import { type Image360 } from '@prisma/client';
 import { before } from 'lodash';
 import { MovementController } from './movement-controller';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -29,6 +28,7 @@ import {
 	useProgress,
 	useTexture,
 } from '@react-three/drei';
+import { Image360 } from 'database';
 
 const Loader = () => {
 	const { progress, errors } = useProgress();

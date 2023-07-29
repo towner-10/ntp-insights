@@ -20,7 +20,8 @@
 		"studio": "prisma studio"
 	},
 	"dependencies": {
-		"@prisma/client": "^4.15.0"
+		"@prisma/client": "^5.0.0",
+		"eslint": "^8.42.0"
 	},
 	"devDependencies": {
 		"config": "*",
