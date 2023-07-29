@@ -2,7 +2,6 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useState } from 'react';
 import { CameraControls } from '@react-three/drei';
 import { type PointCloudOctree, Potree } from 'potree-core';
-import PotreeCamera from './potree-camera';
 
 const potree = new Potree();
 potree.pointBudget = 2_000_000;
