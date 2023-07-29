@@ -3,7 +3,7 @@ import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import { Canvas } from '@react-three/fiber';
 
-const PotreeExample = dynamic(() => import('@/components/potree-renderer'), {
+const PotreeRenderer = dynamic(() => import('@/components/potree-renderer'), {
 	ssr: false,
 });
 
@@ -17,7 +17,7 @@ const View: NextPage = () => {
 			</Head>
 			<div className="h-screen w-screen">
 				<Canvas>
-					<PotreeExample />
+					<PotreeRenderer />
 				</Canvas>
 			</div>
 		</>

@@ -1,3 +1,4 @@
 {
-    "jest.jestCommandLine": "yarn test:watch"
+    "jest.jestCommandLine": "yarn test:watch",
+    "jest.autoRun": "off"
 }
