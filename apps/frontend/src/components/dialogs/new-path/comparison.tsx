@@ -187,6 +187,7 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 	return (
 		<>
 			<DragAndDropZone
+				file_extensions={['.jpg', '.jpeg', '.png']}
 				type="multiple"
 				processing={processing}
 				onFiles={(data) => {

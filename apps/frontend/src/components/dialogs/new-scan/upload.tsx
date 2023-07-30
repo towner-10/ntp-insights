@@ -18,6 +18,7 @@ export const UploadDialogContent = (props: DialogContentProps) => {
 	return (
 		<>
 			<DragAndDropZone
+				file_extensions={['.laz', '.las']}
 				type="single"
 				processing={processing}
 				onFiles={(files) => {}}

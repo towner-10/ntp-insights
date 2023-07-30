@@ -101,6 +101,7 @@ export const FrameposDialogContent = (props: DialogContentProps) => {
 	return (
 		<>
 			<DragAndDropZone
+				file_extensions={['.txt', '.csv']}
 				type="single"
 				processing={processing}
 				onFiles={handleFiles}

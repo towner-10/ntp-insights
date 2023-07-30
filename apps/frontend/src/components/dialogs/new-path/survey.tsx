@@ -155,6 +155,7 @@ export const SurveyPanoramasDialogContent = (props: DialogContentProps) => {
 	return (
 		<>
 			<DragAndDropZone
+				file_extensions={['.jpg', '.jpeg', '.png']}
 				type="multiple"
 				onFiles={(data) => {
 					setFiles(data);

@@ -13,6 +13,7 @@ import {
 import format from 'date-fns/format';
 
 type DragAndDropZoneProps = {
+	file_extensions?: string[];
 	type: 'single' | 'multiple';
 	processing: boolean;
 	requiredFiles?: FileList;
@@ -103,7 +104,7 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 			)}
 			<Input
 				type="file"
-				accept=".las, .laz"
+				accept={props.file_extensions?.join(',')}
 				multiple={props.type === 'multiple'}
 				ref={fileRef}
 				value={''}
