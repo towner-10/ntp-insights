@@ -103,6 +103,7 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 			)}
 			<Input
 				type="file"
+				accept=".las, .laz"
 				multiple={props.type === 'multiple'}
 				ref={fileRef}
 				value={''}
