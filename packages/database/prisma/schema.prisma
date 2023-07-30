@@ -128,6 +128,7 @@ model Path {
   id            String     @id @unique @default(cuid())
   folder_name   String     @unique
   images        Image360[] @relation("Path Images")
+  scans         LiDAR[]    @relation("Path Scans")
   name          String
   date          DateTime
   editable      Boolean    @default(true)
@@ -165,6 +166,31 @@ model Image360 {
   // After is used for Google Street View images to view the NTP image
   // Since Google Street View images can have multiple NTP images, we use a list
   after Image360[] @relation("Image360 History")
+}
+
+model LiDAR {
+  id         String   @id @unique @default(cuid())
+  path       Path     @relation("Path Scans", fields: [path_id], references: [id])
+  path_id    String
+  scan_url  String
+  scan_size BigInt
+  upload_status LiDARStatusCodes @default(PROCESSING)
+  date_taken DateTime?
+  lng        Float
+  lat        Float
+  altitude   Float?
+  distance   Float?
+  heading    Float?
+  pitch      Float?
+  roll       Float?
+  track      Float?
+
+}
+
+enum LiDARStatusCodes {
+  PROCESSING
+  COMPLETED
+  FAILED
 }
 
 enum ImageSource {
