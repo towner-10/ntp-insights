@@ -1,4 +1,3 @@
-import { api } from '@/utils/api';
 import { useEffect, useState } from 'react';
 import { useWebSocketContext } from '@/components/socket-context';
 import { useToast } from '@/components/ui/use-toast';
@@ -10,8 +9,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { LucideScan, MonitorCheck } from 'lucide-react';
 import { useWakeLock } from 'react-screen-wake-lock';
+import { UploadDialogContent } from './upload';
 
 export const NewScanDialog = () => {
+	const [page, setPage] = useState<'upload'>('upload');
+
 	const [open, setOpen] = useState(false);
 	const { socket } = useWebSocketContext();
 	const { isSupported, released, request, release } = useWakeLock();
@@ -34,9 +36,9 @@ export const NewScanDialog = () => {
 				<div className="text-muted-foreground absolute right-0 top-0 mr-2 mt-2">
 					{isSupported && !released && <MonitorCheck size={16} />}
 				</div>
-				<Button onClick={() => setOpen(false)}>
-					Close
-				</Button>
+				{page === 'upload' && (
+					<UploadDialogContent />
+				)}
 			</AlertDialogContent>
 		</AlertDialog>
 	);

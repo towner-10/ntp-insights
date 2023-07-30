@@ -13,7 +13,7 @@ import {
 import format from 'date-fns/format';
 
 type DragAndDropZoneProps = {
-	type: 'framepos' | 'survey' | 'comparison';
+	type: 'single' | 'multiple';
 	processing: boolean;
 	requiredFiles?: FileList;
 	onFiles?: (files: File[]) => void;
@@ -103,7 +103,7 @@ export function DragAndDropZone(props: DragAndDropZoneProps) {
 			)}
 			<Input
 				type="file"
-				multiple={props.type !== 'framepos'}
+				multiple={props.type === 'multiple'}
 				ref={fileRef}
 				value={''}
 				onChange={handleFileChange}

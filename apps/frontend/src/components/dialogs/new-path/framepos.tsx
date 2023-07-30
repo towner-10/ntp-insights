@@ -7,7 +7,7 @@ import {
 	AlertDialogCancel,
 	AlertDialogFooter,
 } from '@/components/ui/alert-dialog';
-import { DialogContentHeader } from './header';
+import { DialogContentHeader } from '../header';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { processFramepos } from '@/lib/street_view';
@@ -101,7 +101,7 @@ export const FrameposDialogContent = (props: DialogContentProps) => {
 	return (
 		<>
 			<DragAndDropZone
-				type="framepos"
+				type="single"
 				processing={processing}
 				onFiles={handleFiles}
 			/>

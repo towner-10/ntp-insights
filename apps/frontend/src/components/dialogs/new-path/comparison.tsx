@@ -8,7 +8,7 @@ import {
 	AlertDialogCancel,
 	AlertDialogFooter,
 } from '@/components/ui/alert-dialog';
-import { DialogContentHeader } from './header';
+import { DialogContentHeader } from '../header';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { batchUploadImages } from './helpers';
@@ -187,7 +187,7 @@ export const ComparisonPanoramasDialogContent = (props: DialogContentProps) => {
 	return (
 		<>
 			<DragAndDropZone
-				type="comparison"
+				type="multiple"
 				processing={processing}
 				onFiles={(data) => {
 					setFiles(data);

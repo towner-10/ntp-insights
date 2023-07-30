@@ -7,7 +7,7 @@ import {
 	AlertDialogCancel,
 	AlertDialogFooter,
 } from '@/components/ui/alert-dialog';
-import { DialogContentHeader } from './header';
+import { DialogContentHeader } from '../header';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { Image360Data } from '@/utils/types/image360Data';
@@ -155,7 +155,7 @@ export const SurveyPanoramasDialogContent = (props: DialogContentProps) => {
 	return (
 		<>
 			<DragAndDropZone
-				type="survey"
+				type="multiple"
 				onFiles={(data) => {
 					setFiles(data);
 
