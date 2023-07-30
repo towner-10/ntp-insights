@@ -3,8 +3,8 @@ import Head from 'next/head';
 import Header from '@/components/header';
 import { Toaster } from '@/components/ui/toaster';
 import { useSession } from 'next-auth/react';
-import { columns } from '../../components/data-tables/paths/columns';
-import { DataTable } from '@/components/data-tables/paths/data-table';
+import { columns } from '../../components/data-tables/scans/columns';
+import { DataTable } from '@/components/data-tables/scans/data-table';
 import { NewScanDialog } from '@/components/dialogs/new-scan/dialog';
 import { ntpProtectedRoute } from '@/lib/protectedRoute';
 import ServerStatusBadge from '@/components/server-status-badge';
@@ -14,7 +14,7 @@ import { ScanInfo } from '@/components/dialogs/info-dialogs';
 
 const Dashboard: NextPage = () => {
 	const session = useSession();
-	const paths = api.paths.getAllPublic.useQuery();
+	const scans = api.scans.getAllPublic.useQuery();
 
 	return (
 		<>
@@ -42,10 +42,16 @@ const Dashboard: NextPage = () => {
 							<NewScanDialog />
 						</div>
 					</div>
-					{paths.isLoading && (
+					{scans.isLoading && (
 						<div className="flex flex-col items-center justify-center">
 							<Skeleton className="h-96 w-full" />
 						</div>
+					)}
+					{scans.data && (
+						<DataTable
+							columns={columns(() => void scans.refetch())}
+							data={scans.data}
+						/>
 					)}
 				</div>
 			</main>

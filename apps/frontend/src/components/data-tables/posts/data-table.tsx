@@ -46,8 +46,7 @@ export function DataTable<TData, TValue>({
 		getSortedRowModel: getSortedRowModel(),
 		state: {
 			sorting,
-		},
-		debugAll: true
+		}
 	});
 
 	return (
