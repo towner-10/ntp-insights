@@ -21,8 +21,8 @@ const PotreeRenderer = () => {
 			result.rotation.x = -Math.PI / 2;
 			
 			// Set material properties of the point cloud (point size, colour, shape, etc.)
-			result.material.size = 1.0;
-			result.material.shape = 2;
+			result.material.size = 1.2;
+			result.material.shape = 1;
 			result.material.inputColorEncoding = 1;
 			result.material.outputColorEncoding = 1;
 
