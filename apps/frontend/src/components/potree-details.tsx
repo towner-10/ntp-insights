@@ -19,7 +19,7 @@ import { radToDeg } from 'three/src/math/MathUtils';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 
-type LiDARDetailsProps = {
+type PotreeDetailsProps = {
 	// index: number;
 	// onIndexChange: (value: number) => void;
 	// imageType: 'before' | 'after';
@@ -43,7 +43,7 @@ function DetailsRow(
 	);
 }
 
-export function LiDARDetails(props: LiDARDetailsProps) {
+export function PotreeDetails(props: PotreeDetailsProps) {
 	type RendererProperties = {
         /* TODO: Make these properties have defaults */
 		shape?: string;
@@ -71,7 +71,7 @@ export function LiDARDetails(props: LiDARDetailsProps) {
 
 	return (
 		// <Card className={cn('lg:col-span-2 lg:row-span-2', props.className)}>
-        <Card>
+        <Card className="lg:col-span-2 lg: row-span-2">
 			<CardHeader>
 				<CardTitle>Details</CardTitle>
 				<CardDescription>About the current LiDAR view</CardDescription>
