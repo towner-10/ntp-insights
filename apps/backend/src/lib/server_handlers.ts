@@ -3,7 +3,8 @@ import formidable from 'formidable';
 import { promises as fs } from 'fs';
 import { logger } from '../utils/logger';
 import { ImageResult } from 'types';
-import { getPathUploadData } from '../db';
+import { getPathUploadData, isScanFolderNameUnique, userExists } from '../db';
+import { handlePointCloudUpload } from './potree_converter';
 
 const IMAGE_DIRECTORY = './images';
 
@@ -49,8 +50,8 @@ export const handleRequest = async (
 			res.end();
 		}
 	} else if (req.method === 'POST') {
-		if (req.url === '/api/upload') {
-			logger.debug('POST /api/upload');
+		if (req.url === '/api/upload/360') {
+			logger.debug('POST /api/upload/360');
 
 			const form = formidable({
 				multiples: true,
@@ -123,8 +124,118 @@ export const handleRequest = async (
 				res.end('Error saving images');
 				return;
 			}
+		} else if (req.url === '/api/upload/lidar') {
+			logger.debug('POST /api/upload/lidar');
 
-			return;
+			const form = formidable({
+				multiples: false,
+				maxFileSize: 4 * 1024 * 1024 * 1024,
+			});
+
+			try {
+				form.parse(req, async (err, fields, files) => {
+					if (err) {
+						logger.error(err);
+						res.writeHead(err.httpCode || 400, {
+							'Content-Type': 'text/plain',
+						});
+						res.end(String(err));
+						return;
+					}
+
+					if (!fields.user_id) {
+						logger.error('Missing user_id');
+						res.writeHead(400, {
+							'Content-Type': 'text/plain',
+						});
+						res.end('Missing user_id');
+						return;
+					}
+
+					if (!await userExists(fields.user_id as string)) {
+						logger.error('Invalid user_id');
+						res.writeHead(400, {
+							'Content-Type': 'text/plain',
+						});
+						res.end('Invalid user_id');
+						return;
+					}
+
+					if (fields.folder_name) {
+						if (!await isScanFolderNameUnique(fields.folder_name as string)) {
+							logger.error('Folder name already exists');
+							res.writeHead(400, {
+								'Content-Type': 'text/plain',
+							});
+							res.end('Folder name already exists');
+							return;
+						}
+
+						// Run REGEX to make sure the folder name is valid
+						if (!/^[a-zA-Z][a-zA-Z0-9-_]+$/g.test(fields.folder_name as string)) {
+							logger.error('Invalid folder name');
+							res.writeHead(400, {
+								'Content-Type': 'text/plain',
+							});
+							res.end('Invalid folder name');
+							return;
+						}
+					}
+
+					if (!files.pointcloud) {
+						logger.error('Missing pointcloud');
+						res.writeHead(400, {
+							'Content-Type': 'text/plain',
+						});
+						res.end('Missing pointcloud');
+						return;
+					}
+
+					const isMultiple = Array.isArray(files.pointcloud);
+
+					if (isMultiple) {
+						logger.error('Multiple pointclouds');
+						res.writeHead(400, {
+							'Content-Type': 'text/plain',
+						});
+						res.end('Multiple pointclouds');
+						return;
+					}
+
+					try {
+						const scan_id = await handlePointCloudUpload({
+							user_id: fields.user_id as string,
+							folder_name: fields.folder_name as string,
+							file: files.pointcloud as formidable.File,
+							scan_type: 'GROUND',
+						});
+
+						res.writeHead(200, {
+							'Content-Type': 'application/json',
+						});
+
+						res.end(
+							JSON.stringify({
+								scan_id: scan_id,
+							})
+						);
+					} catch (err) {
+						logger.error(err);
+						res.writeHead(500, {
+							'Content-Type': 'text/plain',
+						});
+						res.end('Error processing pointcloud');
+						return;
+					}
+				});
+			} catch (err) {
+				logger.error(err);
+				res.writeHead(500, {
+					'Content-Type': 'text/plain',
+				});
+				res.end('Error saving images');
+				return;
+			}
 		} else {
 			res.writeHead(404);
 			res.end();

@@ -1,6 +1,7 @@
 # Ignore images
 images
 potree
+pointclouds
 
 # Ignore SSl
 ssl

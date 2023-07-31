@@ -90,7 +90,7 @@ const uploadImages = async (
 			const xhr = new XMLHttpRequest();
 			xhr.responseType = 'json';
 
-			xhr.open('POST', env.NEXT_PUBLIC_BACKEND_URL + '/api/upload');
+			xhr.open('POST', env.NEXT_PUBLIC_BACKEND_URL + '/api/upload/360');
 
 			xhr.addEventListener('loadstart', () => {
 				console.log('Started uploading images');

@@ -1,4 +1,10 @@
-import { PrismaClient, Search, SearchResult } from 'database';
+import {
+	PrismaClient,
+	ScanStatusCodes,
+	ScanType,
+	Search,
+	SearchResult,
+} from 'database';
 
 const prisma = new PrismaClient();
 
@@ -20,6 +26,24 @@ export const getPathUploadData = async (id: string) => {
 		};
 	} catch (err) {
 		return null;
+	}
+};
+
+export const userExists = async (id: string) => {
+	try {
+		const user = await prisma.user.findUnique({
+			where: {
+				id: id,
+			},
+		});
+	
+		if (!user) {
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		return false;
 	}
 };
 
@@ -221,3 +245,74 @@ export const updateClassifications = async (
 		},
 	});
 };
+
+export const newScan = async ({
+	user_id,
+	scan_location,
+	scan_size,
+	scan_type,
+}: {
+	user_id: string;
+	scan_location: string;
+	scan_size: number;
+	scan_type: ScanType;
+}) => {
+	return await prisma.scan.create({
+		data: {
+			created_by_id: user_id,
+			updated_by_id: user_id,
+			scan_location: scan_location,
+			scan_size: scan_size,
+			scan_type: scan_type,
+		},
+	});
+};
+
+export const setScanStatus = async ({
+	scan_id,
+	status,
+}: {
+	scan_id: string;
+	status: ScanStatusCodes;
+}) => {
+	return await prisma.scan.update({
+		where: {
+			id: scan_id,
+		},
+		data: {
+			upload_status: status,
+		},
+	});
+};
+
+export const updateScanLocation = async ({
+	scan_id,
+	location,
+}: {
+	scan_id: string;
+	location: string;
+}) => {
+	return await prisma.scan.update({
+		where: {
+			id: scan_id,
+		},
+		data: {
+			scan_location: location,
+		},
+	});
+};
+
+export const isScanFolderNameUnique = async (folder_name: string) => {
+	try {
+		const result = await prisma.scan.findFirst({
+			where: {
+				scan_location: folder_name,
+			}
+		});
+
+		if (!result) return true;
+		return false;
+	} catch (err) {
+		return true;
+	}
+}
