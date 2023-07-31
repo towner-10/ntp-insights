@@ -27,7 +27,7 @@ export const columns = (onRefresh: () => void) => {
 
 				return (
 					<Link href={`/lidar/${path.id}/view`}>
-						<Button variant={'link'}>{path.name}</Button>
+						<Button variant={'link'}>{path.name || 'N/A'}</Button>
 					</Link>
 				);
 			},
@@ -53,6 +53,10 @@ export const columns = (onRefresh: () => void) => {
 				);
 			},
 			cell: ({ row }) => {
+				if (!row.original.date_taken) {
+					return <span>{'N/A'}</span>;
+				}
+
 				const path = row.original;
 
 				return <span>{format(path.date_taken, 'MMMM d, yyyy')}</span>;

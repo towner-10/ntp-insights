@@ -2,11 +2,16 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useState } from 'react';
 import { FlyControls, PointerLockControls } from '@react-three/drei';
 import { type PointCloudOctree, Potree } from 'potree-core';
+import { env } from '@/env.mjs';
 
 const potree = new Potree();
 potree.pointBudget = 2_000_000;
 
-const PotreeRenderer = () => {
+const PotreeRenderer = ({
+	scan_location
+}: {
+	scan_location: string;
+}) => {
 	const { scene } = useThree();
 	const [pointClouds, setPointClouds] = useState<PointCloudOctree[]>([]);
 
@@ -14,7 +19,7 @@ const PotreeRenderer = () => {
 		(async () => {
 			const result = await potree.loadPointCloud(
 				'metadata.json',
-				(url) => `/potree/${url}`
+				(url) => `${env.NEXT_PUBLIC_BACKEND_URL}/pointclouds/${scan_location}/${url}`
 			);
 
 			// Ensure the axes are aligned with the world axes

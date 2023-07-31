@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useWebSocketContext } from '@/components/socket-context';
-import { useToast } from '@/components/ui/use-toast';
 import {
 	AlertDialog,
 	AlertDialogContent,
@@ -10,13 +9,23 @@ import { Button } from '@/components/ui/button';
 import { LucideScan, MonitorCheck } from 'lucide-react';
 import { useWakeLock } from 'react-screen-wake-lock';
 import { UploadDialogContent } from './upload';
+import { ConfigureDialogContent } from './configure';
+import { FormState } from './types';
 
 export const NewScanDialog = () => {
-	const [page, setPage] = useState<'upload'>('upload');
-
+	const [page, setPage] = useState<'upload' | 'config'>('upload');
+	const [formState, setFormState] = useState<FormState>();
 	const [open, setOpen] = useState(false);
 	const { socket } = useWebSocketContext();
 	const { isSupported, released, request, release } = useWakeLock();
+
+	useEffect(() => {
+		request();
+
+		return () => {
+			release();
+		};
+	}, [request, release]);
 
 	useEffect(() => {
 		socket?.on('disconnect', () => {
@@ -37,7 +46,29 @@ export const NewScanDialog = () => {
 					{isSupported && !released && <MonitorCheck size={16} />}
 				</div>
 				{page === 'upload' && (
-					<UploadDialogContent />
+					<UploadDialogContent
+						formState={formState}
+						onNext={(state) => {
+							setFormState(state);
+							setPage('config');
+						}}
+						onCancel={() => {
+							setOpen(false);
+						}}
+					/>
+				)}
+				{page === 'config' && (
+					<ConfigureDialogContent
+						formState={formState}
+						onNext={() => {
+							setOpen(false);
+							setPage('upload');
+						}}
+						onCancel={() => {
+							setOpen(false);
+							setPage('upload');
+						}}
+					/>
 				)}
 			</AlertDialogContent>
 		</AlertDialog>

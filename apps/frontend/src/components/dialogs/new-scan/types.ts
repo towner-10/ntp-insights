@@ -1,4 +1,9 @@
+export type FormState = {
+	scan_id?: string;
+}
+
 export type DialogContentProps = {
-	onNext?: () => void;
+	formState: FormState;
+	onNext?: (formState: FormState) => void;
 	onCancel?: () => void;
 };

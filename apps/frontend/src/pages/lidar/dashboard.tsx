@@ -14,7 +14,9 @@ import { ScanInfo } from '@/components/dialogs/info-dialogs';
 
 const Dashboard: NextPage = () => {
 	const session = useSession();
-	const scans = api.scans.getAllPublic.useQuery();
+	const scans = api.scans.getAll.useQuery(null, {
+		refetchInterval: 30000,
+	});
 
 	return (
 		<>
