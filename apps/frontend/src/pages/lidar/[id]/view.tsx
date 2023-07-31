@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import { Canvas } from '@react-three/fiber';
-import { LiDARDetails } from '@/components/lidar-details';
+import { PotreeDetails } from '@/components/potree-details';
 import Header from '@/components/header';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
@@ -33,7 +33,7 @@ const View: NextPage = () => {
 						session={session.data}
 					/>
 					<Toaster/>
-				<div className="container flex flex-col items-center justify-center p-20">
+				<div className="container flex flex-col items-center justify-center p-10">
 					<div className="mb-4 flex w-full flex-row items-center gap-4 text-left text-2xl font-medium">
 						<h2>Scan Name Here</h2>
 					</div>
@@ -41,7 +41,7 @@ const View: NextPage = () => {
 						<Canvas id="potree-canvas" className="relative row-span-2 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[505px]">
 							<PotreeRenderer />
 						</Canvas>
-						<LiDARDetails/>
+						<PotreeDetails/>
 					</div>
 				</div>
 			</main>
