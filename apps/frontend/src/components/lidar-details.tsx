@@ -71,7 +71,7 @@ export function LiDARDetails(props: LiDARDetailsProps) {
 
 	return (
 		// <Card className={cn('lg:col-span-2 lg:row-span-2', props.className)}>
-        <Card>
+        <Card className="lg:col-span-2 lg: row-span-2">
 			<CardHeader>
 				<CardTitle>Details</CardTitle>
 				<CardDescription>About the current LiDAR view</CardDescription>

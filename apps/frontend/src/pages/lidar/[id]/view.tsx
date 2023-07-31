@@ -33,16 +33,15 @@ const View: NextPage = () => {
 						session={session.data}
 					/>
 					<Toaster/>
-				<div className="h-screen w-screen">
-					<div className="grid lg:grid-cols-4">
-						<div className="col-span-3 border-2 border-white">
-							<Canvas>
-								<PotreeRenderer />
-							</Canvas>
-						</div>
-						<div>
-							<LiDARDetails />
-						</div>
+				<div className="container flex flex-col items-center justify-center p-20">
+					<div className="mb-4 flex w-full flex-row items-center gap-4 text-left text-2xl font-medium">
+						<h2>Scan Name Here</h2>
+					</div>
+					<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-6 lg:grid-rows-2">
+						<Canvas id="potree-canvas" className="relative row-span-2 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[505px]">
+							<PotreeRenderer />
+						</Canvas>
+						<LiDARDetails/>
 					</div>
 				</div>
 			</main>

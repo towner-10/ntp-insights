@@ -40,7 +40,7 @@ const PotreeRenderer = () => {
 
 	return (
 		<>
-			<PointerLockControls makeDefault>
+			<PointerLockControls makeDefault selector='#potree-canvas'>
 				<FlyControls movementSpeed={5} rollSpeed={0} />
 			</PointerLockControls>
 		</>
