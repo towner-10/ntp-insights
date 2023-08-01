@@ -9,8 +9,9 @@ import { useRouter } from 'next/router';
 import { Toaster } from '@/components/ui/toaster';
 import { api } from '@/utils/api';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LucideExpand, LucideGlasses, LucideShrink } from 'lucide-react';
+import { LucideExpand, LucideGlasses, LucideShrink, LucideEye, LucideEyeOff } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { VRButton } from '@react-three/xr';
 
 const PotreeRenderer = dynamic(() => import('@/components/potree-renderer'), {
 	ssr: false,
@@ -24,6 +25,7 @@ const View: NextPage = () => {
 	});
 
 	const [fullscreen, setFullscreen] = useState(false);
+	const [hidden, setHidden] = useState(false);
 	const fullscreenRef = useRef<HTMLDivElement>(null);
 	const [vr, setVR] = useState(false);
 
@@ -32,14 +34,14 @@ const View: NextPage = () => {
 			setFullscreen(document.fullscreenElement !== null);
 		});
 
-		// document.addEventListener('keydown', toggleUI);
+		document.addEventListener('keydown', toggleUI);
 
 		return () => {
 			document.removeEventListener('fullscreenchange', () => {
 				setFullscreen(document.fullscreenElement !== null);
 			});
 
-			// document.removeEventListener('keydown', toggleUI);
+			document.removeEventListener('keydown', toggleUI);
 		};
 	});
 
@@ -50,6 +52,50 @@ const View: NextPage = () => {
 		} else {
 			await fullscreenRef.current?.requestFullscreen();
 			setFullscreen(true);
+		}
+	};
+
+	const toggleUI = (event: KeyboardEvent) => {
+		if (event.key.toLowerCase() === 'h') {
+			setHidden(!hidden);
+		}
+	};
+
+	const renderUI = () => {
+		if (!hidden) {
+			return (
+				<>
+					<div className="absolute top-0 left-1/2 z-10 m-2 flex h-0.5 w-0.5 flex-row gap-4 animate-eye-ping">
+						<LucideEye />
+					</div>
+					<div className="absolute bottom-0 right-0 z-10 m-2 flex flex-row gap-4">
+						<button
+							onClick={() => {
+								setVR(!vr);
+							}}
+							className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+						>
+							<LucideGlasses />
+						</button>
+						<button
+							onClick={() => {
+								void (async () => {
+									await toggleFullscreen();
+								})();
+							}}
+							className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+						>
+							{fullscreen ? <LucideShrink /> : <LucideExpand />}
+						</button>
+					</div>
+				</>
+			);
+		} else {
+			return (
+				<div className="absolute top-0 left-1/2 z-10 m-2 flex h-0.5 w-0.5 flex-row gap-4 animate-eye-ping">
+					<LucideEyeOff />
+				</div>
+			);
 		}
 	};
 
@@ -118,27 +164,11 @@ const View: NextPage = () => {
 							>
 								<PotreeRenderer scan_location={scan.data?.scan_location} />
 							</Canvas>
-
-							<div className="absolute bottom-0 right-0 z-10 m-2 flex flex-row gap-4">
-								<button
-									onClick={() => {
-										setVR(!vr);
-									}}
-									className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
-								>
-									<LucideGlasses />
-								</button>
-								<button
-									onClick={() => {
-										void (async () => {
-											await toggleFullscreen();
-										})();
-									}}
-									className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
-								>
-									{fullscreen ? <LucideShrink /> : <LucideExpand />}
-								</button>
+							<div className="absolute bottom-3 left-5 z-10 text-2xl">
+								<span className="font-bold">NTP</span> LiDAR
 							</div>
+							{renderUI()}
+							{vr ? <VRButton /> : null}
 						</div>
 						<PotreeDetails />
 					</div>
