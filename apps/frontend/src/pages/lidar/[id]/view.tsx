@@ -23,6 +23,8 @@ const View: NextPage = () => {
 	const scan = api.scans.getPublic.useQuery({
 		id: (router.query.id as string) || '',
 	});
+	const [currentShape, setCurrentShape] = useState<'circle' | 'square'>('circle');
+	const [currentSize, setCurrentSize] = useState<number[]>([1]);
 
 	const [fullscreen, setFullscreen] = useState(false);
 	const [hidden, setHidden] = useState(false);
@@ -131,7 +133,6 @@ const View: NextPage = () => {
 			</>
 		);
 	}
-
 	return (
 		<>
 			<Head>
@@ -160,9 +161,8 @@ const View: NextPage = () => {
 						>
 							<Canvas
 								id="potree-canvas"
-
 							>
-								<PotreeRenderer scan_location={scan.data?.scan_location} />
+								<PotreeRenderer shape_type={currentShape === "square" ? 0 : currentShape === "circle" ? 1 : 2} size={currentSize[0]} scan_location={scan.data?.scan_location} />
 							</Canvas>
 							<div className="absolute bottom-3 left-5 z-10 text-2xl">
 								<span className="font-bold">NTP</span> LiDAR
@@ -170,8 +170,9 @@ const View: NextPage = () => {
 							{renderUI()}
 							{vr ? <VRButton /> : null}
 						</div>
-						<PotreeDetails />
+						<PotreeDetails size={currentSize} onSizeChange={setCurrentSize} shape={currentShape} onShapeChange={setCurrentShape}  />
 					</div>
+						
 				</div>
 			</main>
 		</>

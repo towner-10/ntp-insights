@@ -10,9 +10,13 @@ const potree = new Potree();
 potree.pointBudget = 2_000_000;
 
 const PotreeRenderer = ({
-	scan_location
+	scan_location,
+	shape_type,
+	size,
 }: {
 	scan_location: string;
+	shape_type: number;
+	size: number;
 }) => {
 	const { scene } = useThree();
 	const [pointClouds, setPointClouds] = useState<PointCloudOctree[]>([]);
@@ -28,8 +32,8 @@ const PotreeRenderer = ({
 			result.rotation.x = -Math.PI / 2;
 			
 			// Set material properties of the point cloud (point size, colour, shape, etc.)
-			result.material.size = 1.2;
-			result.material.shape = 1;
+			result.material.size = size;
+			result.material.shape = shape_type;
 			result.material.inputColorEncoding = 1;
 			result.material.outputColorEncoding = 1;
 
@@ -37,7 +41,7 @@ const PotreeRenderer = ({
 			setPointClouds([...pointClouds, result]);
 		})();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [shape_type, size]);
 
 	useFrame(({ gl, camera }) => {
 		potree.updatePointClouds(pointClouds, camera, gl);
