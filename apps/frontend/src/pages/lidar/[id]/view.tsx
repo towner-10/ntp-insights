@@ -9,6 +9,8 @@ import { useRouter } from 'next/router';
 import { Toaster } from '@/components/ui/toaster';
 import { api } from '@/utils/api';
 import { Skeleton } from '@/components/ui/skeleton';
+import { LucideExpand, LucideGlasses, LucideShrink } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 const PotreeRenderer = dynamic(() => import('@/components/potree-renderer'), {
 	ssr: false,
@@ -20,6 +22,10 @@ const View: NextPage = () => {
 	const scan = api.scans.getPublic.useQuery({
 		id: (router.query.id as string) || '',
 	});
+
+	const [fullscreen, setFullscreen] = useState(false);
+	const fullscreenRef = useRef<HTMLDivElement>(null);
+	const [vr, setVR] = useState(false);
 
 	if (!scan.data || scan.isLoading || !scan.data?.scan_location) {
 		return (
@@ -54,6 +60,18 @@ const View: NextPage = () => {
 		);
 	}
 
+
+
+	const toggleFullscreen = async () => {
+		if (fullscreen) {
+			await document.exitFullscreen();
+			setFullscreen(false);
+		} else {
+			await fullscreenRef.current?.requestFullscreen();
+			setFullscreen(true);
+		}
+	};
+
 	return (
 		<>
 			<Head>
@@ -76,12 +94,36 @@ const View: NextPage = () => {
 						<h2>{scan.data.name || 'N/A'}</h2>
 					</div>
 					<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-6 lg:grid-rows-2">
+					<div
+					ref={fullscreenRef}
+					>
 						<Canvas
 							id="potree-canvas"
 							className="relative row-span-2 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[505px]"
 						>
 							<PotreeRenderer scan_location={scan.data?.scan_location} />
 						</Canvas>
+					</div>
+						<div className="absolute bottom-0 right-0 z-10 m-2 flex flex-row gap-4">
+						<button
+							onClick={() => {
+								setVR(!vr);
+							}}
+							className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+						>
+							<LucideGlasses />
+						</button>
+						<button
+							onClick={() => {
+								void (async () => {
+									await toggleFullscreen();
+								})();
+							}}
+							className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
+						>
+							{fullscreen ? <LucideShrink /> : <LucideExpand />}
+						</button>
+					</div>
 						<PotreeDetails />
 					</div>
 				</div>
