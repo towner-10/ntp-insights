@@ -7,7 +7,7 @@ import {
 	LucideChevronDown,
 	LucideChevronsUp,
 	LucideChevronsDown,
-	LucideShrink,
+	MousePointer,
 } from 'lucide-react';
 import {
 	Dialog,
@@ -177,6 +177,86 @@ export function VRControls() {
 							</li>
 							<li className='text-sm'>
 								<code>B</code> — After Image
+							</li>
+						</ul>
+					</div>
+				</div>
+			</DialogContent>
+			<DialogTrigger>
+				<LucideInfo size={16} />
+			</DialogTrigger>
+		</Dialog>
+	);
+}
+
+export function LiDARControls() {
+	return (
+		<Dialog>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Using NTP LiDAR</DialogTitle>
+					<DialogDescription>How to navigate the LiDAR view</DialogDescription>
+				</DialogHeader>
+				<h2 className="font-medium">Screen Controls</h2>
+					<div className="flex flex-row align-middle text-sm">
+						<div className='pr-2'><MousePointer/></div>[Hold] Move Towards Location
+					</div>
+					<div className="flex flex-row space-x-10 align-middle text-sm">
+						<div className='pr-2'><LucideExpand/></div>Enter Fullscreen
+						<div className='pr-2'><LucideGlasses/></div>Enter VR
+					</div>
+				<h2 className="font-medium">Keyboard Controls</h2>
+				<div className="flex flex-row space-x-10">
+					<div className="flex flex-col space-y-2">
+						<h2 className='font-medium text-sm'>Horizontal Movement Keys</h2>
+						<ul>
+							<li className='text-sm'>
+								<code>W</code> — Forward
+							</li>
+							<li className='text-sm'>
+								<code>A</code> — Left
+							</li>
+							<li className='text-sm'>
+								<code>S</code> — Backward
+							</li>
+							<li className='text-sm'>
+								<code>D</code> — Right
+							</li>
+						</ul>
+					</div>
+					<div className="flex flex-col space-y-2">
+						<h2 className='font-medium text-sm'>Other Keys</h2>
+						<ul>
+							<li className='text-sm'>
+								<code>R</code> — Ascend
+							</li>
+							<li className='text-sm'>
+								<code>F</code> — Descend
+							</li>
+							<li className='text-sm'>
+								<code>Esc</code> — Exit Fullscreen/LiDAR Focus
+							</li>
+							<li className='text-sm'>
+								<code>H</code> — Toggle HUD
+							</li>
+						</ul>
+					</div>
+				</div>
+				<h2 className="font-medium">VR Controls</h2>
+				<div className="flex flex-row space-x-10">
+					<div className="flex flex-col space-y-2">
+						<h2 className='font-medium text-sm'>Left Hand</h2>
+						<ul>
+							<li className='text-sm'>
+								<code>Joystick</code> — Move around
+							</li>
+						</ul>
+					</div>
+					<div className="flex flex-col space-y-2">
+						<h2 className='font-medium text-sm'>Right Hand</h2>
+						<ul>
+							<li className='text-sm'>
+								<code>Joystick</code> — Ascend/Descend
 							</li>
 						</ul>
 					</div>

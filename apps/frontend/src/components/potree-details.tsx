@@ -108,7 +108,7 @@ export function PotreeDetails(props: PotreeDetailsProps) {
 				</div>
 				<div className="grid grid-cols-2">
 					{/* Here once lies the elevation details */}
-					<DetailsRow label="Point shapes">
+					<DetailsRow label="Point shape">
 						<RadioGroup 
 							className="pt-2" 
 							defaultChecked 
@@ -118,11 +118,11 @@ export function PotreeDetails(props: PotreeDetailsProps) {
 						>
 							<div className="flex items-center space-x-2">
 								<RadioGroupItem value="square" id="square" />
-								<Label htmlFor="square">Square</Label>
+								<Label className="font-normal text-md" htmlFor="square">Square</Label>
 							</div>
 							<div className="flex items-center space-x-2 ">
 								<RadioGroupItem value="circle" id="circle" />
-								<Label htmlFor="circle">Circle</Label>
+								<Label className="font-normal text-md" htmlFor="circle">Circle</Label>
 							</div>
 						</RadioGroup>
 					</DetailsRow>

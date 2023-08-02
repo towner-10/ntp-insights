@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { LucideExpand, LucideGlasses, LucideShrink, LucideEye, LucideEyeOff } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { VRButton } from '@react-three/xr';
+import { LiDARControls } from '@/components/dialogs/info-dialogs';
 
 const PotreeRenderer = dynamic(() => import('@/components/potree-renderer'), {
 	ssr: false,
@@ -153,7 +154,9 @@ const View: NextPage = () => {
 				<div className="container flex flex-col items-center justify-center p-10">
 					<div className="mb-4 flex w-full flex-row items-center gap-4 text-left text-2xl font-medium">
 						<h2>{scan.data.name || 'N/A'}</h2>
+						<LiDARControls />
 					</div>
+					
 					<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-6 lg:grid-rows-2">
 						<div
 							className="relative row-span-2 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[505px]"
