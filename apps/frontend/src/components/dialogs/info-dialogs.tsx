@@ -234,7 +234,10 @@ export function LiDARControls() {
 								<code>F</code> — Descend
 							</li>
 							<li className='text-sm'>
-								<code>Esc</code> — Exit Fullscreen/LiDAR Focus
+								<code>Esc</code> — Exit Fullscreen
+							</li>
+							<li className='text-sm'>
+								<code>P</code> — Exit LiDAR Focus
 							</li>
 							<li className='text-sm'>
 								<code>H</code> — Toggle HUD

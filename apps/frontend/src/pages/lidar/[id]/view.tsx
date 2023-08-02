@@ -38,6 +38,7 @@ const View: NextPage = () => {
 		});
 
 		document.addEventListener('keydown', toggleUI);
+		document.addEventListener('keydown', toggleFocus);
 
 		return () => {
 			document.removeEventListener('fullscreenchange', () => {
@@ -45,6 +46,7 @@ const View: NextPage = () => {
 			});
 
 			document.removeEventListener('keydown', toggleUI);
+			document.removeEventListener('keydown', toggleFocus);
 		};
 	});
 
@@ -63,6 +65,12 @@ const View: NextPage = () => {
 			setHidden(!hidden);
 		}
 	};
+
+	const toggleFocus = (event: KeyboardEvent) => {
+		if (event.key.toLowerCase() === 'p') {
+			document.exitPointerLock();
+		}
+	}
 
 	const renderUI = () => {
 		if (!hidden) {
@@ -175,7 +183,6 @@ const View: NextPage = () => {
 						</div>
 						<PotreeDetails size={currentSize} onSizeChange={setCurrentSize} shape={currentShape} onShapeChange={setCurrentShape}  />
 					</div>
-						
 				</div>
 			</main>
 		</>
