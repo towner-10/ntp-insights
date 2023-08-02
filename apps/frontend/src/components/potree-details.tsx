@@ -128,15 +128,17 @@ export function PotreeDetails(props: PotreeDetailsProps) {
 					</DetailsRow>
 				</div>
                 <DetailsRow label="Point cloud size"/>
-                <span className="pb-6">
+                <div className="flex items-center space-x-2">
 					<Slider
+						id="point-cloud-size-slider"
 						min={0}
 						max={5}
 						step={0.1}
 						value={props.size}
 						onValueChange={props.onSizeChange}
 					/>
-				</span>
+					<Label htmlFor="point-cloud-size-slider" className="font-normal text-sm">{props.size}</Label>
+				</div>
 			</CardContent>
 		</Card>
 	);
