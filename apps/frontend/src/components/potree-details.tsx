@@ -18,16 +18,14 @@ import { radToDeg } from 'three/src/math/MathUtils';
 
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { Label } from './ui/label';
 
 type PotreeDetailsProps = {
-	// index: number;
-	// onIndexChange: (value: number) => void;
-	// imageType: 'before' | 'after';
-	// className?: string;
-	// path: Path;
-	// sortedImages: (Image360 & {
-	// 	before: Image360;
-	// })[];
+	onShapeChange: (shape: 'circle' | 'square') => void;
+	onSizeChange: (size: number[]) => void;
+	shape: 'circle' | 'square';
+	size: number[];
 };
 
 function DetailsRow(
@@ -43,14 +41,14 @@ function DetailsRow(
 	);
 }
 
-export function PotreeDetails(props: PotreeDetailsProps) {
-	type RendererProperties = {
-        /* TODO: Make these properties have defaults */
-		shape?: string;
-        quality?: number;
-        size?: number;
-	};
+type RendererProperties = {
+	/* TODO: Make these properties have defaults */
+	shape?: string;
+	quality?: number;
+	size?: number;
+};
 
+export function PotreeDetails(props: PotreeDetailsProps) {
 	const {
 		register,
 		handleSubmit,
@@ -68,6 +66,11 @@ export function PotreeDetails(props: PotreeDetailsProps) {
 	// 		}) as SubmitHandler<RendererProperties>)(event);
 	// 	})();
 	// };
+
+	const test = () => {
+		console.log("test");
+	}
+
 
 	return (
 		// <Card className={cn('lg:col-span-2 lg:row-span-2', props.className)}>
@@ -105,17 +108,37 @@ export function PotreeDetails(props: PotreeDetailsProps) {
 				</div>
 				<div className="grid grid-cols-2">
 					{/* Here once lies the elevation details */}
-					<DetailsRow label="File size">
-						<p>
-							{/* {props.imageType === 'after'
-								? `${props.sortedImages?.[props.index]?.image_size / BigInt(1024)} kB`
-								: `${props.sortedImages?.[props.index]?.before.image_size / BigInt(1024)} kB`} */}
-                                Text
-						</p>
+					<DetailsRow label="Point shape">
+						<RadioGroup 
+							className="pt-2" 
+							defaultChecked 
+							value={props.shape}
+							defaultValue="square"
+							onValueChange={props.onShapeChange}
+						>
+							<div className="flex items-center space-x-2">
+								<RadioGroupItem value="square" id="square" />
+								<Label className="font-normal text-md" htmlFor="square">Square</Label>
+							</div>
+							<div className="flex items-center space-x-2 ">
+								<RadioGroupItem value="circle" id="circle" />
+								<Label className="font-normal text-md" htmlFor="circle">Circle</Label>
+							</div>
+						</RadioGroup>
 					</DetailsRow>
 				</div>
                 <DetailsRow label="Point cloud size"/>
-                <span className="pb-6"><Slider/></span>
+                <div className="flex items-center space-x-2">
+					<Slider
+						id="point-cloud-size-slider"
+						min={0}
+						max={5}
+						step={0.1}
+						value={props.size}
+						onValueChange={props.onSizeChange}
+					/>
+					<Label htmlFor="point-cloud-size-slider" className="font-normal text-sm">{props.size}</Label>
+				</div>
 			</CardContent>
 		</Card>
 	);
