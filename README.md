@@ -1,14 +1,14 @@
-<img width="800" src="./assets/images/NTP_Insights_GIF.gif">
+<img width="800" src="./assets/images/NTP_Insights_GIF.gif" />
 
 ## 🌪 A Rundown on NTP Insights
 
-**NTP Insights** is a web application platform developed by Western Engineering research interns to support the <a href="https://www.uwo.ca/ntp/">Northern Tornadoes Project</a>'s capacity in collecting, analyzing, and sharing important research data in a meaningful way.
+**NTP Insights** is a web application platform developed by Western Engineering research interns to support the <a href="https://www.uwo.ca/ntp/" />Northern Tornadoes Project</a>'s capacity in collecting, analyzing, and sharing important research data in a meaningful way.
 
 > ```01``` **Sign-in Process**
 
 Users can create an NTP Insights account using one of two methods: by entering their email address or by linking their Discord account. If using an email address, a verification email will be sent with a link to proceed. If using a Discord account, a pop-up will prompt the user to authorize the account.
 
-<img width="400" src="./assets/images/Signin.png">
+<img width="400" src="./assets/images/Signin.png" />
 
 > ```02``` **Account Customization**
 
@@ -24,7 +24,27 @@ The main dashboard provides quick access to the three NTP Insights software tool
 
 ## NTP Social
 
+NTP Social is a social media scrapping tool that utilized LLMs to scrape social media posts from Twitter, with the ability to add more sites. It will take these posts and grade them based on a classification model running on `co:here` that will determine the relevance of the post to the NTP. The user can then view the posts and their grades, and can then choose to contact that user if future information is needed.
+
 > ```01``` Social Dashboard
+
+<img width=600 src="./assets/images/social-dashboard.png" />
+
+The dashboard is where you can view all of the current and past searches. You can also create a new search from here. The table also displays if the current search is enabled. If it is enabled, it will run based on the frequency defined in the search (every 6 to 48 hours).
+
+> ```02``` Creating a New Search
+
+Creating a new search is easy with the built in preset values. You can also choose to create a custom search with your own values. The search will be saved and can be viewed in the dashboard.
+
+- **Search Name**: The name of the search. This will be displayed in the dashboard.
+- **Date Range**: The date range of the search. This will be the date range of the posts that are scraped and how long the scraper will run.
+- **Keywords**: The keywords that will be used to search for posts. The scraper will search for posts that contain these keywords.
+- **Negative Keywords**: The negative keywords that will be used to search for posts. The scraper will not search for posts that contain these keywords.
+- **Frequency**: The frequency of the search. This will determine how often the scraper will run.
+- **Max Results**: The maximum number of results that will be scraped. The scraper will stop once this number is reached.
+- **Location**: Using the map marker, location based keywords will be added to the search. The scraper will search for posts that contain these keywords.
+
+<img width=600 src="./assets/images/new-search.png">
 
 ## NTP 360
 
