@@ -167,7 +167,7 @@ const View: NextPage = () => {
 					
 					<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-6 lg:grid-rows-2">
 						<div
-							className="relative row-span-2 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[505px]"
+							className="relative row-span-3 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[627px]" // cursed but it works
 							ref={fullscreenRef}
 						>
 							<Canvas

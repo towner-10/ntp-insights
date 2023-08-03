@@ -8,15 +8,12 @@ import {
 	CardTitle,
 } from './ui/card';
 
-import { Input } from './ui/input';
+
 import { cn } from '@/lib/utils';
-import { Image360, Path } from 'database';
+import { Scan } from 'database';
 import { PropsWithChildren, type ReactNode } from 'react';
 import { type SubmitHandler, useForm } from 'react-hook-form';
-import { CornerDownLeft } from 'lucide-react';
-import { radToDeg } from 'three/src/math/MathUtils';
 
-import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
@@ -66,80 +63,95 @@ export function PotreeDetails(props: PotreeDetailsProps) {
 	// 		}) as SubmitHandler<RendererProperties>)(event);
 	// 	})();
 	// };
-
-	const test = () => {
-		console.log("test");
-	}
-
-
+	
 	return (
-		// <Card className={cn('lg:col-span-2 lg:row-span-2', props.className)}>
-        <Card className="lg:col-span-2 lg: row-span-2">
-			<CardHeader>
-				<CardTitle>Details</CardTitle>
-				<CardDescription>About the current LiDAR view</CardDescription>
-			</CardHeader>
-			<CardContent className="flex flex-col justify-around">
-				<div className="grid grid-cols-2">
-					<DetailsRow label="Event date">
-						<p>Text</p>
-					</DetailsRow>
-					<DetailsRow label="Capture date">
-						<p>
-							{/* {(() => {
-								try {
-									return format(
-										props.imageType === 'after'
-											? props.sortedImages?.[props.index].date_taken
-											: props.sortedImages?.[props.index].before.date_taken,
-										'MMMM d, yyyy'
-									);
-								} catch (err) {
-									return 'N/A';
-								}
-							})()} */}
-                            Text
-						</p>
-					</DetailsRow>
-                    
-				</div>
-				<div className="grid grid-cols-2">
-					{/* Here once lies the coordinates row */}
-				</div>
-				<div className="grid grid-cols-2">
-					{/* Here once lies the elevation details */}
-					<DetailsRow label="Point shape">
-						<RadioGroup 
-							className="pt-2" 
-							defaultChecked 
-							value={props.shape}
-							defaultValue="square"
-							onValueChange={props.onShapeChange}
-						>
-							<div className="flex items-center space-x-2">
-								<RadioGroupItem value="square" id="square" />
-								<Label className="font-normal text-md" htmlFor="square">Square</Label>
-							</div>
-							<div className="flex items-center space-x-2 ">
-								<RadioGroupItem value="circle" id="circle" />
-								<Label className="font-normal text-md" htmlFor="circle">Circle</Label>
-							</div>
-						</RadioGroup>
-					</DetailsRow>
-				</div>
-                <DetailsRow label="Point cloud size"/>
-                <div className="flex items-center space-x-2">
-					<Slider
-						id="point-cloud-size-slider"
-						min={0}
-						max={5}
-						step={0.1}
-						value={props.size}
-						onValueChange={props.onSizeChange}
-					/>
-					<Label htmlFor="point-cloud-size-slider" className="font-normal text-sm">{props.size}</Label>
-				</div>
-			</CardContent>
-		</Card>
+		<>
+			{/* LiDAR details card */}
+			<Card id="lidar-details-card" className="lg:col-span-2">
+				<CardHeader>
+					<CardTitle>Details</CardTitle>
+					<CardDescription>About the current LiDAR view</CardDescription>
+				</CardHeader>
+				<CardContent className="flex flex-col justify-around">
+					<div className="grid grid-cols-2">
+						<DetailsRow label="Event date">
+							<p>Text</p>
+						</DetailsRow>
+						<DetailsRow label="Event location">
+							<p>
+								{/* {(() => {
+									try {
+										return format(
+											props.imageType === 'after'
+												? props.sortedImages?.[props.index].date_taken
+												: props.sortedImages?.[props.index].before.date_taken,
+											'MMMM d, yyyy'
+										);
+									} catch (err) {
+										return 'N/A';
+									}
+								})()} */}
+								Text
+							</p>
+						</DetailsRow>
+					</div>
+					<div className="grid grid-cols-2">
+						<DetailsRow label="Capture time">
+							<p>Text</p>
+						</DetailsRow>
+						<DetailsRow label="Capture type">
+							<p>Text</p>
+						</DetailsRow>
+					</div>
+					<div className="grid grid-cols-2">
+						<DetailsRow label="Capture file size">
+							<p>Text</p>
+						</DetailsRow>
+					</div>
+				</CardContent>
+			</Card>
+			
+			{/* LiDAR Control Card */}
+			<Card id="lidar-controls-card" className="lg:col-span-2 lg: row-span-2">
+				<CardHeader>
+					<CardTitle>Controls</CardTitle>
+					<CardDescription>Change the current LiDAR view</CardDescription>
+				</CardHeader>
+				<CardContent className="flex flex-col justify-around">
+					<div className="grid grid-cols-2">
+						<DetailsRow label="Point shape">
+							<RadioGroup 
+								className="pt-2" 
+								defaultChecked 
+								value={props.shape}
+								defaultValue="square"
+								onValueChange={props.onShapeChange}
+							>
+								<div className="flex items-center space-x-2">
+									<RadioGroupItem value="square" id="square" />
+									<Label className="font-normal text-md" htmlFor="square">Square</Label>
+								</div>
+								<div className="flex items-center space-x-2 ">
+									<RadioGroupItem value="circle" id="circle" />
+									<Label className="font-normal text-md" htmlFor="circle">Circle</Label>
+								</div>
+							</RadioGroup>
+						</DetailsRow>
+					</div>
+					<DetailsRow label="Point cloud size"/>
+					<div className="flex items-center space-x-2">
+						<Slider
+							id="point-cloud-size-slider"
+							min={0}
+							max={5}
+							step={1}
+							value={props.size}
+							onValueChange={props.onSizeChange}
+						/>
+						<Label htmlFor="point-cloud-size-slider" className="font-normal text-sm text-align">{props.size}</Label>
+					</div>
+				</CardContent>
+			</Card>
+		</>
 	);
 }
