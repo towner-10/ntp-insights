@@ -251,7 +251,7 @@ export function LiDARControls() {
 						<h2 className='font-medium text-sm'>Left Hand</h2>
 						<ul>
 							<li className='text-sm'>
-								<code>Joystick</code> — Move around
+								<code>Joystick</code> — Move Around
 							</li>
 						</ul>
 					</div>
