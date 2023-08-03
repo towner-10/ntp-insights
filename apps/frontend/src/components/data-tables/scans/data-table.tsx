@@ -29,7 +29,7 @@ export function DataTable<TData, TValue>({
 	const [sorting, setSorting] = useState<SortingState>([
 		{
 			id: 'date_taken',
-			desc: false,
+			desc: true,
 		},
 	]);
 

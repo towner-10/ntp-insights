@@ -40,7 +40,7 @@ export const columns = (onRefresh: () => void) => {
 			},
 		},
 		{
-			accessorKey: 'date',
+			accessorKey: 'date_taken',
 			header: ({ column }) => {
 				return (
 					<a
