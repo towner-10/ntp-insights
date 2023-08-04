@@ -1,4 +1,4 @@
-<img width="800" src="./assets/images/NTP_Insights_GIF.gif" />
+![NTP Insights](./assets/images/NTP_Insights_GIF.gif)
 
 ## 🌪 A Rundown on NTP Insights
 
@@ -32,7 +32,7 @@ NTP Social is a social media scrapping tool that utilized LLMs to scrape social 
 
 > ```01``` Social Dashboard
 
-<img width=600 src="./assets/images/social-dashboard.png" />
+![Social Dashboard](./assets/images/social-dashboard.png)
 
 The dashboard is where you can view all of the current and past searches. You can also create a new search from here. The table also displays if the current search is enabled. If it is enabled, it will run based on the frequency defined in the search (every 6 to 48 hours).
 
@@ -48,7 +48,7 @@ Creating a new search is easy with the built in preset values. You can also choo
 - **Max Results**: The maximum number of results that will be scraped. The scraper will stop once this number is reached.
 - **Location**: Using the map marker, location based keywords will be added to the search. The scraper will search for posts that contain these keywords.
 
-<img width=600 src="./assets/images/new-search.png">
+![New Search](./assets/images/new-search.png)
 
 ## NTP 360
 
