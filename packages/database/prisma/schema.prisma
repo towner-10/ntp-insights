@@ -172,6 +172,7 @@ model Image360 {
 model Scan {
   id            String          @id @unique @default(cuid())
   name          String?
+  event_date    DateTime? 
   date_taken    DateTime?
   scan_location String
   scan_type     ScanType        @default(GROUND)

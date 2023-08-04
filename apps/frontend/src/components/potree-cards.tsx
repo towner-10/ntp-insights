@@ -1,5 +1,4 @@
 import format from 'date-fns/format';
-import { type FormEvent } from 'react';
 import {
 	Card,
 	CardContent,
@@ -10,15 +9,23 @@ import {
 
 
 import { cn } from '@/lib/utils';
-import { Scan } from 'database';
 import { PropsWithChildren, type ReactNode } from 'react';
-import { type SubmitHandler, useForm } from 'react-hook-form';
 
 import { Slider } from '@/components/ui/slider';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 
+// Props for potree details card
 type PotreeDetailsProps = {
+	event_date: number | Date;
+	date_taken: number | Date;
+	scan_location: string;
+	scan_size: bigint; // in bytes
+	scan_type: string;
+};
+
+// Props for potree controls card
+type PotreeControlsProps = {
 	onShapeChange: (shape: 'circle' | 'square') => void;
 	onSizeChange: (size: number[]) => void;
 	shape: 'circle' | 'square';
@@ -38,32 +45,7 @@ function DetailsRow(
 	);
 }
 
-type RendererProperties = {
-	/* TODO: Make these properties have defaults */
-	shape?: string;
-	quality?: number;
-	size?: number;
-};
-
 export function PotreeDetails(props: PotreeDetailsProps) {
-	const {
-		register,
-		handleSubmit,
-		control,
-		reset,
-		formState: { errors },
-	} = useForm<RendererProperties>();
-
-	// const onSubmit = (event: FormEvent<HTMLFormElement>) => {
-	// 	event.preventDefault();
-	// 	void (async () => {
-	// 		await handleSubmit(((data) => {
-	// 			props.onIndexChange(Number(data.pano) - 1);
-	// 			reset();
-	// 		}) as SubmitHandler<RendererProperties>)(event);
-	// 	})();
-	// };
-	
 	return (
 		<>
 			{/* LiDAR details card */}
@@ -75,42 +57,55 @@ export function PotreeDetails(props: PotreeDetailsProps) {
 				<CardContent className="flex flex-col justify-around">
 					<div className="grid grid-cols-2">
 						<DetailsRow label="Event date">
-							<p>Text</p>
-						</DetailsRow>
-						<DetailsRow label="Event location">
-							<p>
-								{/* {(() => {
+							{(() => {
 									try {
 										return format(
-											props.imageType === 'after'
-												? props.sortedImages?.[props.index].date_taken
-												: props.sortedImages?.[props.index].before.date_taken,
+											props.event_date,
 											'MMMM d, yyyy'
 										);
 									} catch (err) {
 										return 'N/A';
 									}
-								})()} */}
-								Text
-							</p>
+								})()}
+						</DetailsRow>
+						<DetailsRow label="Event location">
+							{props.scan_location}
 						</DetailsRow>
 					</div>
 					<div className="grid grid-cols-2">
-						<DetailsRow label="Capture time">
-							<p>Text</p>
+						<DetailsRow label="Capture date">
+							{(() => {
+									try {
+										return format(
+											props.date_taken,
+											'MMMM d, yyyy'
+										);
+									} catch (err) {
+										return 'N/A';
+									}
+								})()}
 						</DetailsRow>
 						<DetailsRow label="Capture type">
-							<p>Text</p>
+							{props.scan_type}
 						</DetailsRow>
 					</div>
 					<div className="grid grid-cols-2">
 						<DetailsRow label="Capture file size">
-							<p>Text</p>
+							<p>
+							{`${props.scan_size / BigInt(1048576)} MB`} {/* Conversion from bytes to megabytes */}
+							</p>
 						</DetailsRow>
 					</div>
 				</CardContent>
 			</Card>
-			
+		</>
+	)
+
+}
+
+export function PotreeControls(props: PotreeControlsProps) {
+	return (
+		<>
 			{/* LiDAR Control Card */}
 			<Card id="lidar-controls-card" className="lg:col-span-2 lg: row-span-2">
 				<CardHeader>
@@ -138,20 +133,21 @@ export function PotreeDetails(props: PotreeDetailsProps) {
 							</RadioGroup>
 						</DetailsRow>
 					</div>
-					<DetailsRow label="Point cloud size"/>
+					<DetailsRow label="Point size"/>
 					<div className="flex items-center space-x-2">
 						<Slider
-							id="point-cloud-size-slider"
+							id="point-size-slider"
 							min={0}
 							max={5}
 							step={1}
 							value={props.size}
 							onValueChange={props.onSizeChange}
 						/>
-						<Label htmlFor="point-cloud-size-slider" className="font-normal text-sm text-align">{props.size}</Label>
+						<Label htmlFor="point-size-slider" className="font-normal text-sm text-align">{props.size}</Label>
 					</div>
 				</CardContent>
 			</Card>
 		</>
-	);
+	)
+
 }

@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import { Canvas } from '@react-three/fiber';
-import { PotreeDetails } from '@/components/potree-details';
+import { PotreeDetails, PotreeControls } from '@/components/potree-cards';
 import Header from '@/components/header';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
@@ -181,7 +181,8 @@ const View: NextPage = () => {
 							{renderUI()}
 							{vr ? <VRButton /> : null}
 						</div>
-						<PotreeDetails size={currentSize} onSizeChange={setCurrentSize} shape={currentShape} onShapeChange={setCurrentShape}  />
+						<PotreeDetails event_date={scan.data?.event_date} date_taken={scan.data?.date_taken} scan_location={scan.data?.scan_location} scan_size={scan.data?.scan_size} scan_type={scan.data?.scan_type} />
+						<PotreeControls size={currentSize} onSizeChange={setCurrentSize} shape={currentShape} onShapeChange={setCurrentShape} />
 					</div>
 				</div>
 			</main>
