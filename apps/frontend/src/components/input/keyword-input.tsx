@@ -67,7 +67,7 @@ export function KeywordInput(props: KeywordInputProps) {
 				onKeyDown={(e) => {
 					const trimmedInput = input.trim();
 
-					if (e.key === ',') {
+					if (e.key === ',' || e.key === 'Enter') {
 						e.preventDefault();
 
 						if (trimmedInput.length && !value.includes(trimmedInput)) {
