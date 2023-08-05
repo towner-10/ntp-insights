@@ -57,10 +57,6 @@ export const pathsRouter = createTRPCRouter({
 				},
 			});
 
-			if (!path) {
-				throw new TRPCError({ code: 'NOT_FOUND', message: 'Path not found' });
-			}
-
 			return path;
 		}),
 	// TODO: Add pagination

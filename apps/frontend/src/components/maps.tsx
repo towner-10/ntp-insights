@@ -45,6 +45,13 @@ export type SearchViewBox = {
 	country_code: string;
 };
 
+export type View360Point = {
+	index: number;
+	localIndex: number;
+	lng: number;
+	lat: number;
+};
+
 interface DefaultProps {
 	className?: string;
 }
@@ -81,7 +88,7 @@ interface StaticMapProps extends DefaultProps {
 
 interface View360MapProps extends DefaultProps {
 	currentIndex: number;
-	points: mapboxgl.LngLat[];
+	points: View360Point[];
 	onIndexChange?: (index: number) => void;
 }
 
@@ -283,30 +290,38 @@ export function View360Map(props: View360MapProps) {
 
 	const markers = useMemo(
 		() =>
-			props.points
-				.filter((_, index) => {
-					if (index === 0) return true;
-					return index % 5 === 0;
-				})
-				.map((point, index) => (
-					<Marker
-						key={index}
-						longitude={point.lng}
-						latitude={point.lat}
-						onClick={() => {
-							props.onIndexChange(index * 5);
-						}}
-					>
-						<div className="bg-foreground rounded-full">
-							<div className="h-3 w-3" />
-						</div>
-					</Marker>
-				)),
+			props.points.map((point, index) => (
+				<Marker
+					key={index}
+					longitude={point.lng}
+					latitude={point.lat}
+					onClick={() => {
+						props.onIndexChange(point.index);
+
+						
+					}}
+				>
+					<div className="bg-foreground rounded-full">
+						<div className="h-3 w-3" />
+					</div>
+				</Marker>
+			)),
 		[props]
 	);
 
 	useEffect(() => {
-		setCurrentPosition(props.points[props.currentIndex]);
+		const point = props.points.find(
+			(point) => point.index === props.currentIndex
+		);
+
+		if (!point) return;
+
+		setCurrentPosition(
+			mapboxgl.LngLat.convert({
+				lng: point.lng,
+				lat: point.lat,
+			})
+		);
 	}, [props.currentIndex, props.points]);
 
 	// Fit bounds to the path on first render
@@ -409,11 +424,16 @@ export function SearchViewMap(props: SearchViewMapProps) {
 		<div className={props.className}>
 			<Map
 				initialViewState={{
-					bounds: props.boxes?.reduce((bounds, box) => {
-						bounds.extend(new mapboxgl.LngLat(box.geo.bbox[0], box.geo.bbox[1]));
-						bounds.extend(new mapboxgl.LngLat(box.geo.bbox[2], box.geo.bbox[3]));
-						return bounds;
-					}, new LngLatBounds()) || undefined,
+					bounds:
+						props.boxes?.reduce((bounds, box) => {
+							bounds.extend(
+								new mapboxgl.LngLat(box.geo.bbox[0], box.geo.bbox[1])
+							);
+							bounds.extend(
+								new mapboxgl.LngLat(box.geo.bbox[2], box.geo.bbox[3])
+							);
+							return bounds;
+						}, new LngLatBounds()) || undefined,
 					fitBoundsOptions: {
 						padding: 20,
 						maxZoom: 20,

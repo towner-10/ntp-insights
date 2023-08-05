@@ -6,12 +6,12 @@ import Header from '@/components/header';
 import { Toaster } from '@/components/ui/toaster';
 import { useSession } from 'next-auth/react';
 import { View360 } from '@/components/view-360';
-import { View360Map } from '@/components/maps';
+import { View360Map, View360Point } from '@/components/maps';
 import { LngLat } from 'mapbox-gl';
 import { useRouter } from 'next/router';
 import { api } from '@/utils/api';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { View360Details } from '@/components/view-360-details';
 import { VRControls } from '@/components/dialogs/info-dialogs';
 
@@ -39,28 +39,42 @@ const View: NextPage = () => {
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [currentImage, setCurrentImage] = useState<'before' | 'after'>('after');
 
-	const imagesSorted = path.data?.images
-		.filter((image) => {
-			return image.source === 'NTP';
-		})
-		.sort((a: Image360, b: Image360) => {
-			if (b.index === null && a.index !== null) return -1;
-			else if (a.index === null && b.index !== null) return 1;
-			else if (a.index === null && b.index === null) return 0;
-			else return (a.index || 0) - (b.index || 0);
-		});
-
 	// Set current index to a user defined start index
 	useEffect(() => {
 		if (start && Number(start) < imagesSorted?.length && Number(start) >= 0) {
 			setCurrentIndex(Number(start));
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [start]);
 
-	const points = imagesSorted?.map((image) => {
-		return new LngLat(image.lng, image.lat);
-	});
+	const imagesSorted = useMemo(() => {
+		if (!path.data) return [];
+
+		return path.data.images
+			.filter((image) => {
+				return image.source === 'NTP';
+			})
+			.sort((a: Image360, b: Image360) => {
+				if (b.index === null && a.index !== null) return -1;
+				else if (a.index === null && b.index !== null) return 1;
+				else if (a.index === null && b.index === null) return 0;
+				else return (a.index || 0) - (b.index || 0);
+			});
+	}, [path.data]);
+
+	// Only show every 5th image on the map
+	const mapPoints = imagesSorted
+		.filter((_, index) => {
+			return index % 5 === 0;
+		})
+		.map((image, index) => {
+			return {
+				index: image.index,
+				localIndex: index,
+				lng: image.lng,
+				lat: image.lat,
+			} as View360Point;
+		});
 
 	if (
 		path.isLoading ||
@@ -136,7 +150,10 @@ const View: NextPage = () => {
 							setCurrentImage={setCurrentImage}
 							onNext={() => {
 								if (imagesSorted && currentIndex + 1 < imagesSorted?.length) {
-									if (currentImage === 'before' && !imagesSorted[currentIndex + 1].before) {
+									if (
+										currentImage === 'before' &&
+										!imagesSorted[currentIndex + 1].before
+									) {
 										setCurrentImage('after');
 									}
 									setCurrentIndex(currentIndex + 1);
@@ -144,7 +161,10 @@ const View: NextPage = () => {
 							}}
 							onPrevious={() => {
 								if (imagesSorted && currentIndex - 1 >= 0) {
-									if (currentImage === 'before' && !imagesSorted[currentIndex - 1].before) {
+									if (
+										currentImage === 'before' &&
+										!imagesSorted[currentIndex - 1].before
+									) {
 										setCurrentImage('after');
 									}
 									setCurrentIndex(currentIndex - 1);
@@ -152,12 +172,18 @@ const View: NextPage = () => {
 							}}
 							onJumpNext={() => {
 								if (imagesSorted && currentIndex + 5 < imagesSorted?.length) {
-									if (currentImage === 'before' && !imagesSorted[currentIndex + 5].before) {
+									if (
+										currentImage === 'before' &&
+										!imagesSorted[currentIndex + 5].before
+									) {
 										setCurrentImage('after');
 									}
 									setCurrentIndex(currentIndex + 5);
 								} else {
-									if (currentImage === 'before' && !imagesSorted[imagesSorted?.length - 1].before) {
+									if (
+										currentImage === 'before' &&
+										!imagesSorted[imagesSorted?.length - 1].before
+									) {
 										setCurrentImage('after');
 									}
 									setCurrentIndex(imagesSorted?.length - 1);
@@ -165,7 +191,10 @@ const View: NextPage = () => {
 							}}
 							onJumpPrevious={() => {
 								if (imagesSorted && currentIndex - 5 >= 0) {
-									if (currentImage === 'before' && !imagesSorted[currentIndex - 5].before) {
+									if (
+										currentImage === 'before' &&
+										!imagesSorted[currentIndex - 5].before
+									) {
 										setCurrentImage('after');
 									}
 									setCurrentIndex(currentIndex - 5);
@@ -181,16 +210,16 @@ const View: NextPage = () => {
 						<View360Details
 							path={path.data}
 							index={currentIndex}
-							onIndexChange={(value) => setCurrentIndex(value)}
+							onIndexChange={setCurrentIndex}
 							imageType={currentImage}
 							sortedImages={imagesSorted || []}
 						/>
 						<div className="lg:col-span-full">
 							<View360Map
-								points={points || []}
+								points={mapPoints || []}
 								currentIndex={currentIndex}
 								className="h-[400px] w-full overflow-hidden rounded-md lg:h-96"
-								onIndexChange={(value) => setCurrentIndex(value)}
+								onIndexChange={setCurrentIndex}
 							/>
 						</div>
 					</div>
