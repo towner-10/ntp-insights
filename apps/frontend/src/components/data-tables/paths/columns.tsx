@@ -73,9 +73,10 @@ export const columns = (onRefresh: () => void) => {
 
 				const copyLink = () => {
 					if (typeof window !== 'undefined') {
-						const hostname = window.location.hostname;
+						const protocol = window.location.protocol;
+						const host = window.location.host;
 
-						return `${hostname}/360/${path.id}/view`;
+						return `${protocol}//${host}/360/${path.id}/view`;
 					}
 
 					return 'Not available';
@@ -83,9 +84,10 @@ export const columns = (onRefresh: () => void) => {
 
 				const copyFrame = () => {
 					if (typeof window !== 'undefined') {
-						const hostname = window.location.hostname;
+						const protocol = window.location.protocol;
+						const host = window.location.host;
 
-						return `<iframe src="${hostname}/360/${path.id}/frame" width="800" height="600" />`;
+						return `<iframe src="${protocol}//${host}/360/${path.id}/frame" width="800" height="600" />`;
 					}
 
 					return 'Not available';
