@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { type GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import Header from '@/components/header';
-import { DownloadButton } from '@/components/buttons/download-button';
+import { DownloadButton } from '@/components/buttons/search-download-button';
 import StatCard from '@/components/stat-card';
 import { SearchViewMapCard, SearchViewBox } from '@/components/maps';
 import ServerStatusBadge from '@/components/server-status-badge';
@@ -131,10 +131,7 @@ const ViewSearchPage = () => {
 				<div className="container flex flex-col items-center justify-center p-6">
 					<div className="flex w-full flex-row items-center justify-between">
 						<ServerStatusBadge />
-						<div className="flex flex-row items-center gap-4">
-							<Button variant="secondary">Edit</Button>
-							<DownloadButton />
-						</div>
+						<DownloadButton search={search.data} />
 					</div>
 					<div className="grid w-full grid-cols-1 gap-4 py-8 md:grid-cols-5">
 						<SearchGraph
@@ -211,9 +208,11 @@ const ViewSearchPage = () => {
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
-								<div className="flex flex-wrap gap-4 justify-evenly">
+								<div className="flex flex-wrap justify-evenly gap-4">
 									{topPosts.map((post, index) => {
-										return <PostPreview index={index} post={post} key={post.id} />;
+										return (
+											<PostPreview index={index} post={post} key={post.id} />
+										);
 									})}
 								</div>
 							</CardContent>
@@ -279,10 +278,6 @@ function LoadingView(props: { session: Session }) {
 				<div className="container flex flex-col items-center justify-center p-6">
 					<div className="flex w-full flex-row items-center justify-between">
 						<ServerStatusBadge />
-						<div className="flex flex-row items-center gap-4">
-							<Button variant="secondary">Edit</Button>
-							<DownloadButton />
-						</div>
 					</div>
 					<div className="grid w-full grid-cols-1 gap-4 py-8 md:grid-cols-5">
 						<Skeleton className="col-span-full row-span-2 min-h-[332px] lg:col-span-4" />
@@ -314,10 +309,6 @@ function NoResultsView(props: { session: Session; onRefresh: () => void }) {
 				<div className="container flex flex-col items-center justify-center p-6">
 					<div className="flex w-full flex-row items-center justify-between">
 						<ServerStatusBadge />
-						<div className="flex flex-row items-center gap-4">
-							<Button variant="secondary">Edit</Button>
-							<DownloadButton />
-						</div>
 					</div>
 					<div className="flex flex-col items-center justify-center gap-4">
 						<h2 className="text-xl">Search not run yet...</h2>

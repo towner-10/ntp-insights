@@ -256,8 +256,7 @@ export const searchRouter = createTRPCRouter({
 				if (location.stateCode) {
 					response.push(`#${location.stateCode}Storm`);
 					response.push(`#${location.stateCode}WX`);
-				}
-				else if (stateCodes[location?.state || 'None']) {
+				} else if (stateCodes[location?.state || 'None']) {
 					response.push(`#${stateCodes[location.state]}Storm`);
 					response.push(`#${stateCodes[location.state]}WX`);
 				}
@@ -266,5 +265,107 @@ export const searchRouter = createTRPCRouter({
 			}
 
 			return [];
+		}),
+	download: ntpProtectedProcedure
+		.input(
+			z.object({
+				id: z.string(),
+				format: z.enum(['csv', 'json']),
+				start_date: z.date(),
+				end_date: z.date(),
+			})
+		)
+		.mutation(async ({ input }) => {
+			// UTF-8 content cleaner
+			const clean = (str: string) => {
+				return str
+					.replace('\n', ' ')
+					.replace(/ +/g, ' ')
+					.replace(/https?:\/\/.*[\r\n]*/g, '')
+					.replace(/[^\x00-\x7F]+/g, '')
+					.replace(/["]+/g, '')
+					.replace(/[^\x00-\x7F]+/g, '')
+					.replace(/\?{2,}/g, '?')
+					.trim();
+			};
+
+			try {
+				const response = await prisma.search.findUnique({
+					where: {
+						id: input.id,
+					},
+					include: {
+						results: {
+							where: {
+								created_at: {
+									gte: input.start_date,
+									lte: input.end_date,
+								},
+							},
+							include: {
+								posts: {
+									where: {
+										created_at: {
+											gte: input.start_date,
+											lte: input.end_date,
+										},
+									},
+								},
+							},
+						},
+					},
+				});
+
+				if (!response) return null;
+
+				if (input.format === 'json') {
+					// Return list of posts
+					return response.results
+						.filter((result) => result.posts.length > 0)
+						.map((result) => {
+							return result.posts.map((post) => {
+								return {
+									...post,
+									content: clean(post.content),
+								};
+							});
+						});
+				} else if (input.format === 'csv') {
+					// Create CSV header
+					const header =
+						'id,score,category,relevant,irrelevant,source_type,source_id,url,content,found_at,updated_at,created_at,author,images,videos,likes,shares,comments,flagged,search_result_id\n';
+
+					// Create CSV body
+					const body = response.results
+						.filter((result) => result.posts.length > 0)
+						.map((result) => {
+							return result.posts
+								.map((post) => {
+									return `${post.id},${post.score || 'N/A'},${post.category},${
+										post.classifications['RELEVANT']['confidence']
+									},${post.classifications['IRRELEVANT']['confidence']},${
+										post.source_type
+									},${post.source_id},${post.url},"${clean(post.content)}",${
+										post.found_at
+									},${post.updated_at},${post.created_at},${
+										post.author
+									},"${post.images.join(',')}","${post.videos.join(',')}",${
+										post.likes
+									},${post.shares},${post.comments},${
+										post.flagged
+									},${post.search_result_id.trimEnd()}`;
+								})
+								.join('\n');
+						})
+						.join('\n');
+
+					// Return CSV
+					return header + body;
+				}
+			} catch (error) {
+				console.log(error);
+			}
+
+			return null;
 		}),
 });
