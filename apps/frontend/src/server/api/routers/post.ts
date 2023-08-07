@@ -1,23 +1,21 @@
-import {
-	createTRPCRouter,
-	protectedProcedure,
-} from '@/server/api/trpc';
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 import { prisma } from '@/server/db';
 import { z } from 'zod';
 
 export const postRouter = createTRPCRouter({
-	setFlagged: protectedProcedure
-		.input(z.object({ id: z.string(), flagged: z.boolean() }))
+	setFlags: protectedProcedure
+		.input(z.object({ ids: z.string().array(), flag: z.boolean() }))
 		.mutation(async ({ input }) => {
-			const post = await prisma.post.update({
+			const posts = await prisma.post.updateMany({
 				where: {
-					id: input.id,
+					id: {
+						in: input.ids,
+					},
 				},
 				data: {
-					flagged: input.flagged,
+					flagged: input.flag,
 				},
 			});
-
-			return post;
+			return posts.count;
 		}),
 });

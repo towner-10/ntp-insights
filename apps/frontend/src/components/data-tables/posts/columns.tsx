@@ -1,11 +1,31 @@
-import { PostFlagged } from '@/components/buttons/post-flagged';
 import { PostDialog } from '@/components/dialogs/post-dialog';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { Post } from 'database';
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown, LucideFlag, LucideFlagOff } from 'lucide-react';
 
 export const columns: ColumnDef<Post>[] = [
+	{
+		id: 'select',
+		header: ({ table }) => (
+			<Checkbox
+				checked={table.getIsAllPageRowsSelected()}
+				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+				aria-label="Select all"
+			/>
+		),
+		cell: ({ row }) => (
+			<Checkbox
+				checked={row.getIsSelected()}
+				onCheckedChange={(value) => row.toggleSelected(!!value)}
+				aria-label="Select row"
+			/>
+		),
+		enableSorting: false,
+		enableHiding: false,
+	},
 	{
 		id: 'content',
 		header: 'Content',
@@ -83,7 +103,19 @@ export const columns: ColumnDef<Post>[] = [
 		id: 'flag',
 		header: 'Flagged',
 		cell({ row }) {
-			return <PostFlagged post={row.original} />;
+			return (
+				<Badge variant={row.original.flagged ? 'default' : 'secondary'}>
+					{row.original.flagged ? (
+						<span className="m-1 flex flex-row items-center gap-4">
+							<LucideFlag size={16} /> Flagged
+						</span>
+					) : (
+						<span className="m-1 flex flex-row items-center gap-4">
+							<LucideFlagOff size={16} /> Not flagged
+						</span>
+					)}
+				</Badge>
+			);
 		},
 	},
 	{

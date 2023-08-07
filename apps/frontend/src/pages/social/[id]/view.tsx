@@ -40,6 +40,7 @@ const ViewSearchPage = () => {
 	} = router.query;
 
 	const search = api.searches.get.useQuery({ id: id || '' });
+	const setFlags = api.posts.setFlags.useMutation();
 	const searchResults = api.searchResults.getAllForSearch.useQuery({
 		id: id || '',
 	});
@@ -227,6 +228,27 @@ const ViewSearchPage = () => {
 							<CardContent>
 								<DataTable
 									columns={columns}
+									onFlag={(indices, flag) => {
+										const ids = searchResults.data
+											.map((result) => result.posts)
+											.flat()
+											.filter((_, index) => {
+												return indices.includes(index);
+											})
+											.map((post) => post.id);
+
+										setFlags.mutate(
+											{
+												ids,
+												flag,
+											},
+											{
+												onSuccess: (data) => {
+													searchResults.refetch();
+												},
+											}
+										);
+									}}
 									data={searchResults.data.map((result) => result.posts).flat()}
 								/>
 							</CardContent>

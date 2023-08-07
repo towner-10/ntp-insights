@@ -7,7 +7,6 @@ import {
 	SortingState,
 	getSortedRowModel,
 } from '@tanstack/react-table';
-
 import {
 	Table,
 	TableBody,
@@ -19,18 +18,28 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { LucideFlag, LucideFlagOff } from 'lucide-react';
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
+	onFlag: (indices: number[], flag: boolean) => void;
 	className?: string;
 }
 
 export function DataTable<TData, TValue>({
 	columns,
 	data,
+	onFlag,
 	className,
 }: DataTableProps<TData, TValue>) {
+	const [rowSelection, setRowSelection] = useState({});
 	const [sorting, setSorting] = useState<SortingState>([
 		{
 			id: 'classifications',
@@ -44,9 +53,11 @@ export function DataTable<TData, TValue>({
 		getPaginationRowModel: getPaginationRowModel(),
 		onSortingChange: setSorting,
 		getSortedRowModel: getSortedRowModel(),
+		onRowSelectionChange: setRowSelection,
 		state: {
 			sorting,
-		}
+			rowSelection,
+		},
 	});
 
 	return (
@@ -102,6 +113,54 @@ export function DataTable<TData, TValue>({
 				</Table>
 			</div>
 			<div className="flex items-center justify-end space-x-2 py-4">
+				<div className="flex flex-grow items-center justify-start">
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button
+								variant='outline'
+								size='sm'
+								disabled={!table.getFilteredSelectedRowModel().rows.length}
+							>
+								Edit ({table.getFilteredSelectedRowModel().rows.length}{' '}
+								posts)
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent>
+							<DropdownMenuItem
+								onClick={() => {
+									onFlag(
+										table
+											.getFilteredSelectedRowModel()
+											.rows.map((row) => row.index),
+										true
+									);
+
+									table.getFilteredSelectedRowModel().rows.forEach((row) => {
+										row.toggleSelected(false);
+									});
+								}}
+							>
+								<LucideFlag className="mr-2 h-4 w-4" /> Flag
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() => {
+									onFlag(
+										table
+											.getFilteredSelectedRowModel()
+											.rows.map((row) => row.index),
+										false
+									);
+
+									table.getFilteredSelectedRowModel().rows.forEach((row) => {
+										row.toggleSelected(false);
+									});
+								}}
+							>
+								<LucideFlagOff className="mr-2 h-4 w-4" /> Unflag
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
 				<p className="text-muted-foreground mx-4">
 					Page{' '}
 					<strong>
