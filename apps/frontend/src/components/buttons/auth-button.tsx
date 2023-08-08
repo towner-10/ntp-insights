@@ -14,6 +14,7 @@ import {
 	LucideHome,
 	LucideLogOut,
 	LucideRotate3d,
+	LucideFileText,
 	LucideSettings,
 	LucideShare2,
 	LucideUser,
@@ -112,6 +113,14 @@ export default function AuthButton(props: Props) {
 					>
 						<LucideHome size={18} />
 						<span className="pl-2">Home</span>
+					</DropdownMenuItem>
+					<DropdownMenuItem
+						onClick={() => {
+							void window.open('https://github.com/towner-10/ntp-insights/blob/main/README.md');
+						}}
+					>
+						<LucideFileText size={18} />
+						<span className="pl-2">Documentation 🡥</span>
 					</DropdownMenuItem>
 						<DropdownMenuItem
 							onClick={() => {
