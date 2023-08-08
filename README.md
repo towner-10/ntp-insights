@@ -122,4 +122,7 @@ Such controls are further detailed in the graphic below:
 
 ![LiDAR Controls](./assets/images/lidar-controls.png)
 
-> ```04``` Sharing Scan Uploads (To be written)
+> ```04``` Sharing Scan Uploads
+
+Just like with the 360 dashboard, users can copy a shareable public link that leads directly to its associated LiDAR scan entry. An inline frame of the pointcloud view can also easily be embedded onto other webpages.
+ 
