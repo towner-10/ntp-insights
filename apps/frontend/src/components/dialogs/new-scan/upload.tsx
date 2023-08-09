@@ -103,50 +103,90 @@ export const UploadDialogContent = (props: DialogContentProps) => {
 
 				const json = await result.json();
 
-				const interval = setInterval(() => {
-					(async () => {
-						const status = await fetch(
-							`${env.NEXT_PUBLIC_BACKEND_URL}/api/upload/lidar/status/${json['scan_id']}`
-						).then((res) => res.json());
+				let status = await fetch(
+					`${env.NEXT_PUBLIC_BACKEND_URL}/api/upload/lidar/status/${json['scan_id']}`
+				).then((res) => res.json());
 
-						console.log(status);
+				if (!status) {
+					toaster.toast({
+						title: 'Upload failed',
+						variant: 'destructive',
+						description: 'Cannot get upload status, try again later.',
+						duration: 5000,
+					});
+					setProcessing(false);
 
-						if (status['upload_status'] === 'FAILED') {
-							toaster.toast({
-								title: 'Upload failed',
-								variant: 'destructive',
-								description: 'Upload has failed, try again later.',
-								duration: 5000,
-							});
-							setProcessing(false);
+					setFile(null);
+					reset();
 
-							setFile(null);
-							reset();
+					props.onNext?.({
+						scan_id: json['scan_id'] as string,
+					});
 
-							clearInterval(interval);
+					return;
+				}
 
-							props.onNext?.({
-								scan_id: json['scan_id'] as string,
-							});
-						} else if (status['upload_status'] === 'COMPLETED') {
-							toaster.toast({
-								title: 'Upload successful',
-								description: 'Your file has been processed.',
-								duration: 5000,
-							});
-							setProcessing(false);
+				while (status['upload_status'] === 'PROCESSING') {
+					status = await fetch(
+						`${env.NEXT_PUBLIC_BACKEND_URL}/api/upload/lidar/status/${json['scan_id']}`
+					).then((res) => res.json());
 
-							setFile(null);
-							reset();
+					if (!status) {
+						toaster.toast({
+							title: 'Upload failed',
+							variant: 'destructive',
+							description: 'Cannot get upload status, try again later.',
+							duration: 5000,
+						});
+						setProcessing(false);
 
-							clearInterval(interval);
+						setFile(null);
+						reset();
 
-							props.onNext?.({
-								scan_id: json['scan_id'] as string,
-							});
-						}
-					})();
-				}, 2000);
+						props.onNext?.({
+							scan_id: json['scan_id'] as string,
+						});
+
+						return;
+					}
+
+					if (status['upload_status'] === 'FAILED') {
+						toaster.toast({
+							title: 'Upload failed',
+							variant: 'destructive',
+							description: 'Upload has failed, try again later.',
+							duration: 5000,
+						});
+						setProcessing(false);
+
+						setFile(null);
+						reset();
+
+						props.onNext?.({
+							scan_id: json['scan_id'] as string,
+						});
+
+						break;
+					} else if (status['upload_status'] === 'COMPLETED') {
+						toaster.toast({
+							title: 'Upload successful',
+							description: 'Your file has been processed.',
+							duration: 5000,
+						});
+						setProcessing(false);
+
+						setFile(null);
+						reset();
+
+						props.onNext?.({
+							scan_id: json['scan_id'] as string,
+						});
+
+						break;
+					} else {
+						await new Promise((resolve) => setTimeout(resolve, 2000));
+					}
+				}
 			}) as SubmitHandler<Inputs>)(event);
 		})();
 	};
