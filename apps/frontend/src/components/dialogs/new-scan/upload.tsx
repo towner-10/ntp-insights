@@ -107,47 +107,54 @@ export const UploadDialogContent = (props: DialogContentProps) => {
 					`${env.NEXT_PUBLIC_BACKEND_URL}/api/upload/lidar/${json['scan_id']}`
 				).then((res) => res.json());
 
-				while (status['upload_status'] === 'PROCESSING') {
-					if (status['upload_status'] === 'FAILED') {
-						toaster.toast({
-							title: 'Upload failed',
-							variant: 'destructive',
-							description: 'Upload has failed, try again later.',
-							duration: 5000,
-						});
-						setProcessing(false);
+				while (status['upload_status'] === 'PROCESSING' || !status) {
+					await new Promise((resolve) => setTimeout(resolve, 2000));
 
-						setFile(null);
-						reset();
+					status = await fetch(
+						`${env.NEXT_PUBLIC_BACKEND_URL}/api/upload/lidar/${json['scan_id']}`
+					).then((res) => res.json());
+				}
 
-						props.onNext?.({
-							scan_id: json['scan_id'] as string,
-						});
+				if (status['upload_status'] === 'FAILED') {
+					toaster.toast({
+						title: 'Upload failed',
+						variant: 'destructive',
+						description: 'Upload has failed, try again later.',
+						duration: 5000,
+					});
+					setProcessing(false);
 
-						break;
-					} else if (status['upload_status'] === 'COMPLETED') {
-						toaster.toast({
-							title: 'Upload successful',
-							description: 'Your file has been processed.',
-							duration: 5000,
-						});
-						setProcessing(false);
+					setFile(null);
+					reset();
 
-						setFile(null);
-						reset();
+					props.onCancel?.();
+				} else if (status['upload_status'] === 'COMPLETED') {
+					toaster.toast({
+						title: 'Upload successful',
+						description: 'Your file has been processed.',
+						duration: 5000,
+					});
+					setProcessing(false);
 
-						props.onNext?.({
-							scan_id: json['scan_id'] as string,
-						});
+					setFile(null);
+					reset();
 
-						break;
-					} else {
-						await new Promise((resolve) => setTimeout(resolve, 2000));
+					props.onNext?.({
+						scan_id: json['scan_id'] as string,
+					});
+				} else {
+					toaster.toast({
+						title: 'Upload failed',
+						variant: 'destructive',
+						description: 'Upload has failed, try again later.',
+						duration: 5000,
+					});
+					setProcessing(false);
 
-						status = await fetch(
-							`${env.NEXT_PUBLIC_BACKEND_URL}/api/upload/lidar/${json['scan_id']}`
-						).then((res) => res.json());
-					}
+					setFile(null);
+					reset();
+
+					props.onCancel?.();
 				}
 			}) as SubmitHandler<Inputs>)(event);
 		})();
