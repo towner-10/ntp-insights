@@ -67,7 +67,12 @@ export const handlePointCloudUpload = async ({
 
 		// Add to queue
 		const worker = new Worker(
-			path.resolve(__dirname, './potree_converter_worker.ts'),
+			path.resolve(
+				__dirname,
+				process.env.NODE_ENV === 'production'
+					? './potree_converter_worker.js'
+					: './potree_converter_worker.ts'
+			),
 			{
 				workerData: {
 					input: file_path,
