@@ -50,8 +50,8 @@ export const handleRequest = async (
 				res.writeHead(404);
 				res.end();
 			}
-		} else if (req.url?.startsWith('/api/upload/lidar/status')) {
-			logger.debug('GET /api/lidar/status');
+		} else if (req.url?.startsWith('/api/upload/lidar/status/')) {
+			logger.debug('GET /api/lidar/status/');
 
 			const scan_id = req.url.split('/').pop();
 

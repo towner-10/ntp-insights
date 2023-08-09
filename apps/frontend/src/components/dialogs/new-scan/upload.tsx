@@ -103,21 +103,26 @@ export const UploadDialogContent = (props: DialogContentProps) => {
 
 				const json = await result.json();
 
+				const MAX_RETRIES = 10;
+				let retries = 0;
+
 				const uploadStatus = async () => {
 					try {
+						if (retries++ > MAX_RETRIES) return null;
+
 						return await fetch(
-							`${env.NEXT_PUBLIC_BACKEND_URL}/api/upload/lidar/${json['scan_id']}`
+							`${env.NEXT_PUBLIC_BACKEND_URL}/api/upload/lidar/status/${json['scan_id']}`
 						).then((res) => res.json());
 					} catch (err) {
 						return null;
 					}
 				};
 
-				let status = uploadStatus();
+				let status = await uploadStatus();
 
-				while (status['upload_status'] === 'PROCESSING' || !status) {
+				while (!status || status['upload_status'] === 'PROCESSING' || retries < MAX_RETRIES) {
 					await new Promise((resolve) => setTimeout(resolve, 2000));
-					status = uploadStatus();
+					status = await uploadStatus();
 				}
 
 				if (status['upload_status'] === 'COMPLETED') {
