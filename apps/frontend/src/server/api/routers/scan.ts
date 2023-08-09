@@ -118,6 +118,7 @@ export const scansRouter = createTRPCRouter({
 				id: z.string(),
 				data: z.object({
 					name: z.string(),
+					event_date: z.date(),
 					date_taken: z.date(),
 					scan_type: z.enum(['GROUND', 'AERIAL']),
 				}),
@@ -130,6 +131,7 @@ export const scansRouter = createTRPCRouter({
 				},
 				data: {
 					name: input.data.name,
+					event_date: input.data.event_date,
 					date_taken: input.data.date_taken,
 					scan_type: input.data.scan_type,
 					updated_by: {

@@ -285,6 +285,17 @@ export const setScanStatus = async ({
 	});
 };
 
+export const getScanStatus = async (scan_id: string) => {
+	return await prisma.scan.findUnique({
+		where: {
+			id: scan_id,
+		},
+		select: {
+			upload_status: true,
+		},
+	});
+};
+
 export const updateScanLocation = async ({
 	scan_id,
 	location,

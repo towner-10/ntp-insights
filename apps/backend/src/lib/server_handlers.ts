@@ -3,7 +3,12 @@ import formidable from 'formidable';
 import { promises as fs } from 'fs';
 import { logger } from '../utils/logger';
 import { ImageResult } from 'types';
-import { getPathUploadData, isScanFolderNameUnique, userExists } from '../db';
+import {
+	getPathUploadData,
+	getScanStatus,
+	isScanFolderNameUnique,
+	userExists,
+} from '../db';
 import { handlePointCloudUpload } from './potree_converter';
 
 const IMAGE_DIRECTORY = './images';
@@ -45,6 +50,26 @@ export const handleRequest = async (
 				res.writeHead(404);
 				res.end();
 			}
+		} else if (req.url?.startsWith('/api/upload/lidar/status')) {
+			logger.debug('GET /api/lidar/status');
+
+			const scan_id = req.url.split('/').pop();
+
+			// Check if the scan exists
+			if (!scan_id) {
+				logger.error('Missing scan_id');
+				res.writeHead(400, {
+					'Content-Type': 'text/plain',
+				});
+				res.end('Missing scan_id');
+				return;
+			}
+
+			res.writeHead(200, {
+				'Content-Type': 'application/json',
+			});
+
+			res.end(JSON.stringify(await getScanStatus(scan_id as string)));
 		} else {
 			res.writeHead(404);
 			res.end();
@@ -152,7 +177,7 @@ export const handleRequest = async (
 						return;
 					}
 
-					if (!await userExists(fields.user_id as string)) {
+					if (!(await userExists(fields.user_id as string))) {
 						logger.error('Invalid user_id');
 						res.writeHead(400, {
 							'Content-Type': 'text/plain',
@@ -162,7 +187,11 @@ export const handleRequest = async (
 					}
 
 					if (fields.folder_name) {
-						if (!await isScanFolderNameUnique(fields.folder_name as string)) {
+						if (
+							!(await isScanFolderNameUnique(
+								fields.folder_name as string
+							))
+						) {
 							logger.error('Folder name already exists');
 							res.writeHead(400, {
 								'Content-Type': 'text/plain',
@@ -172,7 +201,11 @@ export const handleRequest = async (
 						}
 
 						// Run REGEX to make sure the folder name is valid
-						if (!/^[a-zA-Z][a-zA-Z0-9-_]+$/g.test(fields.folder_name as string)) {
+						if (
+							!/^[a-zA-Z][a-zA-Z0-9-_]+$/g.test(
+								fields.folder_name as string
+							)
+						) {
 							logger.error('Invalid folder name');
 							res.writeHead(400, {
 								'Content-Type': 'text/plain',

@@ -24,6 +24,7 @@ import { api } from '@/utils/api';
 
 type Inputs = {
 	name: string;
+	event_date: Date;
 	date_taken: Date;
 	scan_type: ScanType;
 };
@@ -52,6 +53,7 @@ export const ConfigureDialogContent = (props: DialogContentProps) => {
 						id: props.formState.scan_id,
 						data: {
 							name: data.name,
+							event_date: data.event_date,
 							date_taken: data.date_taken,
 							scan_type: data.scan_type,
 						},
@@ -136,6 +138,36 @@ export const ConfigureDialogContent = (props: DialogContentProps) => {
 					)}
 				</div>
 				<div className="flex w-1/2 flex-col">
+					<Label htmlFor="event_date" className="pb-2">
+						Event Date
+					</Label>
+					<Controller
+						name="event_date"
+						control={control}
+						rules={{
+							required: true,
+						}}
+						render={({ field: { value, onChange } }) => (
+							<DatePicker
+								id="event_date"
+								className="w-full"
+								value={value}
+								onChange={onChange}
+							/>
+						)}
+					/>
+					{errors.date_taken && (
+						<p className="pt-1 text-xs text-red-500">Event date is required.</p>
+					)}
+					{!errors.date_taken && (
+						<p className="text-muted-foreground pt-1 text-xs">
+							Enter a date for when this event occurred.
+						</p>
+					)}
+				</div>
+				
+			</div>
+			<div className="flex flex-col">
 					<Label htmlFor="scan_type" className="pb-2">
 						Scan Type
 					</Label>
@@ -166,7 +198,6 @@ export const ConfigureDialogContent = (props: DialogContentProps) => {
 						</p>
 					)}
 				</div>
-			</div>
 			<AlertDialogFooter className="flex-col items-center pt-2 sm:space-y-2 md:flex-row md:justify-between">
 				<DialogContentHeader
 					index={2}

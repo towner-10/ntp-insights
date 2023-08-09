@@ -96,22 +96,57 @@ export const UploadDialogContent = (props: DialogContentProps) => {
 				}
 
 				toaster.toast({
-					title: 'Upload successful',
-					description: 'Your file has been uploaded successfully.',
+					title: 'Upload created',
+					description: 'Your file is now being processed.',
 					duration: 5000,
 				});
 
-				setProcessing(false);
-
-				setFile(null);
-				reset();
-
 				const json = await result.json();
-				console.log(json);
 
-				props.onNext?.({
-					scan_id: json['scan_id'] as string,
-				});
+				const interval = setInterval(() => {
+					(async () => {
+						const status = await fetch(
+							`${env.NEXT_PUBLIC_BACKEND_URL}/api/upload/lidar/status/${json['scan_id']}`
+						).then((res) => res.json());
+
+						console.log(status);
+
+						if (status['upload_status'] === 'FAILED') {
+							toaster.toast({
+								title: 'Upload failed',
+								variant: 'destructive',
+								description: 'Upload has failed, try again later.',
+								duration: 5000,
+							});
+							setProcessing(false);
+
+							setFile(null);
+							reset();
+
+							clearInterval(interval);
+
+							props.onNext?.({
+								scan_id: json['scan_id'] as string,
+							});
+						} else if (status['upload_status'] === 'COMPLETED') {
+							toaster.toast({
+								title: 'Upload successful',
+								description: 'Your file has been processed.',
+								duration: 5000,
+							});
+							setProcessing(false);
+
+							setFile(null);
+							reset();
+
+							clearInterval(interval);
+
+							props.onNext?.({
+								scan_id: json['scan_id'] as string,
+							});
+						}
+					})();
+				}, 2000);
 			}) as SubmitHandler<Inputs>)(event);
 		})();
 	};
