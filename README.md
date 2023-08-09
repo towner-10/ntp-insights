@@ -90,6 +90,10 @@ Alongside the 360 view is a ```Details``` pane that offers useful information ab
 
 From the 360 dashboard, users can copy a shareable public link that leads directly to its associated event path upload. An inline frame of the 360 view can also easily be embedded onto other webpages.
 
+> ```05``` Additional Resources
+
+[Click here](docs/CAMERA.md) to learn more about using the ```iSTAR Pulsar camera``` and ```Street View Download 360```.
+
 ##  NTP LiDAR
 
 Another way to capture visual data from a storm survey is in the form of LiDAR pointclouds. In conjunction with images from ground/aerial photography, LiDAR data can be used to identify failure modes of natural and man-made structures. 
