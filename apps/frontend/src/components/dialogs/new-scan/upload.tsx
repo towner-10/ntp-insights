@@ -115,20 +115,7 @@ export const UploadDialogContent = (props: DialogContentProps) => {
 					).then((res) => res.json());
 				}
 
-				if (status['upload_status'] === 'FAILED') {
-					toaster.toast({
-						title: 'Upload failed',
-						variant: 'destructive',
-						description: 'Upload has failed, try again later.',
-						duration: 5000,
-					});
-					setProcessing(false);
-
-					setFile(null);
-					reset();
-
-					props.onCancel?.();
-				} else if (status['upload_status'] === 'COMPLETED') {
+				if (status['upload_status'] === 'COMPLETED') {
 					toaster.toast({
 						title: 'Upload successful',
 						description: 'Your file has been processed.',
