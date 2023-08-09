@@ -97,8 +97,9 @@ export function ScanInfo() {
 					<DialogTitle>Creating New LiDAR Scans</DialogTitle>
 					<DialogDescription>Additional information on uploading LiDAR scans</DialogDescription>
 				</DialogHeader>
-				<h2 className="font-medium">TODO</h2>
-				<div className="text-sm">Body text</div>
+				<h2 className="font-medium">Uploading the <code>.laz</code> or <code>.las</code> file</h2>
+				<div className="text-sm">For each LiDAR scan, the user must enter in the name of the scan, the scan type (ground vs. aerial), and the date the scan was taken on.</div>
+				<div className="text-sm">After the pointcloud is finished uploading, NTP LiDAR will automatically convert it to a binary <code>.bin</code> format for Potree. NTP LiDAR uses metadata from the pointcloud and manually-entered information to display extra details in the side pane.</div>
 			</DialogContent>
 			<DialogTrigger>
 				<LucideInfo size={16} />
