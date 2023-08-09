@@ -70,7 +70,7 @@ export const handlePointCloudUpload = async ({
 			path.resolve(
 				__dirname,
 				process.env.NODE_ENV === 'production'
-					? './potree_converter_worker.js'
+					? './lib/potree_converter_worker.js'
 					: './potree_converter_worker.ts'
 			),
 			{
