@@ -48,7 +48,21 @@ Creating a new search is easy with the built in preset values. You can also choo
 - **Max Results**: The maximum number of results that will be scraped. The scraper will stop once this number is reached.
 - **Location**: Using the map marker, location based keywords will be added to the search. The scraper will search for posts that contain these keywords.
 
-![New Search](./assets/images/new-search.png)
+<img width="400" src="./assets/images/new-search.png" alt="New Search" />
+
+> ```03``` Viewing a Search
+
+The search page is where you can view the posts that were scraped from the search. You can also view the search details and where posts are being found. The table of posts is where you will be able to view the posts and their scores. You can also view them on their respective sites.
+
+<img width="400" src="./assets/images/view-search.png" alt="View Search" />
+
+> ```04``` Downloading Posts
+
+You can download the posts from the search as a CSV or JSON file. This will download all of the posts that were scraped from the search given the time frame you select. Using the flag feature is helpful so that you can create code to either exclude or invert the categorization of the posts.
+
+By downloading the posts, you can continue to train the ML model for the app or create validation sets for the model as well.
+
+<img width="400" src="./assets/images/download-posts.png" alt="Download Posts" />
 
 ## NTP 360
 
@@ -94,7 +108,7 @@ From the 360 dashboard, users can copy a shareable public link that leads direct
 
 [Click here](docs/CAMERA.md) to learn more about using the ```iSTAR Pulsar camera``` and ```Street View Download 360```.
 
-##  NTP LiDAR
+## NTP LiDAR
 
 Another way to capture visual data from a storm survey is in the form of LiDAR pointclouds. In conjunction with images from ground/aerial photography, LiDAR data can be used to identify failure modes of natural and man-made structures. 
 
@@ -129,4 +143,3 @@ Such controls are further detailed in the graphic below:
 > ```04``` Sharing Scan Uploads
 
 Just like with the 360 dashboard, users can copy a shareable public link that leads directly to its associated LiDAR scan entry. An inline frame of the pointcloud view can also easily be embedded onto other webpages.
- 
