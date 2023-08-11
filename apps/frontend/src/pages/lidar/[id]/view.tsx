@@ -25,7 +25,7 @@ const View: NextPage = () => {
 		id: (router.query.id as string) || '',
 	});
 	const [currentShape, setCurrentShape] = useState<'circle' | 'square'>('circle');
-	const [currentSize, setCurrentSize] = useState<number[]>([1]);
+	const [currentSize, setCurrentSize] = useState<number[]>([2]);
 
 	const [fullscreen, setFullscreen] = useState(false);
 	const [hidden, setHidden] = useState(false);
