@@ -45,10 +45,6 @@ const config = withBundleAnalyzer({
   async rewrites() {
     return [
       {
-        source: '/google_maps/:path*',
-        destination: 'https://maps.googleapis.com/:path*',
-      },
-      {
         source: '/pbs.twimg.com/:path*',
         destination: 'https://pbs.twimg.com/:path*',
       }
