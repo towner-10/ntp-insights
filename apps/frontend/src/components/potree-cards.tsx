@@ -138,7 +138,7 @@ export function PotreeControls(props: PotreeControlsProps) {
 						<Slider
 							id="point-size-slider"
 							min={0}
-							max={5}
+							max={10}
 							step={1}
 							value={props.size}
 							onValueChange={props.onSizeChange}
