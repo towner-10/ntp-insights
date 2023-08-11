@@ -24,6 +24,8 @@ Once the hotspot is select, turn on the device hotspot by navigating to ```Setti
 
 > ```01``` Raw Camera Files
 
+To export capture sequences from the camera hardware to an external SSD, connect the SSD directly to the camera. In the ```iSTAR Pulsar``` app, click ```Copy to USB-C``` on the desired capture sequence and wait for the transfer to complete. (**Note**: there is a bug in the app that creates empty file transfers after the first transfer. To avoid this, re-launch the app for each transfer.)
+
 For each capture sequence, the ```iSTAR Pulsar Camera``` generates a folder containing a ```.onctd``` file, a ```.onctv``` file, and an ```info.txt``` file. To process these files into panorama images, launch ```NCTech Immersive Studio``` and navigate to ```Data Formation```. For ```Input```, select the folder containing these files, and for ```Output```, select a desired folder to export the panoramas to.
 
 > ```02``` Configuring the Necessary Data Formation Settings
