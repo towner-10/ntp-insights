@@ -39,7 +39,7 @@ export const batchUploadImages = async (
 			onProgress?.(uploaded, files.length);
 		}
 
-		results.push(await uploadImages(batch, path_id, onError));
+		results.push(result);
 	}
 
 	// If any of the batches failed
