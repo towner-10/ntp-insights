@@ -12,9 +12,13 @@ For more information on setting up the camera hardware, including mounting the d
 
 > ```02``` Setting up the Camera Software
 
-To connect to the ```iSTAR Pulsar Camera```’s local network, navigate to ```Settings > …```. Select the ```pulsar-*****``` network, and enter ```pulsar-1234``` as the password.
+To connect to the ```iSTAR Pulsar Camera```’s local network, navigate to ```Settings > Network & internet > Internet```. Select the ```pulsar-*****``` network, and enter ```pulsar-1234``` as the password.
 
-The camera is controlled using the ```iSTAR Pulsar``` app, available on ```Android``` devices. Ensuring you are connected to the ```pulsar-*****``` network, navigate to ```>``` in the ```iSTAR Pulsar``` app.
+The camera is controlled using the ```iSTAR Pulsar``` app, available on ```Android``` devices. Making sure you are connected to the ```pulsar-*****``` network, navigate to ```Network Connection``` in the ```iSTAR Pulsar``` app.  Press ```Select a network > Refresh Network List``` and select the hotspot name (e.g., for NTP's Pixel 7a, the hotspot name is ```NTP Pixel```). Enter the hotspot password and press ```Join network``` (do not enable ```Upload on this network```).
+
+<img width="200" src="../assets/images/pixel-hotspot.png"/>
+
+Once the hotspot is select, turn on the device hotspot by navigating to ```Settings > Network & internet > Hotspot & tethering > Wi-Fi hotspot``` and enabling ```Use Wi-Fi hotspot```. Finally, return to the ```iSTAR Pulsar app``` and begin capturing once the camera sets the GPS lock.
 
 ## Using ```NCTech Immersive Studio``` for Data Formation
 
