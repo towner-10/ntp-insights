@@ -161,10 +161,7 @@ export const NewPathDialog = () => {
 								console.log(data);
 							})();
 						}}
-						onNext={() => {
-							setPage('initial');
-							handleOpen(false);
-						}}
+						onNext={handleCancel}
 						onCancel={handleCancel}
 					/>
 				)}
