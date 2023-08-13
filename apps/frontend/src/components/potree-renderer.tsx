@@ -5,7 +5,6 @@ import { type PointCloudOctree, Potree } from 'potree-core';
 import { env } from '@/env.mjs';
 import { MovementController } from './movement-controller';
 import { XR } from '@react-three/xr';
-import { Color } from 'three';
 
 const potree = new Potree();
 potree.pointBudget = 2_000_000;
@@ -13,10 +12,12 @@ potree.pointBudget = 2_000_000;
 const PotreeRenderer = ({
 	scan_location,
 	shape_type,
+	size_mode,
 	size,
 }: {
 	scan_location: string;
 	shape_type: number;
+	size_mode: number;
 	size: number;
 }) => {
 	const { scene } = useThree();
@@ -33,16 +34,16 @@ const PotreeRenderer = ({
 			result.rotation.x = -Math.PI / 2;
 			
 			// Set material properties of the point cloud (point size, colour, shape, etc.)
-			result.material.pointSizeType = 2; // adaptive point size
+			result.material.pointSizeType = size_mode;  // adaptive point size
 			result.material.size = size;
 			result.material.shape = shape_type;
-			result.material.outputColorEncoding = 1; // sRGB encoding
+			result.material.outputColorEncoding = 1;   // sRGB encoding
 		
 			scene.add(result);
 			setPointClouds([...pointClouds, result]);
 		})();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [shape_type, size]);
+	}, [shape_type, size_mode, size]);
 
 	useFrame(({ gl, camera }) => {
 		potree.updatePointClouds(pointClouds, camera, gl);
