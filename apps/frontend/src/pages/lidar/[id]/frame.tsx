@@ -127,6 +127,7 @@ const Frame: NextPage = () => {
 			<Canvas id="potree-canvas">
 				<PotreeRenderer
 					shape_type={1}
+					size_mode={2}
 					size={1}
 					scan_location={scan.data?.scan_location}
 				/>
