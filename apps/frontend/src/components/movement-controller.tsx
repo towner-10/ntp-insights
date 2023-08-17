@@ -27,20 +27,12 @@ export const MovementController = (props: {
 
 	useFrame(() => {
 		if (controller && player) {
-			const { buttons, axes } = controller.inputSource.gamepad;
+			const { buttons } = controller.inputSource.gamepad;
 			
 			// Buttons
 			if (buttons[0].pressed) props.on0();
             if (buttons[1].pressed) props.on1();
             if (buttons[5].pressed) props.on5();
-			
-			// Y-Stick
-			if (axes[3] > 0.2) props.on3Fwd();
-			if (axes[3] < 0.2) props.on3Bwd();
-
-			// X-Stick
-			if (axes[2] > 0.2) props.on2Right();
-			if (axes[2] < 0.2) props.on2Left();
 		}
 	});
 

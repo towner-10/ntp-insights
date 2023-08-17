@@ -11,7 +11,6 @@ import { api } from '@/utils/api';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LucideExpand, LucideGlasses, LucideShrink, LucideEye, LucideEyeOff } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { VRButton } from '@react-three/xr';
 import { LiDARControls } from '@/components/dialogs/info-dialogs';
 
 const PotreeRenderer = dynamic(() => import('@/components/potree-renderer'), {
@@ -32,7 +31,6 @@ const View: NextPage = () => {
 	const [fullscreen, setFullscreen] = useState(false);
 	const [hidden, setHidden] = useState(false);
 	const fullscreenRef = useRef<HTMLDivElement>(null);
-	const [vr, setVR] = useState(false);
 
 	useEffect(() => {
 		document.addEventListener('fullscreenchange', () => {
@@ -82,14 +80,6 @@ const View: NextPage = () => {
 						<LucideEye />
 					</div>
 					<div className="absolute bottom-0 right-0 z-10 m-2 flex flex-row gap-4">
-						<button
-							onClick={() => {
-								setVR(!vr);
-							}}
-							className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
-						>
-							<LucideGlasses />
-						</button>
 						<button
 							onClick={() => {
 								void (async () => {
@@ -181,7 +171,6 @@ const View: NextPage = () => {
 								<span className="font-bold">NTP</span> LiDAR
 							</div>
 							{renderUI()}
-							{vr ? <VRButton /> : null}
 						</div>
 						<PotreeDetails event_date={scan.data?.event_date} date_taken={scan.data?.date_taken} scan_location={scan.data?.scan_location} scan_size={scan.data?.scan_size} scan_type={scan.data?.scan_type} />
 						<PotreeControls sizeMode={currentSizeMode} onSizeModeChange={setCurrentSizeMode} size={currentSize} onSizeChange={setCurrentSize} shape={currentShape} onShapeChange={setCurrentShape} />
