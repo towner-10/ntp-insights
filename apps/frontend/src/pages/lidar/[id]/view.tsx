@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 import { Toaster } from '@/components/ui/toaster';
 import { api } from '@/utils/api';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LucideExpand, LucideGlasses, LucideShrink, LucideEye, LucideEyeOff } from 'lucide-react';
+import { LucideExpand, LucideShrink, LucideEye, LucideEyeOff } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { LiDARControls } from '@/components/dialogs/info-dialogs';
 
@@ -93,7 +93,6 @@ const View: NextPage = () => {
 							className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
 						>
 							{fullscreen ? <LucideShrink /> : <LucideExpand />}
-							
 						</button>
 					</div>
 				</>
