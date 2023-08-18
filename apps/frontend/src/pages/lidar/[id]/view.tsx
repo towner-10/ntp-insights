@@ -1,7 +1,6 @@
 import Head from 'next/head';
 import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
-import { Canvas } from '@react-three/fiber';
 import { PotreeDetails, PotreeControls } from '@/components/potree-cards';
 import Header from '@/components/header';
 import { useSession } from 'next-auth/react';
@@ -13,7 +12,7 @@ import { LucideExpand, LucideShrink, LucideEye, LucideEyeOff } from 'lucide-reac
 import { useEffect, useRef, useState } from 'react';
 import { LiDARControls } from '@/components/dialogs/info-dialogs';
 
-const PotreeRenderer = dynamic(() => import('@/components/potree-renderer'), {
+const PotreeFull = dynamic(() => import('@/components/potree-full'), {
 	ssr: false,
 });
 
@@ -166,14 +165,12 @@ const View: NextPage = () => {
 							className="relative row-span-3 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[627px]" // cursed but it works
 							ref={fullscreenRef}
 						>
-							<Canvas id="potree-canvas">
-								<PotreeRenderer 
-									shape_type={currentShape === "square" ? 0 : currentShape === "circle" ? 1 : 2} 
-									size_mode={currentSizeMode === "fixed" ? 0 : currentSizeMode === "adaptive" ? 2 : 1} 
-									size={currentSize[0]} 
-									scan_location={scan.data?.scan_location} 
-								/>
-							</Canvas>
+							<PotreeFull
+								shape_type={currentShape === "square" ? 0 : currentShape === "circle" ? 1 : 2} 
+								size_mode={currentSizeMode === "fixed" ? 0 : currentSizeMode === "adaptive" ? 2 : 1} 
+								size={currentSize[0]} 
+								scan_location={scan.data?.scan_location} 
+							/>
 							<div className="absolute bottom-3 left-5 z-10 text-2xl">
 								<span className="font-bold">NTP</span> LiDAR
 							</div>
