@@ -7,14 +7,11 @@ import {
 	CardTitle,
 } from './ui/card';
 
-
 import { cn } from '@/lib/utils';
 import { PropsWithChildren, type ReactNode } from 'react';
-
 import { Slider } from '@/components/ui/slider';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
-import { Potree } from 'potree-core';
 
 // Props for potree details card
 type PotreeDetailsProps = {
@@ -143,7 +140,7 @@ export function PotreeControls(props: PotreeControlsProps) {
 	return (
 		<>
 			{/* LiDAR Control Card */}
-			<Card id="lidar-controls-card" className="lg:col-span-2 lg: row-span-2">
+			<Card id="lidar-controls-card" className="lg:col-span-2 lg: row-span-2 bg-background/60 backdrop-blur">
 				<CardHeader>
 					<CardTitle>Controls</CardTitle>
 					<CardDescription>Change the current LiDAR view</CardDescription>
