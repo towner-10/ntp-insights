@@ -7,10 +7,8 @@ import {
 	CardTitle,
 } from './ui/card';
 
-
 import { cn } from '@/lib/utils';
 import { PropsWithChildren, type ReactNode } from 'react';
-
 import { Slider } from '@/components/ui/slider';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
@@ -28,8 +26,10 @@ type PotreeDetailsProps = {
 type PotreeControlsProps = {
 	onShapeChange: (shape: 'circle' | 'square') => void;
 	onSizeChange: (size: number[]) => void;
+	onSizeModeChange: (size: 'fixed' | 'adaptive') => void;
 	shape: 'circle' | 'square';
 	size: number[];
+	sizeMode: 'fixed' | 'adaptive';
 };
 
 function DetailsRow(
@@ -43,6 +43,39 @@ function DetailsRow(
 			</div>
 		</div>
 	);
+}
+
+// Size slider for potree controls card
+function SizeSlider(props: PotreeControlsProps) {
+	const sliderDefault = (
+		<>
+			<Slider
+				id="point-size-slider"
+				min={0}
+				max={5}
+				step={1}
+				value={props.size}
+				onValueChange={props.onSizeChange}
+			/>
+			<Label htmlFor="point-size-slider" className="font-normal text-sm text-align">{props.size}</Label>
+		</>
+	);
+	
+	// If size mode is fixed, show slider
+	if (props.sizeMode === 'fixed') {
+		return (
+			<div className="flex items-center space-x-2">
+				{sliderDefault}
+			</div>
+		)
+	} 
+	else {
+		return (
+			<div className=" flex items-center space-x-2 opacity-20 pointer-events-none ">
+				{sliderDefault}
+			</div>
+		)
+	}
 }
 
 export function PotreeDetails(props: PotreeDetailsProps) {
@@ -107,7 +140,7 @@ export function PotreeControls(props: PotreeControlsProps) {
 	return (
 		<>
 			{/* LiDAR Control Card */}
-			<Card id="lidar-controls-card" className="lg:col-span-2 lg: row-span-2">
+			<Card id="lidar-controls-card" className="lg:col-span-2 lg: row-span-2 bg-background/60 backdrop-blur">
 				<CardHeader>
 					<CardTitle>Controls</CardTitle>
 					<CardDescription>Change the current LiDAR view</CardDescription>
@@ -132,19 +165,27 @@ export function PotreeControls(props: PotreeControlsProps) {
 								</div>
 							</RadioGroup>
 						</DetailsRow>
+						<DetailsRow label="Point size mode">
+							<RadioGroup 
+								className="pt-2" 
+								defaultChecked 
+								value={props.sizeMode}
+								defaultValue="fixed"
+								onValueChange={props.onSizeModeChange}
+							>
+								<div className="flex items-center space-x-2">
+									<RadioGroupItem value="fixed" id="fixed" />
+									<Label className="font-normal text-md" htmlFor="fixed">Fixed</Label>
+								</div>
+								<div className="flex items-center space-x-2 ">
+									<RadioGroupItem value="adaptive" id="adaptive" />
+									<Label className="font-normal text-md" htmlFor="adaptive">Adaptive</Label>
+								</div>
+							</RadioGroup>
+						</DetailsRow>
 					</div>
 					<DetailsRow label="Point size"/>
-					<div className="flex items-center space-x-2">
-						<Slider
-							id="point-size-slider"
-							min={0}
-							max={10}
-							step={1}
-							value={props.size}
-							onValueChange={props.onSizeChange}
-						/>
-						<Label htmlFor="point-size-slider" className="font-normal text-sm text-align">{props.size}</Label>
-					</div>
+					<SizeSlider {...props} />
 				</CardContent>
 			</Card>
 		</>

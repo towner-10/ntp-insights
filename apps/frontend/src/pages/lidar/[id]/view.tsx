@@ -9,9 +9,8 @@ import { useRouter } from 'next/router';
 import { Toaster } from '@/components/ui/toaster';
 import { api } from '@/utils/api';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LucideExpand, LucideGlasses, LucideShrink, LucideEye, LucideEyeOff } from 'lucide-react';
+import { LucideExpand, LucideShrink, LucideEye, LucideEyeOff } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { VRButton } from '@react-three/xr';
 import { LiDARControls } from '@/components/dialogs/info-dialogs';
 
 const PotreeRenderer = dynamic(() => import('@/components/potree-renderer'), {
@@ -24,13 +23,14 @@ const View: NextPage = () => {
 	const scan = api.scans.getPublic.useQuery({
 		id: (router.query.id as string) || '',
 	});
+
 	const [currentShape, setCurrentShape] = useState<'circle' | 'square'>('circle');
-	const [currentSize, setCurrentSize] = useState<number[]>([2]);
+	const [currentSizeMode, setCurrentSizeMode] = useState<'fixed' | 'adaptive'>('adaptive');
+	const [currentSize, setCurrentSize] = useState<number[]>([1]);
 
 	const [fullscreen, setFullscreen] = useState(false);
 	const [hidden, setHidden] = useState(false);
 	const fullscreenRef = useRef<HTMLDivElement>(null);
-	const [vr, setVR] = useState(false);
 
 	useEffect(() => {
 		document.addEventListener('fullscreenchange', () => {
@@ -79,15 +79,11 @@ const View: NextPage = () => {
 					<div className="absolute top-0 left-1/2 z-10 m-2 flex h-0.5 w-0.5 flex-row gap-4 animate-eye-ping">
 						<LucideEye />
 					</div>
+					{fullscreen ? 
+					<div className="absolute top-0 left-0 z-10 m-2 flex flex-row gap-4">
+						<PotreeControls sizeMode={currentSizeMode} onSizeModeChange={setCurrentSizeMode} size={currentSize} onSizeChange={setCurrentSize} shape={currentShape} onShapeChange={setCurrentShape} />
+					</div> : <></>}
 					<div className="absolute bottom-0 right-0 z-10 m-2 flex flex-row gap-4">
-						<button
-							onClick={() => {
-								setVR(!vr);
-							}}
-							className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
-						>
-							<LucideGlasses />
-						</button>
 						<button
 							onClick={() => {
 								void (async () => {
@@ -170,19 +166,21 @@ const View: NextPage = () => {
 							className="relative row-span-3 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[627px]" // cursed but it works
 							ref={fullscreenRef}
 						>
-							<Canvas
-								id="potree-canvas"
-							>
-								<PotreeRenderer shape_type={currentShape === "square" ? 0 : currentShape === "circle" ? 1 : 2} size={currentSize[0]} scan_location={scan.data?.scan_location} />
+							<Canvas id="potree-canvas">
+								<PotreeRenderer 
+									shape_type={currentShape === "square" ? 0 : currentShape === "circle" ? 1 : 2} 
+									size_mode={currentSizeMode === "fixed" ? 0 : currentSizeMode === "adaptive" ? 2 : 1} 
+									size={currentSize[0]} 
+									scan_location={scan.data?.scan_location} 
+								/>
 							</Canvas>
 							<div className="absolute bottom-3 left-5 z-10 text-2xl">
 								<span className="font-bold">NTP</span> LiDAR
 							</div>
 							{renderUI()}
-							{vr ? <VRButton /> : null}
 						</div>
 						<PotreeDetails event_date={scan.data?.event_date} date_taken={scan.data?.date_taken} scan_location={scan.data?.scan_location} scan_size={scan.data?.scan_size} scan_type={scan.data?.scan_type} />
-						<PotreeControls size={currentSize} onSizeChange={setCurrentSize} shape={currentShape} onShapeChange={setCurrentShape} />
+						<PotreeControls sizeMode={currentSizeMode} onSizeModeChange={setCurrentSizeMode} size={currentSize} onSizeChange={setCurrentSize} shape={currentShape} onShapeChange={setCurrentShape} />
 					</div>
 				</div>
 			</main>
