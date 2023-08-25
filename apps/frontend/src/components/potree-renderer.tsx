@@ -45,7 +45,7 @@ const PotreeRenderer = ({
 			setPointClouds([...pointClouds, result]);
 		})();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [shape_type, size_mode, size]);
+	}, [scan_location, shape_type, size_mode, size]);
 
 	useFrame(({ gl, camera }) => {
 		potree.updatePointClouds(pointClouds, camera, gl);
