@@ -24,6 +24,8 @@ const PotreeRenderer = ({
 	const [pointClouds, setPointClouds] = useState<PointCloudOctree[]>([]);
 
 	useEffect(() => {
+		if (!scan_location) return;
+
 		(async () => {
 			const result = await potree.loadPointCloud(
 				'metadata.json',
