@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  backend:
+    container_name: backend
+    restart: unless-stopped
+    build:
+      context: ./ntp-insights
+      dockerfile: ./apps/backend/Dockerfile
+    expose:
+      - 8000
+    environment:
+      - DATABASE_URL=
+      - COHERE_API_KEY=
+      - TWITTER_BEARER_TOKEN=
+    volumes:
+      - /data/streetview/images/:/app/images
+      - /data/streetview/pointclouds/:/app/pointclouds
+    depends_on:
+      - db
+      - proxy
+  db:
+    container_name: database
+    restart: always
+    build:
+      context: /home/<user>/.acme.sh/api.ntpinsights.ca_ecc/
+      dockerfile: /home/<user>/ntp/postgres/Dockerfile
+    ports:
+      - '<port>:<port>'
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: database
+    volumes:
+      - db:/var/lib/postgresql/data
+  proxy:
+    image: nginx:latest
+    container_name: proxy
+    restart: always
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /home/<user>/.acme.sh/api.ntpinsights.ca_ecc/:/etc/cert/
+      - /data/streetview/images/:/www/images
+      - /data/streetview/pointclouds/:/www/pointclouds
+volumes:
+  proxy:
+    driver: local
+  db:
+    driver: local
+    driver_opts:
+      type: none
+      device: /data/streetview/database
+      o: bind
