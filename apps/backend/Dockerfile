@@ -27,8 +27,8 @@ RUN git clone -b develop https://github.com/potree/PotreeConverter.git && cd Pot
 
 WORKDIR /app
 
-RUN yarn global add turbo
 COPY . .
+RUN yarn global add turbo
 RUN turbo prune --scope=backend --docker
 
 # Add lockfile and package.json's of isolated subworkspace
