@@ -4,7 +4,6 @@ import {
 	LucideExpand,
 	LucideEye,
 	LucideEyeOff,
-	LucideGlasses,
 	LucideShrink,
 } from 'lucide-react';
 import { NextPage } from 'next';
@@ -79,14 +78,6 @@ const Frame: NextPage = () => {
 						<LucideEye />
 					</div>
 					<div className="absolute bottom-0 right-0 z-10 m-2 flex flex-row gap-4">
-						<button
-							onClick={() => {
-								setVR(!vr);
-							}}
-							className="bg-background/60 hover:bg-foreground/40 hover:text-background rounded-lg p-2 backdrop-blur transition hover:cursor-pointer"
-						>
-							<LucideGlasses />
-						</button>
 						<button
 							onClick={() => {
 								void (async () => {

@@ -111,6 +111,22 @@ export const View360 = (props: {
 	const [rotation, setRotation] = useState(0);
 	const fullscreenRef = useRef<HTMLDivElement>(null);
 
+	const toggleFullscreen = async () => {
+		if (fullscreen) {
+			await document.exitFullscreen();
+			setFullscreen(false);
+		} else {
+			await fullscreenRef.current?.requestFullscreen();
+			setFullscreen(true);
+		}
+	};
+
+	const toggleUI = (event: KeyboardEvent) => {
+		if (event.key.toLowerCase() === 'h') {
+			setHidden(!hidden);
+		}
+	};
+
 	useEffect(() => {
 		document.addEventListener('fullscreenchange', () => {
 			setFullscreen(document.fullscreenElement !== null);
@@ -141,22 +157,6 @@ export const View360 = (props: {
 			</div>
 		);
 	}
-
-	const toggleFullscreen = async () => {
-		if (fullscreen) {
-			await document.exitFullscreen();
-			setFullscreen(false);
-		} else {
-			await fullscreenRef.current?.requestFullscreen();
-			setFullscreen(true);
-		}
-	};
-
-	const toggleUI = (event: KeyboardEvent) => {
-		if (event.key.toLowerCase() === 'h') {
-			setHidden(!hidden);
-		}
-	};
 
 	const onValueChange = (value: 'before' | 'after') => {
 		if (value === 'before') {
