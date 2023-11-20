@@ -115,9 +115,6 @@ const Frame: NextPage = () => {
 	return (
 		<div className="relative h-screen" ref={fullscreenRef}>
 			<PotreeFull
-				shape_type={1}
-				size_mode={2}
-				size={1}
 				scan_location={scan.data?.scan_location}
 			/>
 			<div className="absolute bottom-3 left-5 z-10 text-2xl">

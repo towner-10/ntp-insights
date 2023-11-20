@@ -80,7 +80,6 @@ const View: NextPage = () => {
 					</div>
 					{fullscreen ? 
 					<div className="absolute top-0 left-0 z-10 m-2 flex flex-row gap-4">
-						<PotreeControls sizeMode={currentSizeMode} onSizeModeChange={setCurrentSizeMode} size={currentSize} onSizeChange={setCurrentSize} shape={currentShape} onShapeChange={setCurrentShape} />
 					</div> : <></>}
 					<div className="absolute bottom-0 right-0 z-10 m-2 flex flex-row gap-4">
 						<button
@@ -166,9 +165,6 @@ const View: NextPage = () => {
 							ref={fullscreenRef}
 						>
 							<PotreeFull
-								shape_type={currentShape === "square" ? 0 : currentShape === "circle" ? 1 : 2} 
-								size_mode={currentSizeMode === "fixed" ? 0 : currentSizeMode === "adaptive" ? 2 : 1} 
-								size={currentSize[0]} 
 								scan_location={scan.data?.scan_location} 
 							/>
 							<div className="absolute bottom-3 left-5 z-10 text-2xl">
@@ -177,7 +173,6 @@ const View: NextPage = () => {
 							{renderUI()}
 						</div>
 						<PotreeDetails event_date={scan.data?.event_date} date_taken={scan.data?.date_taken} scan_location={scan.data?.scan_location} scan_size={scan.data?.scan_size} scan_type={scan.data?.scan_type} />
-						<PotreeControls sizeMode={currentSizeMode} onSizeModeChange={setCurrentSizeMode} size={currentSize} onSizeChange={setCurrentSize} shape={currentShape} onShapeChange={setCurrentShape} />
 					</div>
 				</div>
 			</main>
