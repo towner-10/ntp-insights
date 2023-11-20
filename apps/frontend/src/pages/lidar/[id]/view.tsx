@@ -1,31 +1,27 @@
 import Head from 'next/head';
 import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
-import { PotreeDetails, PotreeControls } from '@/components/potree-cards';
+import { Canvas } from '@react-three/fiber';
+import { PotreeDetails } from '@/components/potree-cards';
 import Header from '@/components/header';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { Toaster } from '@/components/ui/toaster';
 import { api } from '@/utils/api';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LucideExpand, LucideShrink, LucideEye, LucideEyeOff } from 'lucide-react';
+import { LucideExpand, LucideShrink, LucideEye, LucideEyeOff, LucideList } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { LiDARControls } from '@/components/dialogs/info-dialogs';
 
-const PotreeFull = dynamic(() => import('@/components/potree-full'), {
+const PotreeViewer = dynamic(() => import('@/components/potree-full'), {
 	ssr: false,
 });
 
-const View: NextPage = () => {
+const View : NextPage = () => {
 	const session = useSession();
 	const router = useRouter();
 	const scan = api.scans.getPublic.useQuery({
 		id: (router.query.id as string) || '',
 	});
-
-	const [currentShape, setCurrentShape] = useState<'circle' | 'square'>('circle');
-	const [currentSizeMode, setCurrentSizeMode] = useState<'fixed' | 'adaptive'>('adaptive');
-	const [currentSize, setCurrentSize] = useState<number[]>([1]);
 
 	const [fullscreen, setFullscreen] = useState(false);
 	const [hidden, setHidden] = useState(false);
@@ -36,16 +32,10 @@ const View: NextPage = () => {
 			setFullscreen(document.fullscreenElement !== null);
 		});
 
-		document.addEventListener('keydown', toggleUI);
-		document.addEventListener('keydown', toggleFocus);
-
 		return () => {
 			document.removeEventListener('fullscreenchange', () => {
 				setFullscreen(document.fullscreenElement !== null);
 			});
-
-			document.removeEventListener('keydown', toggleUI);
-			document.removeEventListener('keydown', toggleFocus);
 		};
 	});
 
@@ -59,18 +49,6 @@ const View: NextPage = () => {
 		}
 	};
 
-	const toggleUI = (event: KeyboardEvent) => {
-		if (event.key.toLowerCase() === 'h') {
-			setHidden(!hidden);
-		}
-	};
-
-	const toggleFocus = (event: KeyboardEvent) => {
-		if (event.key.toLowerCase() === 'p') {
-			document.exitPointerLock();
-		}
-	}
-
 	const renderUI = () => {
 		if (!hidden) {
 			return (
@@ -78,10 +56,6 @@ const View: NextPage = () => {
 					<div className="absolute top-0 left-1/2 z-10 m-2 flex h-0.5 w-0.5 flex-row gap-4 animate-eye-ping">
 						<LucideEye />
 					</div>
-					{fullscreen ? 
-					<div className="absolute top-0 left-0 z-10 m-2 flex flex-row gap-4">
-						<PotreeControls sizeMode={currentSizeMode} onSizeModeChange={setCurrentSizeMode} size={currentSize} onSizeChange={setCurrentSize} shape={currentShape} onShapeChange={setCurrentShape} />
-					</div> : <></>}
 					<div className="absolute bottom-0 right-0 z-10 m-2 flex flex-row gap-4">
 						<button
 							onClick={() => {
@@ -157,7 +131,6 @@ const View: NextPage = () => {
 				<div className="container flex flex-col items-center justify-center p-10">
 					<div className="mb-4 flex w-full flex-row items-center gap-4 text-left text-2xl font-medium">
 						<h2>{scan.data.name || 'N/A'}</h2>
-						<LiDARControls />
 					</div>
 					
 					<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-6 lg:grid-rows-2">
@@ -165,19 +138,14 @@ const View: NextPage = () => {
 							className="relative row-span-3 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[627px]" // cursed but it works
 							ref={fullscreenRef}
 						>
-							<PotreeFull
-								shape_type={currentShape === "square" ? 0 : currentShape === "circle" ? 1 : 2} 
-								size_mode={currentSizeMode === "fixed" ? 0 : currentSizeMode === "adaptive" ? 2 : 1} 
-								size={currentSize[0]} 
-								scan_location={scan.data?.scan_location} 
-							/>
+							<PotreeViewer scan_location={scan.data?.scan_location}/>
 							<div className="absolute bottom-3 left-5 z-10 text-2xl">
 								<span className="font-bold">NTP</span> LiDAR
 							</div>
 							{renderUI()}
 						</div>
-						<PotreeDetails event_date={scan.data?.event_date} date_taken={scan.data?.date_taken} scan_location={scan.data?.scan_location} scan_size={scan.data?.scan_size} scan_type={scan.data?.scan_type} />
-						<PotreeControls sizeMode={currentSizeMode} onSizeModeChange={setCurrentSizeMode} size={currentSize} onSizeChange={setCurrentSize} shape={currentShape} onShapeChange={setCurrentShape} />
+						<PotreeDetails event_date={scan.data?.event_date} date_taken={scan.data?.date_taken} scan_location={scan.data?.scan_location} scan_size={scan.data?.scan_size} scan_type={scan.data?.scan_type}/>
+						
 					</div>
 				</div>
 			</main>
