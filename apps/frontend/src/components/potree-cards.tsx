@@ -22,6 +22,16 @@ type PotreeDetailsProps = {
 	scan_type: string;
 };
 
+// Props for potree controls card
+type PotreeControlsProps = {
+	onShapeChange: (shape: 'circle' | 'square') => void;
+	onSizeChange: (size: number[]) => void;
+	onSizeModeChange: (size: 'fixed' | 'adaptive') => void;
+	shape: 'circle' | 'square';
+	size: number[];
+	sizeMode: 'fixed' | 'adaptive';
+};
+
 function DetailsRow(
 	props: PropsWithChildren<{ label: string; className?: string }>
 ) {
@@ -33,6 +43,39 @@ function DetailsRow(
 			</div>
 		</div>
 	);
+}
+
+// Size slider for potree controls card
+function SizeSlider(props: PotreeControlsProps) {
+	const sliderDefault = (
+		<>
+			<Slider
+				id="point-size-slider"
+				min={0}
+				max={5}
+				step={1}
+				value={props.size}
+				onValueChange={props.onSizeChange}
+			/>
+			<Label htmlFor="point-size-slider" className="font-normal text-sm text-align">{props.size}</Label>
+		</>
+	);
+	
+	// If size mode is fixed, show slider
+	if (props.sizeMode === 'fixed') {
+		return (
+			<div className="flex items-center space-x-2">
+				{sliderDefault}
+			</div>
+		)
+	} 
+	else {
+		return (
+			<div className=" flex items-center space-x-2 opacity-20 pointer-events-none ">
+				{sliderDefault}
+			</div>
+		)
+	}
 }
 
 export function PotreeDetails(props: PotreeDetailsProps) {
@@ -93,4 +136,59 @@ export function PotreeDetails(props: PotreeDetailsProps) {
 
 }
 
+export function PotreeControls(props: PotreeControlsProps) {
+	return (
+		<>
+			{/* LiDAR Control Card */}
+			<Card id="lidar-controls-card" className="lg:col-span-2 lg: row-span-2 bg-background/60 backdrop-blur">
+				<CardHeader>
+					<CardTitle>Controls</CardTitle>
+					<CardDescription>Change the current LiDAR view</CardDescription>
+				</CardHeader>
+				<CardContent className="flex flex-col justify-around">
+					<div className="grid grid-cols-2">
+						<DetailsRow label="Point shape">
+							<RadioGroup 
+								className="pt-2" 
+								defaultChecked 
+								value={props.shape}
+								defaultValue="square"
+								onValueChange={props.onShapeChange}
+							>
+								<div className="flex items-center space-x-2">
+									<RadioGroupItem value="square" id="square" />
+									<Label className="font-normal text-md" htmlFor="square">Square</Label>
+								</div>
+								<div className="flex items-center space-x-2 ">
+									<RadioGroupItem value="circle" id="circle" />
+									<Label className="font-normal text-md" htmlFor="circle">Circle</Label>
+								</div>
+							</RadioGroup>
+						</DetailsRow>
+						<DetailsRow label="Point size mode">
+							<RadioGroup 
+								className="pt-2" 
+								defaultChecked 
+								value={props.sizeMode}
+								defaultValue="fixed"
+								onValueChange={props.onSizeModeChange}
+							>
+								<div className="flex items-center space-x-2">
+									<RadioGroupItem value="fixed" id="fixed" />
+									<Label className="font-normal text-md" htmlFor="fixed">Fixed</Label>
+								</div>
+								<div className="flex items-center space-x-2 ">
+									<RadioGroupItem value="adaptive" id="adaptive" />
+									<Label className="font-normal text-md" htmlFor="adaptive">Adaptive</Label>
+								</div>
+							</RadioGroup>
+						</DetailsRow>
+					</div>
+					<DetailsRow label="Point size"/>
+					<SizeSlider {...props} />
+				</CardContent>
+			</Card>
+		</>
+	)
 
+}
