@@ -44,7 +44,5 @@ yarn-error.log*
 # react email
 .react-email
 
-/public/potree/
-
 # typescript
 *.tsbuildinfo
