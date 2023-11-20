@@ -37,26 +37,26 @@ const PotreeViewer = ({
 }) => {
 
     const scripts = [
-        "/potree_libs/jquery/jquery-3.1.1.min.js",
-        "/potree_libs/spectrum/spectrum.js",
-        "/potree_libs/jquery-ui/jquery-ui.min.js",
-        "/potree_libs/other/BinaryHeap.js",
-        "/potree_libs/tween/tween.min.js",
-        "/potree_libs/i18next/i18next.js",
-        "/potree_libs/d3/d3.js",
-        "/potree_libs/proj4/proj4.js",
-        "/potree_libs/openlayers3/ol.js",
-        "/potree_libs/jstree/jstree.js",
-        "/potree_libs/potree/potree.js",
-        "/potree_libs/plasio/js/laslaz.js",
+        "/potree-fork/libs/jquery/jquery-3.1.1.min.js",
+        "/potree-fork/libs/spectrum/spectrum.js",
+        "/potree-fork/libs/jquery-ui/jquery-ui.min.js",
+        "/potree-fork/libs/other/BinaryHeap.js",
+        "/potree-fork/libs/tween/tween.min.js",
+        "/potree-fork/libs/i18next/i18next.js",
+        "/potree-fork/libs/d3/d3.js",
+        "/potree-fork/libs/proj4/proj4.js",
+        "/potree-fork/libs/openlayers3/ol.js",
+        "/potree-fork/libs/jstree/jstree.js",
+        "/potree-fork/libs/potree/potree.js",
+        "/potree-fork/libs/plasio/js/laslaz.js",
       ];
 
       const stylesheets = [
-        "/potree_libs/potree/potree.css",
-        "/potree_libs/jquery-ui/jquery-ui.min.css",
-        "/potree_libs/openlayers3/ol.css",
-        "/potree_libs/spectrum/spectrum.css",
-        "/potree_libs/jstree/themes/mixed/style.css"
+        "/potree-fork/lib/potree/potree.css",
+        "/potree-fork/lib/jquery-ui/jquery-ui.min.css",
+        "/potree-fork/lib/openlayers3/ol.css",
+        "/potree-fork/lib/spectrum/spectrum.css",
+        "/potree-fork/lib/jstree/themes/mixed/style.css"
       ]
     
     
