@@ -52,11 +52,11 @@ const PotreeViewer = ({
       ];
 
       const stylesheets = [
-        "/potree-fork/lib/potree/potree.css",
-        "/potree-fork/lib/jquery-ui/jquery-ui.min.css",
-        "/potree-fork/lib/openlayers3/ol.css",
-        "/potree-fork/lib/spectrum/spectrum.css",
-        "/potree-fork/lib/jstree/themes/mixed/style.css"
+        "/potree-fork/libs/potree/potree.css",
+        "/potree-fork/libs/jquery-ui/jquery-ui.min.css",
+        "/potree-fork/libs/openlayers3/ol.css",
+        "/potree-fork/libs/spectrum/spectrum.css",
+        "/potree-fork/libs/jstree/themes/mixed/style.css"
       ]
     
     
