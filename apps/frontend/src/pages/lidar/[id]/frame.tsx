@@ -1,5 +1,4 @@
 import { api } from '@/utils/api';
-import { Canvas } from '@react-three/fiber';
 import { VRButton } from '@react-three/xr';
 import {
 	LucideExpand,
@@ -12,7 +11,7 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 
-const PotreeRenderer = dynamic(() => import('@/components/potree-renderer'), {
+const PotreeFull = dynamic(() => import('@/components/potree-full'), {
 	ssr: false,
 });
 
@@ -115,14 +114,9 @@ const Frame: NextPage = () => {
 
 	return (
 		<div className="relative h-screen" ref={fullscreenRef}>
-			<Canvas id="potree-canvas">
-				<PotreeRenderer
-					shape_type={1}
-					size_mode={2}
-					size={1}
-					scan_location={scan.data?.scan_location}
-				/>
-			</Canvas>
+			<PotreeFull
+				scan_location={scan.data?.scan_location}
+			/>
 			<div className="absolute bottom-3 left-5 z-10 text-2xl">
 				<span className="font-bold">NTP</span> LiDAR
 			</div>

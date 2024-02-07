@@ -1,0 +1,3 @@
+[submodule "apps/frontend/public/potree-fork"]
+	path = apps/frontend/public/potree-fork
+	url = https://github.com/Raminh05/potree
