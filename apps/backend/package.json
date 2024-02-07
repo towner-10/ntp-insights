@@ -27,7 +27,7 @@
     "socket.io": "^4.6.1",
     "twitter-api-v2": "^1.14.2",
     "typescript": "^5.0.4",
-    "zod": "^3.21.4"
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "@types/formidable": "^2.0.6",
