@@ -3,11 +3,11 @@
 import { env } from '@/env.mjs';
 import { useRef, useEffect } from 'react';
 
-const PotreeScript = (url: string, async: boolean = false) => {
+const PotreeScript = (url: string) => {
   useEffect(() => {
     const script = document.createElement("script");
     script.src = url;
-    script.async = async;
+    script.async = false;
 
     document.head.appendChild(script);
     return () => {
@@ -16,13 +16,13 @@ const PotreeScript = (url: string, async: boolean = false) => {
   }, [url]);
 };
 
-const CSS = (url: string, async: boolean = false) => {
+const CSS = (url: string) => {
   useEffect(() => {
     const sheet = document.createElement("link");
     sheet.rel = "stylesheet";
     sheet.type = "text/css";
     sheet.href = url;
-    sheet.async = async;
+    sheet.async = false;
 
     document.head.appendChild(sheet);
     return () => {
@@ -68,15 +68,15 @@ const PotreeViewer = ({
   useEffect(() => {
     const script = document.createElement('script');
     script.src = "/potree-fork/libs/potree/potree.js";
-    script.addEventListener('load', ()=>set_script_loaded(true));
+    script.addEventListener('load', () => set_script_loaded(true));
     document.head.appendChild(script);
     
-  }, [])
+  }, [set_script_loaded])
 
   const elementRef = useRef();
-  let pointcloud, scene, material;
   
   useEffect(() => {
+    let pointcloud, scene, material;
 
     // Only load the Potree viewport when its script is fully loaded.
     if (script_loaded) {
@@ -89,6 +89,9 @@ const PotreeViewer = ({
       viewer.setFOV(90);
       viewer.setBackground("black");
       viewer.setControls(viewer.earthControls);
+
+      // Just load the VRButton if VR is supported
+      viewer.loadGUI(() => {});
 
       set_viewer_loaded(true);
 
@@ -110,7 +113,7 @@ const PotreeViewer = ({
     else {
       console.log("script is not loaded!")
     }
-  }, [script_loaded])
+  }, [script_loaded, set_viewer_loaded, scan_location])
 
   return (
     <div className="potree_container">
