@@ -1,3 +1,4 @@
+//@ts-nocheck
 import format from 'date-fns/format';
 import {
 	Card,
@@ -10,7 +11,7 @@ import {
 import { cn } from '@/lib/utils';
 import { PropsWithChildren, type ReactNode } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+//import { RadioGroup, RadioGroupItem } from './ui/radio-group'; // Unused for now
 import { Label } from './ui/label';
 
 // Props for potree details card
@@ -24,12 +25,14 @@ type PotreeDetailsProps = {
 
 // Props for potree controls card
 type PotreeControlsProps = {
-	onShapeChange: (shape: 'circle' | 'square') => void;
-	onSizeChange: (size: number[]) => void;
-	onSizeModeChange: (size: 'fixed' | 'adaptive') => void;
-	shape: 'circle' | 'square';
+	//shape: 'circle' | 'square';
+	//onShapeChange: (shape: 'circle' | 'square') => void;
+
+	count: number[];
+	onCountChange: (count: number[]) => void;
+
 	size: number[];
-	sizeMode: 'fixed' | 'adaptive';
+	onSizeChange: (size: number[]) => void;
 };
 
 function DetailsRow(
@@ -52,30 +55,51 @@ function SizeSlider(props: PotreeControlsProps) {
 			<Slider
 				id="point-size-slider"
 				min={0}
-				max={5}
+				max={400}
 				step={1}
 				value={props.size}
 				onValueChange={props.onSizeChange}
 			/>
+			
 			<Label htmlFor="point-size-slider" className="font-normal text-sm text-align">{props.size}</Label>
+			
 		</>
 	);
 	
-	// If size mode is fixed, show slider
-	if (props.sizeMode === 'fixed') {
-		return (
-			<div className="flex items-center space-x-2">
-				{sliderDefault}
-			</div>
-		)
-	} 
-	else {
-		return (
-			<div className=" flex items-center space-x-2 opacity-20 pointer-events-none ">
-				{sliderDefault}
-			</div>
-		)
-	}
+	viewer.setMinNodeSize(props.size[0]);
+
+	return (
+		<div className=" flex items-center space-x-2">
+			{sliderDefault}
+		</div>
+	)	
+}
+
+// Point count slider for potree controls card
+function CountSlider(props: PotreeControlsProps) {
+	const sliderDefault = (
+		<>
+			<Slider
+				id="point-size-slider"
+				min={10000}
+				max={1000000}
+				step={1}
+				value={props.count}
+				onValueChange={props.onCountChange}
+			/>
+			
+			<Label htmlFor="point-count-slider" className="font-normal text-sm text-align">{props.count}</Label>
+			
+		</>
+	);
+	
+	viewer.setPointBudget(props.count[0]);
+
+	return (
+		<div className=" flex items-center space-x-2">
+			{sliderDefault}
+		</div>
+	)
 }
 
 export function PotreeDetails(props: PotreeDetailsProps) {
@@ -147,48 +171,13 @@ export function PotreeControls(props: PotreeControlsProps) {
 				</CardHeader>
 				<CardContent className="flex flex-col justify-around">
 					<div className="grid grid-cols-2">
-						<DetailsRow label="Point shape">
-							<RadioGroup 
-								className="pt-2" 
-								defaultChecked 
-								value={props.shape}
-								defaultValue="square"
-								onValueChange={props.onShapeChange}
-							>
-								<div className="flex items-center space-x-2">
-									<RadioGroupItem value="square" id="square" />
-									<Label className="font-normal text-md" htmlFor="square">Square</Label>
-								</div>
-								<div className="flex items-center space-x-2 ">
-									<RadioGroupItem value="circle" id="circle" />
-									<Label className="font-normal text-md" htmlFor="circle">Circle</Label>
-								</div>
-							</RadioGroup>
-						</DetailsRow>
-						<DetailsRow label="Point size mode">
-							<RadioGroup 
-								className="pt-2" 
-								defaultChecked 
-								value={props.sizeMode}
-								defaultValue="fixed"
-								onValueChange={props.onSizeModeChange}
-							>
-								<div className="flex items-center space-x-2">
-									<RadioGroupItem value="fixed" id="fixed" />
-									<Label className="font-normal text-md" htmlFor="fixed">Fixed</Label>
-								</div>
-								<div className="flex items-center space-x-2 ">
-									<RadioGroupItem value="adaptive" id="adaptive" />
-									<Label className="font-normal text-md" htmlFor="adaptive">Adaptive</Label>
-								</div>
-							</RadioGroup>
-						</DetailsRow>
+						<DetailsRow label="Point count"/>
+						<CountSlider {...props}/>
+						<DetailsRow label="Point size"/>
+						<SizeSlider {...props}/>
 					</div>
-					<DetailsRow label="Point size"/>
-					<SizeSlider {...props} />
 				</CardContent>
 			</Card>
 		</>
 	)
-
 }
