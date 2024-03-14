@@ -11,8 +11,9 @@ import {
 import { cn } from '@/lib/utils';
 import { PropsWithChildren, type ReactNode } from 'react';
 import { Slider } from '@/components/ui/slider';
-//import { RadioGroup, RadioGroupItem } from './ui/radio-group'; // Unused for now
+import { RadioGroup, RadioGroupItem } from './ui/radio-group'; 
 import { Label } from './ui/label';
+import { useState } from 'react';
 
 // Props for potree details card
 type PotreeDetailsProps = {
@@ -80,7 +81,7 @@ function CountSlider(props: PotreeControlsProps) {
 	const sliderDefault = (
 		<>
 			<Slider
-				id="point-size-slider"
+				id="point-count-slider"
 				min={10000}
 				max={1000000}
 				step={1}
@@ -99,6 +100,52 @@ function CountSlider(props: PotreeControlsProps) {
 		<div className=" flex items-center space-x-2">
 			{sliderDefault}
 		</div>
+	)
+}
+
+function ControlSelect() {
+	const [controlType, setcontrolType] = useState<string>("earth");
+	const element = (
+		<>
+			<RadioGroup
+				className="pt-2"
+				defaultChecked
+				value={controlType}
+				defaultValue="earth"
+				onValueChange={setcontrolType}
+			>	
+				<div className="flex items-center space-x-2">
+					<RadioGroupItem value="earth" id="earth"/>
+					<Label className="font-normal text-md" htmlFor="earth">Earth</Label>
+				</div>
+				<div className="flex items-center space-x-2">
+					<RadioGroupItem value="fly" id="fly"/>
+					<Label className="font-normal text-md" htmlFor="fly">Fly</Label>
+				</div>
+				<div className="flex items-center space-x-2">
+					<RadioGroupItem value="device" id="device"/>
+					<Label className="font-normal text-md" htmlFor="device">Device</Label>
+				</div>
+			</RadioGroup>
+		</>
+	);
+
+	switch (controlType) {
+		case "earth":
+			viewer.setControls(viewer.earthControls);
+			break;
+		case "fly":
+			viewer.setControls(viewer.fpControls);
+			break;
+		case "device":
+			viewer.setControls(viewer.deviceControls);
+			break;
+	}
+	
+	return (
+		<div className=" flex items-center space-x-2 ">
+			{element}
+		</div>	
 	)
 }
 
@@ -175,6 +222,8 @@ export function PotreeControls(props: PotreeControlsProps) {
 						<CountSlider {...props}/>
 						<DetailsRow label="Point size"/>
 						<SizeSlider {...props}/>
+						<DetailsRow label="Control Type"/>
+						<ControlSelect/>
 					</div>
 				</CardContent>
 			</Card>
