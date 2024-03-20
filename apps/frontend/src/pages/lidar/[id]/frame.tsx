@@ -1,5 +1,4 @@
 import { api } from '@/utils/api';
-import { VRButton } from '@react-three/xr';
 import {
 	LucideExpand,
 	LucideEye,
@@ -28,12 +27,15 @@ const Frame: NextPage = () => {
 			refetchOnWindowFocus: false,
 		}
 	);
+	
+	// States for external script loading
+	const [scriptsLoaded, setScriptsLoaded] = useState(false);
 
 	const [fullscreen, setFullscreen] = useState(false);
 	const [hidden, setHidden] = useState(false);
+	
 	const fullscreenRef = useRef<HTMLDivElement>(null);
-	const [vr, setVR] = useState(false);
-
+	
 	useEffect(() => {
 		document.addEventListener('fullscreenchange', () => {
 			setFullscreen(document.fullscreenElement !== null);
@@ -115,13 +117,15 @@ const Frame: NextPage = () => {
 	return (
 		<div className="relative h-screen" ref={fullscreenRef}>
 			<PotreeFull
+				script_loaded={scriptsLoaded}
+				set_script_loaded={setScriptsLoaded}
 				scan_location={scan.data?.scan_location}
+				set_viewer_loaded={() => {}}
 			/>
 			<div className="absolute bottom-3 left-5 z-10 text-2xl">
 				<span className="font-bold">NTP</span> LiDAR
 			</div>
 			{renderUI()}
-			{vr ? <VRButton /> : null}
 		</div>
 	);
 };

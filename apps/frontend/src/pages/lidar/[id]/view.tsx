@@ -23,12 +23,19 @@ const View: NextPage = () => {
 		id: (router.query.id as string) || '',
 	});
 
-	const [currentShape, setCurrentShape] = useState<'circle' | 'square'>('circle');
-	const [currentSizeMode, setCurrentSizeMode] = useState<'fixed' | 'adaptive'>('adaptive');
-	const [currentSize, setCurrentSize] = useState<number[]>([1]);
-
+	// States for UI
 	const [fullscreen, setFullscreen] = useState(false);
 	const [hidden, setHidden] = useState(false);
+
+	// States for LiDAR propertiese
+	const [size, setSize] = useState<number[]>([1]);
+	const [count, setCount] = useState<number[]>([200000]);
+	//const [shape, setShape] = useState<"circle" | "square">("circle");
+
+	// States for external script loading
+	const [scriptsLoaded, setScriptsLoaded] = useState(false);
+	const [viewerLoaded, setViewerLoaded] = useState(false);
+
 	const fullscreenRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -160,19 +167,16 @@ const View: NextPage = () => {
 					</div>
 					
 					<div className="grid w-full grid-cols-1 gap-4 lg:grid-cols-6 lg:grid-rows-2">
-						<div
-							className="relative row-span-3 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[627px]" // cursed but it works
-							ref={fullscreenRef}
-						>
-							<PotreeFull
-								scan_location={scan.data?.scan_location} 
-							/>
+						<div className="relative row-span-3 h-[500px] overflow-hidden rounded-md lg:col-span-4 lg:h-[627px]" ref={fullscreenRef}>
+							<PotreeFull set_script_loaded={setScriptsLoaded} script_loaded={scriptsLoaded} set_viewer_loaded={setViewerLoaded} scan_location={scan.data?.scan_location} />
 							<div className="absolute bottom-3 left-5 z-10 text-2xl">
 								<span className="font-bold">NTP</span> LiDAR
 							</div>
 							{renderUI()}
 						</div>
 						<PotreeDetails event_date={scan.data?.event_date} date_taken={scan.data?.date_taken} scan_location={scan.data?.scan_location} scan_size={scan.data?.scan_size} scan_type={scan.data?.scan_type} />
+						{viewerLoaded ? <PotreeControls size={size} onSizeChange={setSize} count={count} onCountChange={setCount} /> : <></>}
+						
 					</div>
 				</div>
 			</main>
