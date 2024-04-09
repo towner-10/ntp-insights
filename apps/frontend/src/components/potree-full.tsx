@@ -49,6 +49,7 @@ const PotreeViewer = ({
     "/potree-fork/libs/other/BinaryHeap.js",
     "/potree-fork/libs/tween/tween.min.js",
     "/potree-fork/libs/d3/d3.js",
+    "/potree-fork/libs/three.js/build/three.js",
     "/potree-fork/libs/proj4/proj4.js",
     "/potree-fork/libs/potree/potree.js",
 ];
